@@ -34,7 +34,7 @@
     "selectDepartment": "Select Department",
     "selectSubDepartment": "Select Sub Department",
     "selectLevel": "Select Priority Level",
-    "enterDescription": "Please provide detailed description of your complaint."
+    "enterDescription": "Please provide detailed description of your complaint..."
   },
    "login": {
     "title": "Admin Login",
