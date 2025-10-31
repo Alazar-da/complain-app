@@ -171,7 +171,7 @@ useEffect(() => {
               onChange={(e) =>
                 setForm({
                   ...form,
-                  department: e.target.value,
+                  department: e.target.value as Department,
                   subDepartment: "",
                 })
               }
