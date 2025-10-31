@@ -1,4 +1,8 @@
 {
+     "meta": {
+    "title": "Waajjira Komii Barnootaa Magaalaa",
+    "description": "Appii komii"
+  },
   "dashboard": "Daashboordii",
   "complaints": "Maddarsoota",
   "logout": "Ba'i",

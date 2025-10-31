@@ -1,4 +1,8 @@
 {
+     "meta": {
+    "title": "City Education Complaint Office",
+    "description": "Complaint app"
+  },
   "dashboard": "Dashboard",
   "complaints": "Complaints",
   "logout": "Logout",

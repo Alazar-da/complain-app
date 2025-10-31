@@ -1,4 +1,8 @@
 {
+    "meta": {
+    "title": "የከተማ ትምህርት ቅሬታ ጽ/ቤት",
+    "description": "ቅሬታ መቀበያ መተግበሪያ"
+  },
   "dashboard": "ዳሽቦርድ",
   "complaints": "ጥያቄዎች",
   "logout": "ውጣ",
