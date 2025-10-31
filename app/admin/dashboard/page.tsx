@@ -1,0 +1,601 @@
+'use client';
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiGrid, FiList, FiLogOut, FiUser, FiBell, FiMenu, FiX, FiCalendar, FiLock, FiClock, FiArrowRight } from "react-icons/fi";
+import { TbLayoutGrid, TbLayoutList } from "react-icons/tb";
+import EditModal from "@/components/EditModal";
+import ViewModal from "@/components/ViewModal";
+import DeleteModal from "@/components/DeleteModal";
+
+interface Complaint {
+  _id: string;
+  title: string;
+  department: string;
+  subDepartment: string;
+  level: string;
+  description: string;
+  status: string;
+  date: string;
+}
+
+export default function AdminDashboard() {
+  const [complaints, setComplaints] = useState<Complaint[]>([]);
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
+  const router = useRouter();
+    const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const limit = 10; // complaints per page
+
+const [token, setToken] = useState<string | null>(null);
+const [countdown, setCountdown] = useState(3);
+
+useEffect(() => {
+  const storedToken = localStorage.getItem("adminToken");
+  if (!storedToken) {
+    // Start countdown when no token
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          router.push("/admin/login");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  } else {
+    setToken(storedToken);
+  }
+}, [router]);
+
+ const fetchComplaints = async (pageNumber = 1) => {
+    const res = await fetch(
+      `/api/complaints?page=${pageNumber}&limit=${limit}&search=${encodeURIComponent(
+        searchTerm
+      )}&status=${statusFilter}`
+    );
+    const data = await res.json();
+    setComplaints(data.data);
+    setTotalPages(data.totalPages);
+    setPage(data.page);
+    setLoading(false)
+  };
+
+  useEffect(() => {
+    fetchComplaints(1); // always fetch first page when filters change
+  }, [searchTerm, statusFilter]);
+
+
+  const handleLogout = () => {
+    localStorage.removeItem("adminToken");
+    router.push('/admin/login');
+  };
+
+  const openEditModal = (complaint: Complaint) => {
+    setSelectedComplaint(complaint);
+    setShowEditModal(true);
+  };
+
+  const openViewModal = (complaint: Complaint) => {
+    setSelectedComplaint(complaint);
+    setShowViewModal(true);
+  };
+
+    const openDeleteModal = (complaint: Complaint) => {
+    setSelectedComplaint(complaint);
+    setShowDeleteModal(true);
+  };
+
+  const getStatusBadge = (status: string) => {
+    const baseStyles = "px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1 w-fit";
+    
+    switch (status) {
+      case "Pending":
+        return `${baseStyles} bg-yellow-100 text-yellow-800 border border-yellow-200`;
+      case "Completed":
+        return `${baseStyles} bg-green-100 text-green-800 border border-green-200`;
+      case "In Progress":
+        return `${baseStyles} bg-blue-100 text-blue-800 border border-blue-200`;
+      default:
+        return `${baseStyles} bg-red-100 text-red-800 border border-red-200`;
+    }
+  };
+
+  const getLevelBadge = (level: string) => {
+    const baseStyles = "px-2 py-1 rounded-full text-xs font-semibold";
+    
+    switch (level) {
+      case "High":
+        return `${baseStyles} bg-red-100 text-red-800`;
+      case "Medium":
+        return `${baseStyles} bg-orange-100 text-orange-800`;
+      case "Low":
+        return `${baseStyles} bg-green-100 text-green-800`;
+      default:
+        return `${baseStyles} bg-gray-100 text-gray-800`;
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "Pending":
+        return <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>;
+      case "Completed":
+        return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
+      case "In Progress":
+        return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>;
+      default:
+        return <div className="w-2 h-2 bg-red-500 rounded-full"></div>;
+    }
+  };
+
+    const handlePrev = () => {
+    if (page > 1) fetchComplaints(page - 1);
+  };
+
+  const handleNext = () => {
+    if (page < totalPages) fetchComplaints(page + 1);
+  };
+
+
+
+// ... inside the return statement
+if (!token) {
+  return (
+    <div className="fixed inset-0 bg-linear-to-br from-slate-50 to-emerald-50 flex items-center justify-center p-4 z-50 animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full transform transition-all duration-300 animate-scale-in">
+        {/* Header */}
+        <div className="p-6 text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FiLock className="w-8 h-8 text-red-600" />
+          </div>
+          
+          <h3 className="text-xl font-bold text-gray-900 mb-2">Access Restricted</h3>
+          <p className="text-gray-600 mb-4">
+            Authentication required to view this page.
+          </p>
+          
+          {/* Dynamic Countdown */}
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <FiClock className="w-5 h-5 text-blue-600 animate-pulse" />
+            <span className="text-sm text-gray-500">
+              Redirecting in <span className="font-mono font-bold text-blue-600 text-lg">{countdown}</span>...
+            </span>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+            <div 
+              className="bg-linear-to-r from-blue-600 to-blue-400 h-2 rounded-full transition-all duration-1000 ease-out"
+              style={{ width: `${((3 - countdown) / 3) * 100}%` }}
+            ></div>
+          </div>
+
+          <p className="text-xs text-gray-500">
+            You will be automatically redirected
+          </p>
+        </div>
+
+        {/* Action Button */}
+        <div className="flex space-x-3 p-6 border-t border-gray-200">
+          <button
+            onClick={() => router.push("/admin/login")}
+            className="flex-1 bg-linear-to-r from-blue-600 to-blue-700 text-white py-2.5 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center space-x-2 hover:cursor-pointer"
+          >
+            <span>Login Now</span>
+            <FiArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600">Loading complaints...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="min-h-screen bg-gray-50 text-slate-800">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Left side - Logo and Title */}
+            <div className="flex items-center">
+              <div className="shrink-0">
+                <div className="w-8 h-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                  <FiUser className="w-4 h-4 text-white" />
+                </div>
+              </div>
+              <div className="ml-3">
+                <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+              </div>
+            </div>
+
+            {/* Right side - User menu and logout */}
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <button 
+                  onClick={handleLogout}
+                  className="flex items-center space-x-2 bg-red-50 text-red-700 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors duration-200 border border-red-200 hover:cursor-pointer"
+                >
+                  <FiLogOut className="w-4 h-4" />
+                  <span className="hidden sm:block font-medium">Logout</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="p-4 sm:p-6 lg:p-8">
+        {/* Stats and Controls */}
+        <div className="mb-5">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Complaint Management</h2>
+              <p className="text-gray-600 mt-1">Manage and track all submitted complaints</p>
+            </div>
+            <div className="mt-4 lg:mt-0 flex items-center space-x-4">
+              <div className="flex items-center space-x-2 bg-white rounded-lg border border-gray-200 p-1">
+                <button
+                  onClick={() => setViewMode('table')}
+                  className={`p-2 rounded-md transition-all duration-200 ${
+                    viewMode === 'table' 
+                      ? 'bg-blue-100 text-blue-600' 
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  <TbLayoutList className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('card')}
+                  className={`p-2 rounded-md transition-all duration-200 ${
+                    viewMode === 'card' 
+                      ? 'bg-blue-100 text-blue-600' 
+                      : 'text-gray-400 hover:text-gray-600'
+                  }`}
+                >
+                  <TbLayoutGrid className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                Total: {complaints.length}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Filters and Search */}
+        <div className="mb-6 bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Search complaints..."
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <FiSearch className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              </div>
+            </div>
+            <div className="sm:w-48">
+              <div className="relative">
+                <select
+                  className="w-full border border-gray-300 rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white appearance-none"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="All">All Status</option>
+                  <option value="Pending">Pending</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+                <FiFilter className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Content based on view mode */}
+        {viewMode === 'table' ? (
+          /* Table View */
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50 border-b border-gray-200">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Complaint
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Department
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Priority
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Date
+                    </th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {complaints.map((complaint) => (
+                    <tr key={complaint._id} className="hover:bg-gray-50 transition-colors duration-150">
+                      <td className="px-6 py-4">
+                        <div>
+                          <div className="font-medium text-gray-900">{complaint.title}</div>
+                          <div className="text-sm text-gray-500 line-clamp-2 mt-1">
+                            {complaint.description.substring(0, 60)}...
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-900">{complaint.department}</div>
+                        {complaint.subDepartment && (
+                          <div className="text-xs text-gray-500 mt-1">{complaint.subDepartment}</div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={getLevelBadge(complaint.level)}>
+                          {complaint.level}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={getStatusBadge(complaint.status)}>
+                          {getStatusIcon(complaint.status)}
+                          <span>{complaint.status}</span>
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-gray-500">
+                        {new Date(complaint.date).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric'
+                        })}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => openViewModal(complaint)}
+                            className="inline-flex items-center p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200 hover:cursor-pointer"
+                            title="View Details"
+                          >
+                            <FiEye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openEditModal(complaint)}
+                            className="inline-flex items-center p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200 hover:cursor-pointer"
+                            title="Edit Status"
+                          >
+                            <FiEdit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => openDeleteModal(complaint)}
+                            className="inline-flex items-center p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200 hover:cursor-pointer"
+                            title="Delete Complaint"
+                          >
+                            <FiTrash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {complaints.length === 0 && (
+              <div className="text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FiSearch className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-500 text-lg">No complaints found</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  {searchTerm || statusFilter !== "All" ? "Try adjusting your search or filters" : "No complaints have been submitted yet"}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Card View */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {complaints.map((complaint) => (
+              <div key={complaint._id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{complaint.title}</h3>
+                    <div className="flex items-center space-x-2 mb-3">
+                      <span className={getLevelBadge(complaint.level)}>
+                        {complaint.level}
+                      </span>
+                      <span className={getStatusBadge(complaint.status)}>
+                        {getStatusIcon(complaint.status)}
+                        <span>{complaint.status}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  {complaint.description}
+                </p>
+
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FiUser className="w-4 h-4 mr-2" />
+                    <span>{complaint.department}</span>
+                  </div>
+                  {complaint.subDepartment && (
+                    <div className="flex items-center text-sm text-gray-500">
+                      <span className="ml-6">{complaint.subDepartment}</span>
+                    </div>
+                  )}
+                  <div className="flex items-center text-sm text-gray-500">
+                    <FiCalendar className="w-4 h-4 mr-2" />
+                    <span>
+                      {new Date(complaint.date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                  <button
+                    onClick={() => openViewModal(complaint)}
+                    className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors duration-200 text-sm font-medium hover:cursor-pointer"
+                  >
+                    <FiEye className="w-4 h-4" />
+                    <span>View</span>
+                  </button>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => openEditModal(complaint)}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200 hover:cursor-pointer"
+                      title="Edit Status"
+                    >
+                      <FiEdit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(complaint)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200 hover:cursor-pointer"
+                      title="Delete Complaint"
+                    >
+                      <FiTrash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {complaints.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <FiSearch className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-500 text-lg">No complaints found</p>
+                <p className="text-gray-400 text-sm mt-1">
+                  {searchTerm || statusFilter !== "All" ? "Try adjusting your search or filters" : "No complaints have been submitted yet"}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+
+        {/* Compact Pagination */}
+<div className="flex items-center justify-center space-x-4 mt-5">
+  <button
+    onClick={handlePrev}
+    disabled={page === 1}
+    className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-200"
+  >
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+    </svg>
+    <span>Prev</span>
+  </button>
+
+  <div className="flex items-center space-x-2 text-sm">
+    <span className="text-gray-600">Page</span>
+    <span className="font-semibold text-blue-600">{page}</span>
+    <span className="text-gray-600">of</span>
+    <span className="font-semibold text-gray-900">{totalPages}</span>
+  </div>
+
+  <button
+    onClick={handleNext}
+    disabled={page === totalPages}
+    className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-200"
+  >
+    <span>Next</span>
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+</div>
+
+        {/* Modals */}
+        {showEditModal && selectedComplaint && (
+          <EditModal
+            complaint={selectedComplaint}
+            onClose={() => setShowEditModal(false)}
+            onUpdated={fetchComplaints}
+          />
+        )}
+
+        {showViewModal && selectedComplaint && (
+          <ViewModal
+            complaint={selectedComplaint}
+            onClose={() => setShowViewModal(false)}
+          />
+        )}
+
+        {showDeleteModal && selectedComplaint && (
+         <DeleteModal
+            complaint={selectedComplaint}
+            onClose={() => setShowDeleteModal(false)}
+             onDelete={fetchComplaints}
+          />
+        )}
+      </main>
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scale-in {
+          from { transform: scale(0.9); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.2s ease-out;
+        }
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
+    </main>
+  );
+}
