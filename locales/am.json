@@ -1,0 +1,52 @@
+{
+  "dashboard": "ዳሽቦርድ",
+  "complaints": "ጥያቄዎች",
+  "logout": "ውጣ",
+  "search": "ፈልግ",
+  "status": "ሁኔታ",
+  "pending": "በመጠባበቅ ላይ",
+  "completed": "ተጠናቋል",
+  "canceled": "ተሰርዟል",
+   "title": "ቅሬታ ያቅርቡ",
+          "subtitle": "እባክዎ ቅሬታዎን ለመላክ ቅጹን ይሙሉ።",
+          "form": {
+            "title": "ርዕስ",
+            "department": "ዲፓርትመንት",
+            "subDepartment": "ንዑስ ዲፓርትመንት",
+            "priority": "ቅድሚያ ደረጃ",
+            "description": "መግለጫ",
+            "submit": "ቅሬታ ያቅርቡ",
+            "submitting": "በመላክ ላይ...",
+            "success": "ቅሬታዎ በተሳካ ሁኔታ ተላከ! በቅርቡ ትመለሳለች...",
+            "error": "አንዳንድ ችግኝ ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
+            "note": "ቅሬታዎ በቅርቡ ታየና መልስ ይሰጣል።"
+          },
+          "levels": { "low": "ዝቅተኛ", "medium": "መካከለኛ", "high": "ከፍተኛ" },
+          "departments": {
+  "general": "አጠቃላይ",
+  "educationTech": "የስርዓተ ትምህርት መረጃና ቴኪኖሎጆ ስራዎች አስተባባራ",
+  "teacherTraining": "የት/መና የመም/ል/የልዩ/ፍ/የሱፐ/ስራ ቡዱን አስተባባራ"
+},
+"messages": {
+    "success": "ቅሬታዎ በተሳካ ሁኔታ ተልኳል። በቅርቡ ታስተላለፋለህ...",
+    "error": "የሆነ ስህተት ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
+    "enterTitle": "የቅሬታ ርዕስ ያስገቡ",
+    "selectDepartment": "መድፍ ይምረጡ",
+    "selectSubDepartment": "ንዑስ መድፍ ይምረጡ",
+    "selectLevel": "የቅሬታ ደረጃ ይምረጡ",
+    "enterDescription": "እባክዎን ዝርዝር መግለጫ ያቀርቡ።"
+  },
+   "login": {
+    "title": "የአስተዳዳሪ መግቢያ",
+    "subtitle": "ወደ የአስተዳዳሪ ዳሽቦርድ ይግቡ",
+    "username": "የተጠቃሚ ስም",
+    "usernamePlaceholder": "የተጠቃሚ ስምዎን ያስገቡ",
+    "password": "የይለፍ ቃል",
+    "passwordPlaceholder": "የይለፍ ቃልዎን ያስገቡ",
+    "button": "ወደ ዳሽቦርድ ይግቡ",
+    "success": "መግቢያ ተሳክቷል! ወደ ዳሽቦርድ በቅርቡ ታስተላለፋል...",
+      "networkError": "ኔትወርክ ስህተት ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
+      "signingIn": "በመግቢያ ላይ..."
+  }
+
+}
