@@ -1,0 +1,52 @@
+{
+  "dashboard": "Daashboordii",
+  "complaints": "Maddarsoota",
+  "logout": "Ba'i",
+  "search": "Barbaadi",
+  "status": "Haala",
+  "pending": "Eegamaa jira",
+  "completed": "Xumurameera",
+  "canceled": "Haqameera",
+   "title": "Dhiyeessi Komii",
+          "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
+          "form": {
+            "title": "Mata-duree",
+            "department": "Kutaa hojii",
+            "subDepartment": "Kutaa xiqqaa",
+            "priority": "Sadarkaa Dursa",
+            "description": "Ibsa",
+            "submit": "Komii Galchi",
+            "submitting": "Ergaa jira...",
+            "success": "Komiin kee milkaa'inaan ergame! Dhihoo irratti deebi'a...",
+            "error": "Dogoggorri uumame. Maaloo irra deebi'ii yaali.",
+            "note": "Komiin kee ni ilaalama, deebiin ni kennama."
+          },
+          "levels": { "low": "Gadii", "medium": "Giddugaleessa", "high": "Olaanaa" },
+          "departments": {
+  "general": "Waliigalaa",
+  "educationTech": "Hojii Odeeffannoo fi Teeknooloojii Barnootaa",
+  "teacherTraining": "Leenjii Barattootaa fi Sagantaa Adda Addaa"
+},
+"messages": {
+    "success": "Madda komii kee milkaaʼinaan ergame! Gara fuula biraatti geeffamaa jira...",
+    "error": "Dogoggorri uumame. Mee irra deebi'ii yaali.",
+    "enterTitle": "Mata duree komii galchi",
+    "selectDepartment": "Kutaa filadhu",
+    "selectSubDepartment": "Kutaa xiqqaa filadhu",
+    "selectLevel": "Sadarkaa Dursa filadhu",
+    "enterDescription": "Mee ibsa bal’aa komii kee kenni."
+  },
+  "login": {
+    "title": "Seensa Bulchaa",
+    "subtitle": "Fuula bulchiinsa seeni",
+    "username": "Maqaa fayyadamaa",
+    "usernamePlaceholder": "Maqaa fayyadamaa kee galchi",
+    "password": "Jecha iccitii",
+    "passwordPlaceholder": "Jecha iccitii kee galchi",
+    "button": "Fuula Bulchaa seeni",
+        "success": "Seensi milkaaʼe! Gara fuula bulchaa geeffamaa jira...",
+      "networkError": "Dogoggora network uumame. Mee irra deebi'ii yaali.",
+      "signingIn": "Seensa jalqabaa..."
+  }
+
+}

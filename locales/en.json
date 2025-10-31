@@ -1,0 +1,52 @@
+{
+  "dashboard": "Dashboard",
+  "complaints": "Complaints",
+  "logout": "Logout",
+  "search": "Search",
+  "status": "Status",
+  "pending": "Pending",
+  "completed": "Completed",
+  "canceled": "Canceled",
+  "title": "Submit a Complaint",
+          "subtitle": "Fill out the form below to submit your complaint.",
+          "form": {
+            "title": "Title",
+            "department": "Department",
+            "subDepartment": "Sub Department",
+            "priority": "Priority Level",
+            "description": "Description",
+            "submit": "Submit Complaint",
+            "submitting": "Submitting...",
+            "success": "Complaint submitted successfully! Redirecting...",
+            "error": "Something went wrong. Please try again.",
+            "note": "Your complaint will be reviewed and addressed promptly."
+},
+          "levels": { "low": "Low", "medium": "Medium", "high": "High" },
+          "departments": {
+  "general": "General",
+  "educationTech": "Education Information & Technology Administration",
+  "teacherTraining": "Teacher Education & Special Programs Administration"
+},
+"messages": {
+    "success": "Complaint submitted successfully! Redirecting...",
+    "error": "Something went wrong. Please try again.",
+    "enterTitle": "Enter complaint title",
+    "selectDepartment": "Select Department",
+    "selectSubDepartment": "Select Sub Department",
+    "selectLevel": "Select Priority Level",
+    "enterDescription": "Please provide detailed description of your complaint."
+  },
+   "login": {
+    "title": "Admin Login",
+    "subtitle": "Access the administration dashboard",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "button": "Sign In to Dashboard",
+    "success": "Login successful! Redirecting to dashboard...",
+    "networkError": "Network error. Please try again.",
+    "signingIn": "Signing In..."
+  }
+
+}

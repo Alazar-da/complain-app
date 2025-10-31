@@ -1,23 +1,12 @@
 "use client";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useState, useEffect, FormEvent } from "react";
+import { useTranslation } from "react-i18next";
+import { departments, DepartmentKey } from "@/data/departments";
 
-  // Department structure
-  const structure = {
-    "General": [],
-    "የስርዓተ ትምህርት መረጃና ቴኪኖሎጆ ስራዎች አስተባባራ": [
-      "የት/ት መረጃና ቴክኖሎጂ ቡዱን",
-      "የአፋን ኦሮሞ ስርዓተ ት/ት ክትትል ቡዱን",
-      "የስርዓተ ትምህርት ት/ክ/ት ቡዱን መራ",
-    ],
-    "የት/መና የመም/ል/የልዩ/ፍ/የሱፐ/ስራ ቡዱን አስተባባራ": [
-      "የአጠዋለይ 2ኛ ደረጃ ት/ቤት አስተባባራ",
-      "የልዩ ፍ/አ/ት/ዘ/ብ/ጉዳዩችቡዱን ቡዱን",
-      "የት/ትመሻሻልና የግባዓትአቅርቦት ቡዱን",
-      "የመ/ራን እና ትም/አመራር ቡዱን",
-    ],
-  }as const;
 
-    type Department = keyof typeof structure;
+type Department = keyof typeof departments;
+
 
 export default function Home() {
   const [form, setForm] = useState<{
@@ -38,12 +27,19 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [countdown, setCountdown] = useState(0);
+    const { t } = useTranslation();
+    const { i18n } = useTranslation();
+const language = i18n.language as "am" | "en" | "om";
 
 
 
 
 
-  const levels = ["Low", "Medium", "High"];
+ const levels = [
+  { key: "Low", label: t("levels.low") },
+  { key: "Medium", label: t("levels.medium") },
+  { key: "High", label: t("levels.high") },
+];
 
   // Countdown effect for redirect
 useEffect(() => {
@@ -75,7 +71,7 @@ useEffect(() => {
       const data = await res.json();
       
       if (data.success) {
-        showMessage("Complaint submitted successfully! Redirecting...", "success");
+        showMessage(t("messages.success"), "success");
         setForm({
           title: "",
           department: "",
@@ -88,7 +84,7 @@ useEffect(() => {
         showMessage("Error: " + data.error, "error");
       }
     } catch (err) {
-      showMessage("Something went wrong. Please try again.", "error");
+      showMessage(t("messages.error"), "error");
     } finally {
       setLoading(false);
     }
@@ -108,7 +104,10 @@ useEffect(() => {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 text-slate-800 py-8">
+    <main className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 text-slate-800 py-8">
+      <section className="fixed top-2 right-2">
+        <LanguageSwitcher/>
+      </section>
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-lg mx-4 my-8 border border-gray-100 transform transition-all duration-300 hover:shadow-3xl"
@@ -120,8 +119,8 @@ useEffect(() => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Submit a Complaint</h1>
-          <p className="text-gray-600">Fill out the form below to submit your complaint</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2"> {t("title")}</h1>
+          <p className="text-gray-600">{t("subtitle")}</p>
         </div>
 
         {/* Message Display */}
@@ -151,86 +150,93 @@ useEffect(() => {
         {/* Form Fields */}
         <div className="space-y-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Title</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.title")}</label>
             <input
               type="text"
               className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder="Enter complaint title"
+              placeholder={t("messages.enterTitle")}
               required
             />
           </div>
 
           {/* Department Dropdown */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Department</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.department")}</label>
             <select
               className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
               value={form.department}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  department: e.target.value as Department,
-                  subDepartment: "",
-                })
-              }
+    setForm({
+      ...form,
+      department: e.target.value as DepartmentKey,
+      subDepartment: "",
+    })
+  }
               required
             >
-              <option value="">Select Department</option>
-              {Object.keys(structure).map((dept) => (
-                <option key={dept} value={dept}>
-                  {dept}
-                </option>
-              ))}
+               <option value="" selected disabled>{t("messages.selectDepartment")}</option>
+  {Object.entries(departments).map(([key, dept]) => (
+    <option key={key} value={key}>
+      {dept[language] || dept.am}
+    </option>
+  ))}
             </select>
           </div>
 
           {/* Sub-department Dropdown */}
-          {form.department && structure[form.department].length > 0 && (
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Sub Department</label>
-              <select
-                className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
-                value={form.subDepartment}
-                onChange={(e) =>
-                  setForm({ ...form, subDepartment: e.target.value })
-                }
-              >
-                <option value="">Select Sub Department</option>
-                {structure[form.department].map((sub) => (
-                  <option key={sub} value={sub}>
-                    {sub}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+         {form.department &&
+  departments[form.department as DepartmentKey].subDepartments.length > 0 && (
+    <div>
+      <label className="block text-sm font-semibold text-gray-700 mb-2">
+        {t("form.subDepartment")}
+      </label>
+
+      <select
+        className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
+        value={form.subDepartment}
+        onChange={(e) =>
+          setForm({ ...form, subDepartment: e.target.value })
+        }
+      >
+        <option value="" selected disabled>{t("messages.selectSubDepartment")}</option>
+        {departments[form.department as DepartmentKey].subDepartments.map(
+          (sub, index) => (
+            <option key={index} value={sub.am}>
+              {sub[language] || sub.am}
+            </option>
+          )
+        )}
+      </select>
+    </div>
+  )}
+
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Priority Level</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.priority")}</label>
             <select
               className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
               value={form.level}
               onChange={(e) => setForm({ ...form, level: e.target.value })}
               required
             >
-              <option value="">Select Priority Level</option>
+              <option value="" selected disabled>{t("messages.selectLevel")}</option>
               {levels.map((lvl) => (
-                <option key={lvl} value={lvl}>
-                  {lvl}
+                <option key={lvl.key} value={lvl.key}>
+                  {lvl.label}
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.description")}</label>
             <textarea
               className="w-full border border-gray-300 rounded-xl p-3 h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder="Please provide detailed description of your complaint..."
+              placeholder={t("messages.enterDescription")+"..."}
               required
             />
           </div>
@@ -245,16 +251,16 @@ useEffect(() => {
           {loading ? (
             <div className="flex items-center justify-center space-x-2">
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>Submitting...</span>
+              <span>{t("form.submitting")}</span>
             </div>
           ) : (
-            "Submit Complaint"
+            `${t("form.submit")}`
           )}
         </button>
 
         {/* Footer Note */}
         <p className="text-center text-gray-500 text-sm mt-6">
-          Your complaint will be reviewed and addressed promptly.
+          {t("form.note")}
         </p>
       </form>
 

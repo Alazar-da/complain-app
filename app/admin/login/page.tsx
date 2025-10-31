@@ -1,6 +1,8 @@
 'use client';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -8,6 +10,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+    const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +29,7 @@ export default function LoginPage() {
       if (res.ok) {
         localStorage.setItem("adminToken", data.token);
         setMessage({ 
-          text: "Login successful! Redirecting to dashboard...", 
+          text: t("login.success"), 
           type: "success" 
         });
         setTimeout(() => router.push('/admin/dashboard'), 2000);
@@ -38,7 +41,7 @@ export default function LoginPage() {
       }
     } catch (error) {
       setMessage({ 
-        text: "Network error. Please try again.", 
+        text:t("login.networkError"), 
         type: "error" 
       });
     } finally {
@@ -60,13 +63,16 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-emerald-50 py-8 px-4 text-slate-800">
+    <main className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-emerald-50 py-8 px-4 text-slate-800">
+     <section className="fixed top-2 right-2">
+             <LanguageSwitcher/>
+           </section>
       <div className="w-full max-w-md">
         {/* Card Container */}
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
           {/* Header Section */}
           <div className="bg-linear-to-r from-emerald-600 to-green-700 p-8 text-center">
-            <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+           {/*  <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg 
                 className="w-10 h-10 text-white" 
                 fill="none" 
@@ -80,10 +86,10 @@ export default function LoginPage() {
                   d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" 
                 />
               </svg>
-            </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Admin Login</h1>
+            </div> */}
+            <h1 className="text-3xl font-bold text-white mb-2">{t("login.title")}</h1>
             <p className="text-emerald-100 text-sm">
-              Access the administration dashboard
+              {t("login.subtitle")}
             </p>
           </div>
 
@@ -119,12 +125,12 @@ export default function LoginPage() {
               {/* Username Field */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Username
+                  {t("login.username")}
                 </label>
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="Enter your username"
+                    placeholder={t("login.usernamePlaceholder")}
                     className="w-full border border-gray-300 rounded-xl p-4 pl-12 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-gray-50"
                     value={form.username}
                     onChange={(e) => setForm({ ...form, username: e.target.value })}
@@ -142,12 +148,12 @@ export default function LoginPage() {
               {/* Password Field */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Password
+                  {t("login.password")}
                 </label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder={t("login.passwordPlaceholder")}
                     className="w-full border border-gray-300 rounded-xl p-4 pl-12 pr-12 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 bg-gray-50"
                     value={form.password}
                     onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -188,21 +194,21 @@ export default function LoginPage() {
                 {loading ? (
                   <div className="flex items-center justify-center space-x-2">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Signing In...</span>
+                    <span>{t("login.signingIn")}</span>
                   </div>
                 ) : (
                   <div className="flex items-center justify-center space-x-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                     </svg>
-                    <span>Sign In to Dashboard</span>
+                    <span>{t("login.button")}</span>
                   </div>
                 )}
               </button>
             </form>
 
             {/* Security Note */}
-            <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            {/* <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <div className="flex items-start space-x-3">
                 <svg className="w-5 h-5 text-blue-600 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
@@ -214,7 +220,7 @@ export default function LoginPage() {
                   </p>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
