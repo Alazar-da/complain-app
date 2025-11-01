@@ -1,9 +1,9 @@
 'use client';
 
-import { FiX, FiFileText, FiCalendar, FiClock, FiTag, FiAlertCircle, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiTrendingUp, FiTrendingDown, FiMinus, FiInfo } from 'react-icons/fi';
+import { FiX, FiFileText, FiClock, FiTag, FiAlertCircle, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiTrendingUp, FiTrendingDown, FiMinus, FiInfo } from 'react-icons/fi';
 import { TbBuilding, TbBuildingSkyscraper } from 'react-icons/tb';
 import { useTranslation } from "react-i18next";
-import { departments } from "@/data/departments";
+import { departments,DepartmentKey } from "@/data/departments";
 
 interface ViewModalProps {
   complaint: any;
@@ -188,7 +188,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                 <div className="space-y-3">
                   <div className="bg-white rounded-lg p-3 border border-gray-200">
                     <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.main_department")}</p>
-                    <p className="text-gray-800 font-semibold">{departments[complaint.department]?.[lang] || complaint.department}</p>
+                    <p className="text-gray-800 font-semibold">{departments[complaint.department as DepartmentKey]?.[lang] || complaint.department}</p>
                   </div>
                   {complaint.subDepartment && (
                     <div className="bg-white rounded-lg p-3 border border-gray-200">
@@ -196,7 +196,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                       <p className="text-gray-800 font-semibold flex items-center space-x-1">
                         <TbBuildingSkyscraper className="w-3 h-3" />
                         <span>{
-                          departments[complaint.department]?.subDepartments.find(
+                          departments[complaint.department as DepartmentKey]?.subDepartments.find(
                             (sub:any) =>
                               sub.en === complaint.subDepartment ||
                               sub.am === complaint.subDepartment ||

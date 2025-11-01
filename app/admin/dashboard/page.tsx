@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiGrid, FiList, FiLogOut, FiUser, FiBell, FiMenu, FiX, FiCalendar, FiLock, FiClock, FiArrowRight } from "react-icons/fi";
+import { FiSearch, FiFilter, FiEdit, FiTrash2, FiEye, FiLogOut, FiUser, FiCalendar, FiLock, FiClock, FiArrowRight } from "react-icons/fi";
 import { TbLayoutGrid, TbLayoutList } from "react-icons/tb";
 import EditModal from "@/components/EditModal";
 import ViewModal from "@/components/ViewModal";
@@ -10,8 +10,6 @@ import DeleteModal from "@/components/DeleteModal";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { departments, DepartmentKey } from "@/data/departments";
-
-type Department = keyof typeof departments;
 
 interface Complaint {
   _id: string;
@@ -371,14 +369,15 @@ if (!token) {
                      <td className="px-6 py-4">
   {/* Department */}
   <div className="text-sm text-gray-900">
-    {departments[complaint.department]?.[lang] || complaint.department}
-  </div>
+  {departments[complaint.department as DepartmentKey]?.[lang] || complaint.department}
+</div>
+
 
   {/* Sub-department */}
   {complaint.subDepartment && (
     <div className="text-xs text-gray-500 mt-1">
       {
-        departments[complaint.department]?.subDepartments.find(
+        departments[complaint.department as DepartmentKey]?.subDepartments.find(
           (sub:any) =>
             sub.en === complaint.subDepartment || // if you store the English label
             sub.am === complaint.subDepartment || // or Amharic
