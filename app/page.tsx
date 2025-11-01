@@ -35,10 +35,10 @@ const language = i18n.language as "am" | "en" | "om";
 
 
 
- const levels = [
-  { key: "Low", label: t("levels.low") },
-  { key: "Medium", label: t("levels.medium") },
-  { key: "High", label: t("levels.high") },
+ const level = [
+  { key: "Low", label: t("levels.Low") },
+  { key: "Medium", label: t("levels.Medium") },
+  { key: "High", label: t("levels.High") },
 ];
 
   // Countdown effect for redirect
@@ -222,7 +222,7 @@ useEffect(() => {
               required
             >
               <option value="" selected disabled>{t("messages.selectLevel")}</option>
-              {levels.map((lvl) => (
+              {level.map((lvl) => (
                 <option key={lvl.key} value={lvl.key}>
                   {lvl.label}
                 </option>

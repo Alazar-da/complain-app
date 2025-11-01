@@ -1,5 +1,5 @@
 export const departments = {
-  general: {
+  General: {
     am: "አጠቃላይ",
     en: "General",
     om: "Waliigalaa",

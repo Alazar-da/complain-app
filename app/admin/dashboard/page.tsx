@@ -7,6 +7,11 @@ import { TbLayoutGrid, TbLayoutList } from "react-icons/tb";
 import EditModal from "@/components/EditModal";
 import ViewModal from "@/components/ViewModal";
 import DeleteModal from "@/components/DeleteModal";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { departments, DepartmentKey } from "@/data/departments";
+
+type Department = keyof typeof departments;
 
 interface Complaint {
   _id: string;
@@ -36,6 +41,10 @@ export default function AdminDashboard() {
 
 const [token, setToken] = useState<string | null>(null);
 const [countdown, setCountdown] = useState(3);
+const { t } = useTranslation();
+const { i18n } = useTranslation();
+const lang = i18n.language as "en" | "am" | "om";
+
 
 useEffect(() => {
   const storedToken = localStorage.getItem("adminToken");
@@ -152,7 +161,8 @@ useEffect(() => {
 // ... inside the return statement
 if (!token) {
   return (
-    <div className="fixed inset-0 bg-linear-to-br from-slate-50 to-emerald-50 flex items-center justify-center p-4 z-50 animate-fade-in">
+    <main className="fixed inset-0 bg-linear-to-br from-slate-50 to-emerald-50 flex items-center justify-center p-4 z-50 animate-fade-in">
+      
       <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full transform transition-all duration-300 animate-scale-in">
         {/* Header */}
         <div className="p-6 text-center">
@@ -197,7 +207,7 @@ if (!token) {
           </button>
         </div>
       </div>
-    </div>
+    </main>
   );
 }
   if (loading) {
@@ -225,7 +235,7 @@ if (!token) {
                 </div>
               </div>
               <div className="ml-3">
-                <h1 className="text-xl font-bold text-gray-900">Admin Dashboard</h1>
+                <h1 className="text-xl font-bold text-gray-900">{t('admin_dashboard.title')}</h1>
               </div>
             </div>
 
@@ -237,7 +247,7 @@ if (!token) {
                   className="flex items-center space-x-2 bg-red-50 text-red-700 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors duration-200 border border-red-200 hover:cursor-pointer"
                 >
                   <FiLogOut className="w-4 h-4" />
-                  <span className="hidden sm:block font-medium">Logout</span>
+                  <span className="hidden sm:block font-medium">{t('admin_dashboard.logout')}</span>
                 </button>
               </div>
             </div>
@@ -245,13 +255,16 @@ if (!token) {
         </div>
       </header>
 
-      <main className="p-4 sm:p-6 lg:p-8">
+      <main className="relative p-4 sm:p-6 lg:px-8 lg:py-10">
+              <section className="fixed top-18 right-2 z-50">
+              <LanguageSwitcher/>
+            </section>
         {/* Stats and Controls */}
         <div className="mb-5">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Complaint Management</h2>
-              <p className="text-gray-600 mt-1">Manage and track all submitted complaints</p>
+              <h2 className="sm:text-2xl text-lg font-bold text-gray-900">{t('admin_dashboard.complaint_management')}</h2>
+              <p className="text-gray-600 mt-1 sm:text-md text-sm">{t('admin_dashboard.manage_and_track')}</p>
             </div>
             <div className="mt-4 lg:mt-0 flex items-center space-x-4">
               <div className="flex items-center space-x-2 bg-white rounded-lg border border-gray-200 p-1">
@@ -277,7 +290,7 @@ if (!token) {
                 </button>
               </div>
               <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                Total: {complaints.length}
+                {t('admin_dashboard.total')} {complaints.length}
               </div>
             </div>
           </div>
@@ -290,7 +303,7 @@ if (!token) {
               <div className="relative">
                 <input
                   type="text"
-                  placeholder="Search complaints..."
+                  placeholder={t('admin_dashboard.search_placeholder') || ''}
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -305,10 +318,10 @@ if (!token) {
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
-                  <option value="All">All Status</option>
-                  <option value="Pending">Pending</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
+                  <option value="All">{t('admin_dashboard.all_status')}</option>
+                  <option value="Pending">{t('admin_dashboard.pending')}</option>
+                  <option value="In Progress">{t('admin_dashboard.in_progress')}</option>
+                  <option value="Completed">{t('admin_dashboard.completed')}</option>
                 </select>
                 <FiFilter className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               </div>
@@ -325,22 +338,22 @@ if (!token) {
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Complaint
+                      {t('admin_dashboard.complaint')}
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Department
+                      {t('admin_dashboard.department')}
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Priority
+                      {t('admin_dashboard.priority')}
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Status
+                      {t('admin_dashboard.status')}
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Date
+                      {t('admin_dashboard.date')}
                     </th>
                     <th className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                      Actions
+                      {t('admin_dashboard.actions')}
                     </th>
                   </tr>
                 </thead>
@@ -355,21 +368,36 @@ if (!token) {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-sm text-gray-900">{complaint.department}</div>
-                        {complaint.subDepartment && (
-                          <div className="text-xs text-gray-500 mt-1">{complaint.subDepartment}</div>
-                        )}
-                      </td>
+                     <td className="px-6 py-4">
+  {/* Department */}
+  <div className="text-sm text-gray-900">
+    {departments[complaint.department]?.[lang] || complaint.department}
+  </div>
+
+  {/* Sub-department */}
+  {complaint.subDepartment && (
+    <div className="text-xs text-gray-500 mt-1">
+      {
+        departments[complaint.department]?.subDepartments.find(
+          (sub:any) =>
+            sub.en === complaint.subDepartment || // if you store the English label
+            sub.am === complaint.subDepartment || // or Amharic
+            sub.om === complaint.subDepartment    // or Oromo
+        )?.[lang] || complaint.subDepartment
+      }
+    </div>
+  )}
+</td>
+
                       <td className="px-6 py-4">
                         <span className={getLevelBadge(complaint.level)}>
-                          {complaint.level}
+                          {t(`level.${complaint.level}`)}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <span className={getStatusBadge(complaint.status)}>
                           {getStatusIcon(complaint.status)}
-                          <span>{complaint.status}</span>
+                          <span>{t(`status.${complaint.status}`)}</span>
                         </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-500">
@@ -432,11 +460,11 @@ if (!token) {
                     <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2">{complaint.title}</h3>
                     <div className="flex items-center space-x-2 mb-3">
                       <span className={getLevelBadge(complaint.level)}>
-                        {complaint.level}
+                        {t(`level.${complaint.level}`)}
                       </span>
                       <span className={getStatusBadge(complaint.status)}>
                         {getStatusIcon(complaint.status)}
-                        <span>{complaint.status}</span>
+                        <span>{t(`status.${complaint.status}`)}</span>
                       </span>
                     </div>
                   </div>
@@ -521,11 +549,11 @@ if (!token) {
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
     </svg>
-    <span>Prev</span>
+    <span>{t("pagination.prev")}</span>
   </button>
 
   <div className="flex items-center space-x-2 text-sm">
-    <span className="text-gray-600">Page</span>
+    <span className="text-gray-600">{t("pagination.page")}</span>
     <span className="font-semibold text-blue-600">{page}</span>
     <span className="text-gray-600">of</span>
     <span className="font-semibold text-gray-900">{totalPages}</span>
@@ -536,7 +564,7 @@ if (!token) {
     disabled={page === totalPages}
     className="flex items-center space-x-1 px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-200"
   >
-    <span>Next</span>
+    <span>{t("pagination.next")}</span>
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
     </svg>

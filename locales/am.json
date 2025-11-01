@@ -3,14 +3,6 @@
     "title": "የከተማ ትምህርት ቅሬታ ጽ/ቤት",
     "description": "ቅሬታ መቀበያ መተግበሪያ"
   },
-  "dashboard": "ዳሽቦርድ",
-  "complaints": "ጥያቄዎች",
-  "logout": "ውጣ",
-  "search": "ፈልግ",
-  "status": "ሁኔታ",
-  "pending": "በመጠባበቅ ላይ",
-  "completed": "ተጠናቋል",
-  "canceled": "ተሰርዟል",
    "title": "ቅሬታ ያቅርቡ",
           "subtitle": "እባክዎ ቅሬታዎን ለመላክ ቅጹን ይሙሉ።",
           "form": {
@@ -51,6 +43,106 @@
     "success": "መግቢያ ተሳክቷል! ወደ ዳሽቦርድ በቅርቡ ታስተላለፋል...",
       "networkError": "ኔትወርክ ስህተት ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
       "signingIn": "በመግቢያ ላይ..."
+  },
+    "admin_dashboard":{
+  "title": "የአስተዳዳሪ ዳሽቦርድ",
+  "logout": "ውጣ",
+  "complaint_management": "የቅሬታ አስተዳደር",
+  "manage_and_track": "የቀረቡ ቅሬታዎችን ያስተዳድሩና ይከታተሉ",
+  "total": "ድምር፡",
+  "search_placeholder": "ቅሬታዎችን ፈልግ...",
+  "all_status": "ሁሉም ሁኔታዎች",
+    "pending": "በመጠባበቅ ላይ",
+  "in_progress": "በሂደት ላይ",
+  "completed": "ተጠናቋል",
+  "complaint": "ቅሬታ",
+  "department": "መምሪያ ክፍል",
+  "priority": "ቅድሚያ",
+  "status": "ሁኔታ",
+  "date": "ቀን",
+  "actions": "እርምጃዎች"
+  },
+  "delete_complaint":{
+     "title": "ቅሬታን አጥፋ",
+  "confirmation": "ቅሬታውን ማጥፋት እንደምትፈልጉ እርግጠኛ ነዎት?",
+  "irreversible_note": "ይህ እርምጃ መመለስ አይቻልም።",
+  "warning_title": "ማስጠንቀቂያ",
+  "warning_message": "ይህ ቅሬታውን እና ከእሱ ጋር የተያያዙ መረጃዎችን በቋሚነት ያጠፋል።",
+  "cancel": "ይቅር",
+  "delete": "አጥፋ"
+},
+"update_status":{
+  "title": "ሁኔታን አዘምን",
+  "subtitle": "ፈጣን የሁኔታ አዘምን",
+  "select_status": "ሁኔታ ይምረጡ",
+  "cancel": "ይቅር",
+  "saving": "በመቀመጥ ላይ...",
+  "update": "አዘምን",
+
+  "status_options": {
+    "pending": {
+      "name": "Pending",
+      "label": "Eeggataa",
+      "description": "Eegamaa jira"
+    },
+    "in_progress": {
+      "name": "In Progress",
+      "label": "Jiraatti",
+      "description": "Hojjetamaa jira"
+    },
+    "completed": {
+      "name": "Completed",
+      "label": "Xumurame",
+      "description": "Dhiheessi ni xumurame"
+    },
+    "canceled": {
+      "name": "Canceled",
+      "label": "Haquu",
+      "description": "Hojii irraa haqame"
+    }
   }
+
+
+},
+
+"level": {
+    "Low": "ዝቅተኛ",
+    "Medium": "መካከለኛ",
+    "High": "ከፍተኛ"
+    },
+  "status": {
+    "Pending":"በመጠባበቅ ላይ",
+    "In Progress":"በሂደት ላይ",
+    "Completed": "ተጠናቋል",
+    "Canceled": "ተሰርዟል"
+  },
+   "pagination": {
+    "prev": "የቀድሞ",
+    "page": "ገጽ",
+    "next": "ቀጣይ"
+  },
+    "complaint_details": {
+    "title": "የቅሬታ ዝርዝር",
+    "subtitle": "ሙሉ መረጃ እና ትክክለኛ መከታተያ",
+    "complaint_title": "የቅሬታ ርዕስ",
+    "main_description": "ዋና የጉዳዩ መግለጫ",
+    "detailed_description": "ዝርዝር መግለጫ",
+    "full_details": "የቅሬታ ሙሉ መረጃ",
+    "department": "ክፍል",
+    "main_department": "ዋና ክፍል",
+    "sub_department": "ንዑስ ክፍል",
+    "additional_info": "ተጨማሪ መረጃ",
+    "tracking_info": "የመከታተያ መረጃ",
+    "complaint_id": "የቅሬታ መታወቂያ ቁጥር",
+    "days_active": "ቀናት እየተሰሩ",
+    "status":"ሁኔታ",
+    "priority": "ከፍተኛ ጥራት",
+    "assigned_department":"የተመደበ ክፍል",
+    "days":"ቀናት"
+
+  }
+
+
+
 
 }

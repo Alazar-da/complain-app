@@ -3,14 +3,6 @@
     "title": "Waajjira Komii Barnootaa Magaalaa",
     "description": "Appii komii"
   },
-  "dashboard": "Daashboordii",
-  "complaints": "Maddarsoota",
-  "logout": "Ba'i",
-  "search": "Barbaadi",
-  "status": "Haala",
-  "pending": "Eegamaa jira",
-  "completed": "Xumurameera",
-  "canceled": "Haqameera",
    "title": "Dhiyeessi Komii",
           "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
           "form": {
@@ -51,6 +43,96 @@
         "success": "Seensi milkaaʼe! Gara fuula bulchaa geeffamaa jira...",
       "networkError": "Dogoggora network uumame. Mee irra deebi'ii yaali.",
       "signingIn": "Seensa jalqabaa..."
+  },
+    "admin_dashboard":{
+  "title": "Daashboordii Bulchaa",
+  "logout": "Ba'i",
+  "complaint_management": "Hoggansa Dhiheessii Komii",
+  "manage_and_track": "Komii dhihaate hunda too'annoo fi hordoffii godhi",
+  "total": "Waliigala:",
+  "search_placeholder": "Komii barbaadi...",
+  "all_status": "Haala Hunda",
+    "pending": "Eeggataa",
+  "in_progress": "Jiraatti",
+  "completed": "Xumurame",
+  "complaint": "Komii",
+  "department": "Kutaa Hojii",
+  "priority": "Mudaa Dursa",
+  "status": "Haala",
+  "date": "Guyyaa",
+  "actions": "Gochoota"
+  },
+  "delete_complaint":{
+"title": "Komii Haqi",
+  "confirmation": "Komii kana haquu akka barbaaddu mirkaneeffadhu?",
+  "irreversible_note": "Tartiibni kun deebi'ee hin danda'amu.",
+  "warning_title": "Akeekkachiisa",
+  "warning_message": "Kun komii fi odeeffannoo hunda isa waliin walqabatu guutummaatti ni balleessa.",
+  "cancel": "Dhiisi",
+  "delete": "Haqi"
+},
+"update_status":{
+  "title": "Haala Haaraa Galchi",
+  "subtitle": "Haalota saffisaan haaromsi",
+  "select_status": "Haala filadhu",
+  "cancel": "Dhiisi",
+  "saving": "Ol kaa'aa jira...",
+  "update": "Haaromsi",
+  "status_options": {
+    "pending": {
+      "value": "Eeggataa",
+      "description": "Eegamaa jira"
+    },
+    "in_progress": {
+      "value": "Jiraatti",
+      "description": "Hojjetamaa jira"
+    },
+    "completed": {
+      "value": "Xumurame",
+      "description": "Dhiheessi ni xumurame"
+    },
+    "canceled": {
+      "value": "Haquu",
+      "description": "Hojii irraa haqame"
+    }
   }
+},
+
+"level": {
+    "Low": "Gadi-aanaa",
+    "Medium": "Giddu-galeessa",
+    "High": "Ol'aanaa"
+    },
+  "status": {
+    "Pending":"Eeggataa",
+    "In Progress":"Jiraatti",
+    "Completed": "Xumurame",
+    "Canceled": "Haquu"
+  },
+    "pagination": {
+    "prev": "Dura",
+    "page": "Fuula",
+    "next": "Kan itti aanu"
+  },
+    "complaint_details": {
+    "title": "Faayila Komii",
+    "subtitle": "Odeeffannoo guutuu fi hordoffii",
+    "complaint_title": "Mata Duree Komii",
+    "main_description": "Ibsa Rakkoo Ijoo",
+    "detailed_description": "Ibsa Bal'aa",
+    "full_details": "Odeeffannoo guutuu komii",
+    "department": "Kutaa",
+    "main_department": "Kutaa Ijoo",
+    "sub_department": "Kutaa Xiqqaa",
+    "additional_info": "Odeeffannoo Dabalataa",
+    "tracking_info": "Odeeffannoo Hordoffii",
+    "complaint_id": "ID Komii",
+    "days_active": "Guyyaa Hojjetamaa",
+      "status":"Haala",
+    "priority": "Dursa",
+    "assigned_department":"Kutaa ramadame",
+    "days":"Guyyaa"
+  }
+
 
 }

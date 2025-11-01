@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FiEdit, FiX, FiClock, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiMessageSquare, FiSave } from "react-icons/fi";
 
 interface EditModalProps {
@@ -12,6 +13,7 @@ interface EditModalProps {
 export default function EditModal({ complaint, onClose, onUpdated }: EditModalProps) {
   const [status, setStatus] = useState(complaint.status);
   const [loading, setLoading] = useState(false);
+    const { t } = useTranslation();
 
   const updateStatus = async () => {
     setLoading(true);
@@ -31,10 +33,34 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
   };
 
   const statusOptions = [
-    { value: "Pending", icon: FiClock, color: "yellow", description: "Awaiting review" },
-    { value: "In Progress", icon: FiPlayCircle, color: "blue", description: "Being addressed" },
-    { value: "Completed", icon: FiCheckCircle, color: "green", description: "Resolved" },
-    { value: "Canceled", icon: FiPauseCircle, color: "red", description: "Cancelled" },
+    {
+      name: t('update_status.status_options.pending.name'),
+      label: t('update_status.status_options.pending.label'),
+      description: t('update_status.status_options.pending.description'),
+      icon: FiClock,
+      color: 'yellow'
+    },
+    {
+      name: t('update_status.status_options.in_progress.name'),
+      label: t('update_status.status_options.in_progress.label'),
+      description: t('update_status.status_options.in_progress.description'),
+      icon: FiPlayCircle,
+      color: 'blue'
+    },
+    {
+      name: t('update_status.status_options.completed.name'),
+      label: t('update_status.status_options.completed.label'),
+      description: t('update_status.status_options.completed.description'),
+      icon: FiCheckCircle,
+      color: 'green'
+    },
+    {
+      name: t('update_status.status_options.canceled.name'),
+      label: t('update_status.status_options.canceled.label'),
+      description: t('update_status.status_options.canceled.description'),
+      icon: FiPauseCircle,
+      color: 'red'
+    }
   ];
 
   const getStatusColor = (color: string) => {
@@ -47,7 +73,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
     return colors[color as keyof typeof colors] || "border-gray-400 bg-gray-50 text-gray-700";
   };
 
-  const selectedStatus = statusOptions.find(opt => opt.value === status);
+  const selectedStatus = statusOptions.find(opt => opt.name === status);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
@@ -59,8 +85,8 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
               <FiEdit className="w-4 h-4 text-blue-600" />
             </div>
             <div>
-              <h2 className="font-semibold text-gray-900">Update Status</h2>
-              <p className="text-gray-500 text-sm">Quick status update</p>
+              <h2 className="font-semibold text-gray-900">{t('update_status.title')}</h2>
+              <p className="text-gray-500 text-sm">{t('update_status.subtitle')}</p>
             </div>
           </div>
           <button
@@ -91,18 +117,18 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
           {/* Status Selection */}
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-700">
-              Select Status
+              {t('update_status.select_status')}
             </label>
             
             <div className="grid grid-cols-2 gap-2">
               {statusOptions.map((option) => {
                 const Icon = option.icon;
-                const isSelected = status === option.value;
+                const isSelected = status === option.name;
                 
                 return (
                   <button
-                    key={option.value}
-                    onClick={() => setStatus(option.value)}
+                    key={option.name}
+                    onClick={() => setStatus(option.name)}
                     className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium flex flex-col items-center space-y-1 ${
                       isSelected
                         ? `${getStatusColor(option.color)} border-current`
@@ -110,7 +136,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
                     }`}
                   >
                     <Icon className="w-4 h-4" />
-                    <span className="text-xs">{option.value}</span>
+                    <span className="text-xs">{option.label}</span>
                   </button>
                 );
               })}
@@ -121,7 +147,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
               <div className={`p-3 rounded-lg border ${getStatusColor(selectedStatus.color)}`}>
                 <div className="flex items-center space-x-2">
                   <selectedStatus.icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{selectedStatus.value}</span>
+                  <span className="text-sm font-medium">{selectedStatus.label}</span>
                 </div>
                 <p className="text-xs mt-1 opacity-80">
                   {selectedStatus.description}
@@ -138,7 +164,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
             disabled={loading}
             className="flex-1 py-2.5 px-4 text-gray-700 bg-white border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors duration-200 disabled:opacity-50 hover:cursor-pointer"
           >
-            Cancel
+            {t('update_status.cancel')}
           </button>
           <button
             onClick={updateStatus}
@@ -148,12 +174,12 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
             {loading ? (
               <>
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Saving...</span>
+                <span>{t('update_status.saving')}</span>
               </>
             ) : (
               <>
                 <FiSave className="w-4 h-4" />
-                <span>Update</span>
+                <span>{t('update_status.update')}</span>
               </>
             )}
           </button>

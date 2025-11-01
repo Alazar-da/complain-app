@@ -3,14 +3,6 @@
     "title": "City Education Complaint Office",
     "description": "Complaint app"
   },
-  "dashboard": "Dashboard",
-  "complaints": "Complaints",
-  "logout": "Logout",
-  "search": "Search",
-  "status": "Status",
-  "pending": "Pending",
-  "completed": "Completed",
-  "canceled": "Canceled",
   "title": "Submit a Complaint",
           "subtitle": "Fill out the form below to submit your complaint.",
           "form": {
@@ -25,7 +17,6 @@
             "error": "Something went wrong. Please try again.",
             "note": "Your complaint will be reviewed and addressed promptly."
 },
-          "levels": { "low": "Low", "medium": "Medium", "high": "High" },
           "departments": {
   "general": "General",
   "educationTech": "Education Information & Technology Administration",
@@ -51,6 +42,97 @@
     "success": "Login successful! Redirecting to dashboard...",
     "networkError": "Network error. Please try again.",
     "signingIn": "Signing In..."
+  },
+  "admin_dashboard":{
+     "title": "Admin Dashboard",
+  "logout": "Logout",
+  "complaint_management": "Complaint Management",
+  "manage_and_track": "Manage and track all submitted complaints",
+  "total": "Total:",
+  "search_placeholder": "Search complaints...",
+  "all_status": "All Status",
+    "pending": "Pending",
+  "in_progress": "In Progress",
+  "completed": "Completed",
+  "complaint": "Complaint",
+  "department": "Department",
+  "priority": "Priority",
+  "status": "Status",
+  "date": "Date",
+  "actions": "Actions"
+  },
+"delete_complaint":{
+    "title": "Delete Complaint",
+  "confirmation": "Are you sure you want to delete the complaint?",
+  "irreversible_note": "This action cannot be undone.",
+  "warning_title": "Warning",
+  "warning_message": "This will permanently remove the complaint and all associated data.",
+  "cancel": "Cancel",
+  "delete": "Delete"
+},
+"update_status":{
+  "title": "Update Status",
+  "subtitle": "Quick status update",
+  "select_status": "Select Status",
+  "cancel": "Cancel",
+  "saving": "Saving...",
+  "update": "Update",
+  "status_options": {
+    "pending": {
+      "value": "Pending",
+      "description": "Awaiting review"
+    },
+    "in_progress": {
+      "value": "In Progress",
+      "description": "Being addressed"
+    },
+    "completed": {
+      "value": "Completed",
+      "description": "Resolved"
+    },
+    "canceled": {
+      "value": "Canceled",
+      "description": "Cancelled"
+    }
   }
+},
+  "level": {
+    "Low": "Low",
+    "Medium": "Medium",
+    "High": "High"
+    },
+  "status": {
+    "Pending":"Pending",
+    "In Progress":"In Progress",
+    "Completed": "Completed",
+    "Canceled": "Canceled"
+  },
+   "pagination": {
+    "prev": "Prev",
+    "page": "Page",
+    "next": "Next"
+  },
+   "complaint_details": {
+    "title": "Complaint Details",
+    "subtitle": "Complete information and tracking",
+    "complaint_title": "Complaint Title",
+    "main_description": "Main issue description",
+    "detailed_description": "Detailed Description",
+    "full_details": "Full complaint details",
+    "department": "Department",
+     "status":"Status", 
+ "priority":"Priority",   
+"assigned_department":"Assigned Department",
+    "main_department": "Main Department",
+    "sub_department": "Sub Department",
+    "additional_info": "Additional Info",
+    "tracking_info": "Tracking information",
+    "complaint_id": "Complaint ID",
+    "days_active": "Days Active",
+"days":"days"
+  }
+
+
+
 
 }
