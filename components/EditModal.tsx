@@ -128,7 +128,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
                   <button
                     key={option.name}
                     onClick={() => setStatus(option.name)}
-                    className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium flex flex-col items-center space-y-1 ${
+                    className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium flex flex-col items-center space-y-1 hover:cursor-pointer ${
                       isSelected
                         ? `${getStatusColor(option.color)} border-current`
                         : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"

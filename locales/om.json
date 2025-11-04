@@ -78,21 +78,25 @@
   "cancel": "Dhiisi",
   "saving": "Ol kaa'aa jira...",
   "update": "Haaromsi",
-  "status_options": {
+   "status_options": {
     "pending": {
-      "value": "Eeggataa",
+      "name": "Pending",
+      "label": "Eeggataa",
       "description": "Eegamaa jira"
     },
     "in_progress": {
-      "value": "Jiraatti",
+      "name": "In Progress",
+      "label": "Jiraatti",
       "description": "Hojjetamaa jira"
     },
     "completed": {
-      "value": "Xumurame",
+      "name": "Completed",
+      "label": "Xumurame",
       "description": "Dhiheessi ni xumurame"
     },
     "canceled": {
-      "value": "Haquu",
+      "name": "Canceled",
+      "label": "Haquu",
       "description": "Hojii irraa haqame"
     }
   }

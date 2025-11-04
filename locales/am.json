@@ -79,28 +79,29 @@
   "saving": "በመቀመጥ ላይ...",
   "update": "አዘምን",
 
-  "status_options": {
-    "pending": {
-      "name": "Pending",
-      "label": "Eeggataa",
-      "description": "Eegamaa jira"
-    },
-    "in_progress": {
-      "name": "In Progress",
-      "label": "Jiraatti",
-      "description": "Hojjetamaa jira"
-    },
-    "completed": {
-      "name": "Completed",
-      "label": "Xumurame",
-      "description": "Dhiheessi ni xumurame"
-    },
-    "canceled": {
-      "name": "Canceled",
-      "label": "Haquu",
-      "description": "Hojii irraa haqame"
-    }
+ "status_options": {
+  "pending": {
+    "name": "Pending",
+    "label": "በመጠባበቅ ላይ",
+    "description": "ቅሬታው በመጠባበቅ ላይ ነው"
+  },
+  "in_progress": {
+    "name": "In Progress",
+    "label": "በሂደት ላይ",
+    "description": "ቅሬታው በመስራት ላይ ነው"
+  },
+  "completed": {
+    "name": "Completed",
+    "label": "ተጠናቋል",
+    "description": "ቅሬታው ተፈትሎ ተጠናቋል"
+  },
+  "canceled": {
+    "name": "Canceled",
+    "label": "ተሰርዟል",
+    "description": "ቅሬታው ተሰርዟል ወይም ተሰረዘ"
   }
+}
+
 
 
 },

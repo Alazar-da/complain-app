@@ -79,19 +79,23 @@
   "update": "Update",
   "status_options": {
     "pending": {
-      "value": "Pending",
+      "name": "Pending",
+      "label": "Pending",
       "description": "Awaiting review"
     },
     "in_progress": {
-      "value": "In Progress",
+      "name": "In Progress",
+      "label": "In Progress",
       "description": "Being addressed"
     },
     "completed": {
-      "value": "Completed",
+      "name": "Completed",
+      "label": "Completed",
       "description": "Resolved"
     },
     "canceled": {
-      "value": "Canceled",
+      "name": "Canceled",
+      "label": "Canceled",
       "description": "Cancelled"
     }
   }

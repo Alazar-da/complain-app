@@ -36,9 +36,9 @@ const language = i18n.language as "am" | "en" | "om";
 
 
  const level = [
-  { key: "Low", label: t("levels.Low") },
-  { key: "Medium", label: t("levels.Medium") },
-  { key: "High", label: t("levels.High") },
+  { key: "Low", label: t("level.Low") },
+  { key: "Medium", label: t("level.Medium") },
+  { key: "High", label: t("level.High") },
 ];
 
   // Countdown effect for redirect
