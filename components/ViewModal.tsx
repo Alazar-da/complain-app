@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { departments, DepartmentKey } from "@/data/departments";
 import { useState, useEffect } from 'react';
 import { FaSpinner, FaTrash, FaImage, FaVideo, FaCloudUploadAlt } from 'react-icons/fa';
+import { time } from 'console';
 
 interface ViewModalProps {
   complaint: any;
@@ -56,6 +57,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
     }
   };
 
+  // ✅ Clear the mediaUrl in DB
   const clearMediaUrl = async (complaintId: string) => {
     try {
       const res = await fetch("/api/complaints/clear-media", {
@@ -68,53 +70,79 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
       if (!res.ok) throw new Error(data.error || "Failed to clear media URL");
 
       showMessage(t("messages.file.remove.success"), "success");
+      setTimeout(() => { window.location.reload(); }, 3000);
     } catch (error: any) {
       console.error("❌ Clear media failed:", error.message);
-      showMessage(error.message || "Failed to remove media", "error");
+       showMessage(t("messages.file.remove.error"), "error");
     }
   };
 
-  // Delete from Cloudinary
-  const deleteFromCloudinary = async () => {
-    if (!complaint.mediaUrl) {
-      showMessage("No media file to delete", "error");
+// Check if the same media is used by other complaints
+const checkDuplicateMedia = async (mediaUrl: string, complaintId: string) => {
+  try {
+    const res = await fetch(`/api/complaints/check-duplicate?mediaUrl=${encodeURIComponent(mediaUrl)}&excludeId=${complaintId}`);
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || "Failed to check duplicates");
+    return data.isDuplicate; // boolean
+  } catch (error: any) {
+    console.error("❌ Duplicate check failed:", error.message);
+    return false;
+  }
+};
+
+// Delete from Cloudinary (with duplicate check)
+const deleteFromCloudinary = async () => {
+  if (!complaint.mediaUrl) {
+    showMessage("No media file to delete", "error");
+    return;
+  }
+
+  try {
+    setDeleting(true);
+
+    // 🔍 Step 1: Check for duplicates
+    const isDuplicate = await checkDuplicateMedia(complaint.mediaUrl, complaint._id);
+
+    if (isDuplicate) {
+      console.log("⚠️ Media used in another complaint — skipping Cloudinary delete");
+      await clearMediaUrl(complaint._id);
+      showMessage(t("messages.file.remove.success"), "success");
       return;
     }
 
-    try {
-      setDeleting(true);
-      
-      const publicId = extractPublicId(complaint.mediaUrl);
-      if (!publicId) {
-        throw new Error("Could not extract file information");
-      }
+    // 🧩 Step 2: Extract Cloudinary public ID
+    const publicId = extractPublicId(complaint.mediaUrl);
+    if (!publicId) throw new Error("Could not extract file information");
 
-      const isVideo = /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
-      const resourceType = isVideo ? "video" : "image";
+    const isVideo = /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
+    const resourceType = isVideo ? "video" : "image";
 
-      const res = await fetch("/api/delete-cloudinary", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          public_id: publicId,
-          resource_type: resourceType,
-        }),
-      });
+    // 🗑️ Step 3: Delete from Cloudinary
+    const res = await fetch("/api/delete-cloudinary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        public_id: publicId,
+        resource_type: resourceType,
+      }),
+    });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to delete file");
-      console.log("✅ File deleted:", publicId);
-      
-      // Clear media URL from database
-      await clearMediaUrl(complaint._id);
-      
-    } catch (error: any) {
-      console.error("❌ Delete failed:", error.message);
-      showMessage(t("messages.file.remove.error"), "error");
-    } finally {
-      setDeleting(false);
-    }
-  };
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Failed to delete file");
+
+    console.log("✅ File deleted:", publicId);
+
+    // 🧹 Step 4: Clear the URL in DB
+    await clearMediaUrl(complaint._id);
+  } catch (error: any) {
+    console.error("❌ Delete failed:", error.message);
+    showMessage(t("messages.file.remove.error"), "error");
+  } finally {
+    setDeleting(false);
+  }
+};
+
 
   const handleDelete = async () => {
     await deleteFromCloudinary();
