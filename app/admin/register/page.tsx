@@ -58,7 +58,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-blue-50 py-8 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-blue-50 py-8 px-4 text-slate-800">
       <div className="w-full max-w-md">
         {/* Card Container */}
         <div className="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
@@ -214,6 +214,6 @@ export default function RegisterPage() {
           animation: fade-in 0.3s ease-out;
         }
       `}</style>
-    </div>
+    </main>
   );
 }

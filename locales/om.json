@@ -6,7 +6,7 @@
    "title": "Dhiyeessi Komii",
           "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
           "form": {
-            "title": "Mata-duree",
+            "title": "Maqaa Komii",
             "department": "Kutaa hojii",
             "subDepartment": "Kutaa xiqqaa",
             "priority": "Sadarkaa Dursa",
@@ -15,7 +15,16 @@
             "submitting": "Ergaa jira...",
             "success": "Komiin kee milkaa'inaan ergame! Dhihoo irratti deebi'a...",
             "error": "Dogoggorri uumame. Maaloo irra deebi'ii yaali.",
-            "note": "Komiin kee ni ilaalama, deebiin ni kennama."
+            "note": "Komiin kee ni ilaalama, deebiin ni kennama.",
+            "file_optional":"Faayilii (filannoo)",
+            "click_to_upload": "Suuraa yookaan viidiyoo Erguuf cuqaasaa",
+            "max_size": "Hangii ol’aanaa: 10MB",
+            "uploading": "Faayilii ergaa jira...",
+            "uploaded": "Ergame",
+            "image": "Suuraa",
+            "video": "Viidiyoo",
+            "removing":"Haqaa jira...",
+            "remove": "Haqi"
           },
           "levels": { "low": "Gadii", "medium": "Giddugaleessa", "high": "Olaanaa" },
           "departments": {
@@ -24,6 +33,14 @@
   "teacherTraining": "Leenjii Barattootaa fi Sagantaa Adda Addaa"
 },
 "messages": {
+  "file": {
+    "remove":{
+      "success": "Faayiliin haqame milkaa'inaan!",
+      "error": "Faayiliin haquun hin milkaa'inne."
+    },
+  "success": "Faayiliin Ergame olkaa’ame!",
+  "error": "Faayilii olkaa’uun hin milkaa’inne."
+  },
     "success": "Madda komii kee milkaaʼinaan ergame! Gara fuula biraatti geeffamaa jira...",
     "error": "Dogoggorri uumame. Mee irra deebi'ii yaali.",
     "enterTitle": "Mata duree komii galchi",
@@ -55,6 +72,7 @@
     "pending": "Eeggataa",
   "in_progress": "Jiraatti",
   "completed": "Xumurame",
+  "canceled": "Haquu",
   "complaint": "Komii",
   "department": "Kutaa Hojii",
   "priority": "Mudaa Dursa",
@@ -124,6 +142,7 @@
     "complaint_title": "Mata Duree Komii",
     "main_description": "Ibsa Rakkoo Ijoo",
     "detailed_description": "Ibsa Bal'aa",
+    "attached_media":"Miidiyaa Waliin Hidhame",
     "full_details": "Odeeffannoo guutuu komii",
     "department": "Kutaa",
     "main_department": "Kutaa Ijoo",
@@ -136,6 +155,33 @@
     "priority": "Dursa",
     "assigned_department":"Kutaa ramadame",
     "days":"Guyyaa"
+  },
+  "profile":{
+    "title":"Profaayilii",
+    "profileSettings": "Qajeelfama Profaayilii",
+    "manageAccount": "Qajeelfamoota fi filannoo herrega keetiin to’achi",
+    "accessRequired": "Seensa barbaachisaa",
+    "loginPrompt": "Profaayilii keetiif seenuuf galmaa'aa",
+    "profileInformation": "Odeeffannoo Profaayilii",
+    "updateUsername": "Maqaa fayyadamaa keetiin haaraa galchi",
+    "username": "Maqaa fayyadamaa",
+    "saveChanges": "Fayyadama Haaraa Galchi",
+    "securitySettings": "Qajeelfamoota Nageenyaa",
+    "changePassword": "Jecha darbii jijjiiri",
+    "currentPassword": "Jecha darbii amma jiru",
+    "newPassword": "Jecha darbii haaraa",
+    "confirmPassword": "Jecha darbii mirkaneessi",
+    "passwordStrengthGood": "✓ Humna jecha darbii: Gaarii",
+    "passwordMinLength": "⚠ Jecha darbii xiqqaa ta’e: 6 qabachuu qaba",
+    "passwordsDoNotMatch": "⚠ Jechoonni darbii wal hin siman",
+    "passwordsMatch": "✓ Jechoonni darbii walsiman",
+    "needHelp": "Deeggarsa barbaaddaa? Rakkoo herrega keessan yoo qabaattan deeggarsa qunnamu.",
+    "saving": "Ollaa jira...",
+    "updating": "Gulaalaa jira...",
+    "failedToLoadProfile": "Odeeffannoo profaayilii fiduu hin dandeenye",
+    "failed": "Hin milkoofne",
+    "usernameUpdated": "Maqaan fayyadamaa milkaa’inaan haaromfame",
+    "passwordChanged": "Jechi darbii milkaa’inaan jijjiirame"
   }
 
 

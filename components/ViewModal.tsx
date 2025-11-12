@@ -3,7 +3,9 @@
 import { FiX, FiFileText, FiClock, FiTag, FiAlertCircle, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiTrendingUp, FiTrendingDown, FiMinus, FiInfo } from 'react-icons/fi';
 import { TbBuilding, TbBuildingSkyscraper } from 'react-icons/tb';
 import { useTranslation } from "react-i18next";
-import { departments,DepartmentKey } from "@/data/departments";
+import { departments, DepartmentKey } from "@/data/departments";
+import { useState, useEffect } from 'react';
+import { FaSpinner, FaTrash, FaImage, FaVideo, FaCloudUploadAlt } from 'react-icons/fa';
 
 interface ViewModalProps {
   complaint: any;
@@ -13,62 +15,164 @@ interface ViewModalProps {
 export default function ViewModal({ complaint, onClose }: ViewModalProps) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language as "en" | "am" | "om";
+  const [countdown, setCountdown] = useState(0);
+  const [deleting, setDeleting] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
 
-  const getStatusConfig = (status: string) => {
-    switch (status) {
-      case "Pending":
-        return {
-          color: "text-yellow-600 bg-yellow-50 border-yellow-200",
-          icon: <FiClock className="w-4 h-4" />
-        };
-      case "Completed":
-        return {
-          color: "text-green-600 bg-green-50 border-green-200",
-          icon: <FiCheckCircle className="w-4 h-4" />
-        };
-      case "In Progress":
-        return {
-          color: "text-blue-600 bg-blue-50 border-blue-200",
-          icon: <FiPlayCircle className="w-4 h-4" />
-        };
-      case "Canceled":
-        return {
-          color: "text-red-600 bg-red-50 border-red-200",
-          icon: <FiPauseCircle className="w-4 h-4" />
-        };
-      default:
-        return {
-          color: "text-gray-600 bg-gray-50 border-gray-200",
-          icon: <FiInfo className="w-4 h-4" />,
-          label: status
-        };
+  // Countdown effect
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (countdown === 0 && message.type === "success") {
+      // Auto-close when countdown reaches 0
+      const closeTimer = setTimeout(() => {
+        onClose();
+      }, 500);
+      return () => clearTimeout(closeTimer);
+    }
+  }, [countdown, message.type, onClose]);
+
+  const showMessage = (text: string, type = "info") => {
+    setMessage({ text, type });
+    if (type === "success") setCountdown(3); // Start 3-second countdown
+  };
+
+  // Extract public_id from Cloudinary URL
+  const extractPublicId = (url: string): string => {
+    try {
+      const urlParts = url.split('/');
+      const uploadIndex = urlParts.indexOf('upload');
+      if (uploadIndex !== -1 && urlParts[uploadIndex + 1]) {
+        // Get everything after 'upload/' and remove file extension
+        const pathWithVersion = urlParts.slice(uploadIndex + 1).join('/');
+        const withoutVersion = pathWithVersion.replace(/^v\d+\//, '');
+        return withoutVersion.split('.')[0]; // Remove file extension
+      }
+      return '';
+    } catch (error) {
+      console.error('Error extracting public ID:', error);
+      return '';
     }
   };
 
-  const getLevelConfig = (level: string) => {
-    switch (level) {
-      case "High":
-        return {
-          color: "text-red-600 bg-red-50 border-red-200",
-          icon: <FiTrendingUp className="w-4 h-4" />,
-        };
-      case "Medium":
-        return {
-          color: "text-orange-600 bg-orange-50 border-orange-200",
-          icon: <FiMinus className="w-4 h-4" />,
-        };
-      case "Low":
-        return {
-          color: "text-green-600 bg-green-50 border-green-200",
-          icon: <FiTrendingDown className="w-4 h-4" />,
-        };
-      default:
-        return {
-          color: "text-gray-600 bg-gray-50 border-gray-200",
-          icon: <FiInfo className="w-4 h-4" />,
-          label: level
-        };
+  const clearMediaUrl = async (complaintId: string) => {
+    try {
+      const res = await fetch("/api/complaints/clear-media", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: complaintId }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to clear media URL");
+
+      showMessage(t("messages.file.remove.success"), "success");
+    } catch (error: any) {
+      console.error("❌ Clear media failed:", error.message);
+      showMessage(error.message || "Failed to remove media", "error");
     }
+  };
+
+  // Delete from Cloudinary
+  const deleteFromCloudinary = async () => {
+    if (!complaint.mediaUrl) {
+      showMessage("No media file to delete", "error");
+      return;
+    }
+
+    try {
+      setDeleting(true);
+      
+      const publicId = extractPublicId(complaint.mediaUrl);
+      if (!publicId) {
+        throw new Error("Could not extract file information");
+      }
+
+      const isVideo = /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
+      const resourceType = isVideo ? "video" : "image";
+
+      const res = await fetch("/api/delete-cloudinary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          public_id: publicId,
+          resource_type: resourceType,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete file");
+      console.log("✅ File deleted:", publicId);
+      
+      // Clear media URL from database
+      await clearMediaUrl(complaint._id);
+      
+    } catch (error: any) {
+      console.error("❌ Delete failed:", error.message);
+      showMessage(t("messages.file.remove.error"), "error");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    await deleteFromCloudinary();
+  };
+
+  const getStatusConfig = (status: string) => {
+    const configs: any = {
+      "Pending": {
+        color: "text-yellow-600 bg-yellow-50 border-yellow-200",
+        icon: <FiClock className="w-4 h-4" />,
+        label: t("status.Pending") || "Pending"
+      },
+      "Completed": {
+        color: "text-green-600 bg-green-50 border-green-200",
+        icon: <FiCheckCircle className="w-4 h-4" />,
+        label: t("status.Completed") || "Completed"
+      },
+      "In Progress": {
+        color: "text-blue-600 bg-blue-50 border-blue-200",
+        icon: <FiPlayCircle className="w-4 h-4" />,
+        label: t("status.In Progress") || "In Progress"
+      },
+      "Canceled": {
+        color: "text-red-600 bg-red-50 border-red-200",
+        icon: <FiPauseCircle className="w-4 h-4" />,
+        label: t("status.Canceled") || "Canceled"
+      }
+    };
+    return configs[status] || {
+      color: "text-gray-600 bg-gray-50 border-gray-200",
+      icon: <FiInfo className="w-4 h-4" />,
+      label: status
+    };
+  };
+
+  const getLevelConfig = (level: string) => {
+    const configs: any = {
+      "High": {
+        color: "text-red-600 bg-red-50 border-red-200",
+        icon: <FiTrendingUp className="w-4 h-4" />,
+        label: t("level.High") || "High"
+      },
+      "Medium": {
+        color: "text-orange-600 bg-orange-50 border-orange-200",
+        icon: <FiMinus className="w-4 h-4" />,
+        label: t("level.Medium") || "Medium"
+      },
+      "Low": {
+        color: "text-green-600 bg-green-50 border-green-200",
+        icon: <FiTrendingDown className="w-4 h-4" />,
+        label: t("level.Low") || "Low"
+      }
+    };
+    return configs[level] || {
+      color: "text-gray-600 bg-gray-50 border-gray-200",
+      icon: <FiInfo className="w-4 h-4" />,
+      label: level
+    };
   };
 
   const statusConfig = getStatusConfig(complaint.status);
@@ -77,6 +181,18 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
   const daysSinceSubmission = Math.floor(
     (new Date().getTime() - new Date(complaint.date).getTime()) / (1000 * 60 * 60 * 24)
   );
+
+  const getMessageStyles = () => {
+    const base = "my-4 p-4 rounded-lg border text-center font-medium animate-fade-in";
+    switch (message.type) {
+      case "success": return `${base} bg-green-50 text-green-800 border-green-200`;
+      case "error": return `${base} bg-red-50 text-red-800 border-red-200`;
+      default: return `${base} bg-blue-50 text-blue-800 border-blue-200`;
+    }
+  };
+
+  const isImage = complaint.mediaUrl?.includes("image") || /\.(jpg|jpeg|png|gif|webp)$/i.test(complaint.mediaUrl);
+  const isVideo = complaint.mediaUrl?.includes("video") || /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
 
   return (
     <main className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
@@ -143,6 +259,95 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                   </p>
                 </div>
               </div>
+
+              {/* Media Section */}
+              {complaint.mediaUrl && (
+                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        {isImage ? (
+                          <FaImage className="w-5 h-5 text-purple-600" />
+                        ) : (
+                          <FaVideo className="w-5 h-5 text-purple-600" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {t("complaint_details.attached_media")}
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                          {isImage ? t("form.image") : t("form.video")}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={handleDelete}
+                      disabled={deleting}
+                      className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:cursor-pointer"
+                    >
+                      {deleting ? (
+                        <>
+                          <FaSpinner className="animate-spin text-sm" />
+                          <span className="text-sm">{t("form.removing")}</span>
+                        </>
+                      ) : (
+                        <>
+                          <FaTrash className="text-sm" />
+                          <span className="text-sm">{t("form.remove")}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {message.text && (
+                    <div className={getMessageStyles()}>
+                      <div className="flex items-center justify-center space-x-2">
+                        {message.type === "success" && (
+                          <FiCheckCircle className="w-5 h-5 text-green-600" />
+                        )}
+                        {message.type === "error" && (
+                          <FiAlertCircle className="w-5 h-5 text-red-600" />
+                        )}
+                        <span>{message.text}</span>
+                      </div>
+                      {message.type === "success" && countdown > 0 && (
+                        <div className="mt-2 text-sm text-gray-600">
+                          Closing in {countdown} second{countdown !== 1 ? 's' : ''}...
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="bg-white rounded-xl p-4 border-2 border-dashed border-gray-200">
+                    {isImage ? (
+                      <div className="relative group">
+                        <img
+                          src={complaint.mediaUrl}
+                          alt="Complaint attachment"
+                          className="w-full rounded-lg shadow-sm max-h-96 object-contain bg-gray-50"
+                        />
+                        <div className="absolute inset-0 bg-black/50 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <FaImage className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <video
+                          src={complaint.mediaUrl}
+                          controls
+                          className="w-full rounded-lg shadow-sm max-h-96 bg-black"
+                        />
+                        <div className="absolute top-4 right-4 bg-black/50 rounded-full p-2">
+                          <FaVideo className="w-4 h-4 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Right Column - Metadata */}
@@ -156,9 +361,8 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                   </div>
                   <div className={`inline-flex items-center space-x-2 px-3 py-2 rounded-full text-sm font-medium border ${statusConfig.color}`}>
                     {statusConfig.icon}
-                    <span className="font-semibold">{t(`status.${complaint.status}`)}</span>
+                    <span className="font-semibold">{statusConfig.label}</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">{statusConfig.label}</p>
                 </div>
 
                 <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
@@ -168,9 +372,8 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                   </div>
                   <div className={`inline-flex items-center space-x-2 px-3 py-2 rounded-full text-sm font-medium border ${levelConfig.color}`}>
                     {levelConfig.icon}
-                    <span className="font-semibold">{t(`level.${complaint.level}`)}</span>
+                    <span className="font-semibold">{levelConfig.label}</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">{levelConfig.label}</p>
                 </div>
               </div>
 
@@ -197,7 +400,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                         <TbBuildingSkyscraper className="w-3 h-3" />
                         <span>{
                           departments[complaint.department as DepartmentKey]?.subDepartments.find(
-                            (sub:any) =>
+                            (sub: any) =>
                               sub.en === complaint.subDepartment ||
                               sub.am === complaint.subDepartment ||
                               sub.om === complaint.subDepartment
@@ -245,23 +448,23 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
           </div>
         </div>
       </div>
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes scale-in {
+          from { transform: scale(0.9); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.2s ease-out;
+        }
+        .animate-scale-in {
+          animation: scale-in 0.2s ease-out;
+        }
+      `}</style>
     </main>
   );
 }
-
-<style jsx global>{`
-  @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
-  @keyframes scale-in {
-    from { transform: scale(0.9); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .animate-fade-in {
-    animation: fade-in 0.2s ease-out;
-  }
-  .animate-scale-in {
-    animation: scale-in 0.2s ease-out;
-  }
-`}</style>

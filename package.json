@@ -10,12 +10,17 @@
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
+    "browser-image-compression": "^2.0.2",
+    "chart.js": "^4.5.1",
+    "cloudinary": "^2.8.0",
+    "dayjs": "^1.11.19",
     "i18next": "^25.6.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.2",
     "next": "16.0.1",
     "next-i18next": "^15.4.2",
     "react": "19.2.0",
+    "react-chartjs-2": "^5.3.1",
     "react-dom": "19.2.0",
     "react-i18next": "^16.2.3",
     "react-icons": "^5.5.0"
