@@ -6,7 +6,7 @@
   "title": "Submit a Complaint",
           "subtitle": "Fill out the form below to submit your complaint.",
           "form": {
-            "title": "Title",
+            "title": "Complaint Title",
             "department": "Department",
             "subDepartment": "Sub Department",
             "priority": "Priority Level",
@@ -15,7 +15,16 @@
             "submitting": "Submitting...",
             "success": "Complaint submitted successfully! Redirecting...",
             "error": "Something went wrong. Please try again.",
-            "note": "Your complaint will be reviewed and addressed promptly."
+            "note": "Your complaint will be reviewed and addressed promptly.",
+            "file_optional": "File (optional)",
+            "click_to_upload": "Click to upload image or video",
+            "max_size":"Max: 10MB",
+            "uploading": "Uploading your file...",
+            "image": "Image",
+            "video": "Video",
+            "uploaded": "uploaded",
+            "removing": "Removing...",
+            "remove": "Remove"
 },
           "departments": {
   "general": "General",
@@ -23,6 +32,14 @@
   "teacherTraining": "Teacher Education & Special Programs Administration"
 },
 "messages": {
+  "file":{
+    "remove":{
+      "success": "File removed successfully!",
+      "error": "File removal failed."
+    },
+  "success": "File uploaded successfully!",
+    "error": "File upload failed."
+  },
     "success": "Complaint submitted successfully! Redirecting...",
     "error": "Something went wrong. Please try again.",
     "enterTitle": "Enter complaint title",
@@ -54,6 +71,7 @@
     "pending": "Pending",
   "in_progress": "In Progress",
   "completed": "Completed",
+  "canceled": "Canceled",
   "complaint": "Complaint",
   "department": "Department",
   "priority": "Priority",
@@ -122,6 +140,7 @@
     "complaint_title": "Complaint Title",
     "main_description": "Main issue description",
     "detailed_description": "Detailed Description",
+    "attached_media":"Attached Media",
     "full_details": "Full complaint details",
     "department": "Department",
      "status":"Status", 
@@ -134,6 +153,34 @@
     "complaint_id": "Complaint ID",
     "days_active": "Days Active",
 "days":"days"
+  },
+
+  "profile":{
+    "title":"Profile",
+    "profileSettings": "Profile Settings",
+    "manageAccount": "Manage your account settings and preferences",
+    "accessRequired": "Access Required",
+    "loginPrompt": "Please log in to access your profile.",
+    "profileInformation": "Profile Information",
+    "updateUsername": "Update your username",
+    "username": "Username",
+    "saveChanges": "Save Changes",
+    "securitySettings": "Security Settings",
+    "changePassword": "Change your password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "passwordStrengthGood": "✓ Password strength: Good",
+    "passwordMinLength": "⚠ Password must be at least 6 characters",
+    "passwordsDoNotMatch": "⚠ Passwords do not match",
+    "passwordsMatch": "✓ Passwords match",
+    "needHelp": "Need help? Contact support if you're having trouble with your account.",
+    "saving": "Saving...",
+    "updating": "Updating...",
+    "failedToLoadProfile": "Failed to load profile",
+    "failed": "Failed",
+    "usernameUpdated": "Username updated successfully",
+    "passwordChanged": "Password changed successfully"
   }
 
 

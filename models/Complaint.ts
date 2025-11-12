@@ -6,6 +6,7 @@ export interface IComplaint extends Document {
   subDepartment: string;
   level: "Low" | "Medium" | "High";
   description: string;
+  mediaUrl?: string; // 🔹 Cloudinary file URL
   status: "Pending" | "Canceled" | "In Progress" | "Completed";
   date: Date;
 }
@@ -17,6 +18,7 @@ const ComplaintSchema = new Schema<IComplaint>(
     subDepartment: { type: String, required: false },
     level: { type: String, enum: ["Low", "Medium", "High"], required: true },
     description: { type: String, required: true },
+    mediaUrl: { type: String, required: false }, // 🔹 Cloudinary file URL
     status: {
       type: String,
       enum: ["Pending", "Canceled","In Progress", "Completed"],

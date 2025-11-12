@@ -36,34 +36,9 @@ export default function AdminDashboard() {
     const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10; // complaints per page
-
-const [token, setToken] = useState<string | null>(null);
-const [countdown, setCountdown] = useState(3);
 const { t } = useTranslation();
 const { i18n } = useTranslation();
 const lang = i18n.language as "en" | "am" | "om";
-
-
-useEffect(() => {
-  const storedToken = localStorage.getItem("adminToken");
-  if (!storedToken) {
-    // Start countdown when no token
-    const countdownInterval = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(countdownInterval);
-          router.push("/admin/login");
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(countdownInterval);
-  } else {
-    setToken(storedToken);
-  }
-}, [router]);
 
  const fetchComplaints = async (pageNumber = 1) => {
     const res = await fetch(
@@ -81,12 +56,6 @@ useEffect(() => {
   useEffect(() => {
     fetchComplaints(1); // always fetch first page when filters change
   }, [searchTerm, statusFilter]);
-
-
-  const handleLogout = () => {
-    localStorage.removeItem("adminToken");
-    router.push('/admin/login');
-  };
 
   const openEditModal = (complaint: Complaint) => {
     setSelectedComplaint(complaint);
@@ -113,8 +82,10 @@ useEffect(() => {
         return `${baseStyles} bg-green-100 text-green-800 border border-green-200`;
       case "In Progress":
         return `${baseStyles} bg-blue-100 text-blue-800 border border-blue-200`;
-      default:
+        case "Canceled":
         return `${baseStyles} bg-red-100 text-red-800 border border-red-200`;
+      default:
+        return `${baseStyles} bg-gray-100 text-gray-800 border border-gray-200`;
     }
   };
 
@@ -141,8 +112,10 @@ useEffect(() => {
         return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
       case "In Progress":
         return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>;
-      default:
+         case "Canceled":
         return <div className="w-2 h-2 bg-red-500 rounded-full"></div>;
+      default:
+        return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>;
     }
   };
 
@@ -154,60 +127,6 @@ useEffect(() => {
     if (page < totalPages) fetchComplaints(page + 1);
   };
 
-
-
-// ... inside the return statement
-if (!token) {
-  return (
-    <main className="fixed inset-0 bg-linear-to-br from-slate-50 to-emerald-50 flex items-center justify-center p-4 z-50 animate-fade-in">
-      
-      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full transform transition-all duration-300 animate-scale-in">
-        {/* Header */}
-        <div className="p-6 text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FiLock className="w-8 h-8 text-red-600" />
-          </div>
-          
-          <h3 className="text-xl font-bold text-gray-900 mb-2">Access Restricted</h3>
-          <p className="text-gray-600 mb-4">
-            Authentication required to view this page.
-          </p>
-          
-          {/* Dynamic Countdown */}
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <FiClock className="w-5 h-5 text-blue-600 animate-pulse" />
-            <span className="text-sm text-gray-500">
-              Redirecting in <span className="font-mono font-bold text-blue-600 text-lg">{countdown}</span>...
-            </span>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
-            <div 
-              className="bg-linear-to-r from-blue-600 to-blue-400 h-2 rounded-full transition-all duration-1000 ease-out"
-              style={{ width: `${((3 - countdown) / 3) * 100}%` }}
-            ></div>
-          </div>
-
-          <p className="text-xs text-gray-500">
-            You will be automatically redirected
-          </p>
-        </div>
-
-        {/* Action Button */}
-        <div className="flex space-x-3 p-6 border-t border-gray-200">
-          <button
-            onClick={() => router.push("/admin/login")}
-            className="flex-1 bg-linear-to-r from-blue-600 to-blue-700 text-white py-2.5 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 transition-all duration-200 flex items-center justify-center space-x-2 hover:cursor-pointer"
-          >
-            <span>Login Now</span>
-            <FiArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </main>
-  );
-}
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -224,37 +143,21 @@ if (!token) {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Left side - Logo and Title */}
-            <div className="flex items-center">
-              <div className="shrink-0">
+          <div className="flex items-center justify-start h-16">
+              <div className="shrink-0 lg:block hidden">
                 <div className="w-8 h-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
                   <FiUser className="w-4 h-4 text-white" />
                 </div>
               </div>
-              <div className="ml-3">
+              <div className="lg:ml-3 ml-15">
                 <h1 className="text-xl font-bold text-gray-900">{t('admin_dashboard.title')}</h1>
               </div>
-            </div>
-
-            {/* Right side - User menu and logout */}
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                <button 
-                  onClick={handleLogout}
-                  className="flex items-center space-x-2 bg-red-50 text-red-700 px-4 py-2 rounded-lg hover:bg-red-100 transition-colors duration-200 border border-red-200 hover:cursor-pointer"
-                >
-                  <FiLogOut className="w-4 h-4" />
-                  <span className="hidden sm:block font-medium">{t('admin_dashboard.logout')}</span>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </header>
 
-      <main className="relative p-4 sm:p-6 lg:px-8 lg:py-10">
-              <section className="fixed top-18 right-2 z-50">
+      <section className="relative p-4 sm:p-6 lg:px-8 lg:py-10">
+              <section className="fixed top-3.5 right-5 z-50">
               <LanguageSwitcher/>
             </section>
         {/* Stats and Controls */}
@@ -320,6 +223,7 @@ if (!token) {
                   <option value="Pending">{t('admin_dashboard.pending')}</option>
                   <option value="In Progress">{t('admin_dashboard.in_progress')}</option>
                   <option value="Completed">{t('admin_dashboard.completed')}</option>
+                  <option value="Canceled">{t('admin_dashboard.canceled')}</option>
                 </select>
                 <FiFilter className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               </div>
@@ -593,7 +497,7 @@ if (!token) {
              onDelete={fetchComplaints}
           />
         )}
-      </main>
+      </section>
 
       <style jsx global>{`
         @keyframes fade-in {

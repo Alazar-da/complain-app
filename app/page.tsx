@@ -3,83 +3,149 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useState, useEffect, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { departments, DepartmentKey } from "@/data/departments";
-
+import { compressAndUploadMedia } from "@/utils/uploadImage";
+import { FaCloudUploadAlt, FaImage, FaSpinner, FaTimes, FaTrash, FaVideo } from "react-icons/fa";
 
 type Department = keyof typeof departments;
 
-
 export default function Home() {
-  const [form, setForm] = useState<{
+   const [form, setForm] = useState<{
     title: string;
     department: Department | "";
     subDepartment: string;
-    status?:string;
+    status?: string;
     level: string;
     description: string;
+    mediaUrl?: string;
+    publicId?: string; // store Cloudinary public_id
   }>({
     title: "",
     department: "",
     subDepartment: "",
-    status:"Pending",
+    status: "Pending",
     level: "",
     description: "",
+    mediaUrl: "",
+    publicId: "",
   });
+
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [countdown, setCountdown] = useState(0);
-    const { t } = useTranslation();
-    const { i18n } = useTranslation();
-const language = i18n.language as "am" | "en" | "om";
+  const [preview, setPreview] = useState<string | null>(null);
+  const { t, i18n } = useTranslation();
+  const language = i18n.language as "am" | "en" | "om";
 
+  const level = [
+    { key: "Low", label: t("level.Low") },
+    { key: "Medium", label: t("level.Medium") },
+    { key: "High", label: t("level.High") },
+  ];
 
+  useEffect(() => {
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown]);
 
-
-
- const level = [
-  { key: "Low", label: t("level.Low") },
-  { key: "Medium", label: t("level.Medium") },
-  { key: "High", label: t("level.High") },
-];
-
-  // Countdown effect for redirect
-useEffect(() => {
-  if (countdown > 0) {
-    const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
-    return () => clearTimeout(timer);
-  }
-}, [countdown, message.type]);
-
-
-  const showMessage = (text:string, type = "info") => {
+  const showMessage = (text: string, type = "info") => {
     setMessage({ text, type });
-    if (type === "success") {
-      setCountdown(3); // Start 3-second countdown for redirect
+    if (type === "success") setCountdown(3);
+  };
+
+  // Upload image/video
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploading(true);
+
+      // Compress and upload media
+      const uploaded = await compressAndUploadMedia(file, "complain_app/uploads");
+
+      setForm(prev => ({
+        ...prev,
+        mediaUrl: uploaded.secure_url,
+        publicId: uploaded.public_id, // store public_id for deletion
+      }));
+
+      setPreview(uploaded.secure_url);
+           showMessage(t("messages.file.success"), "success");
+      console.log("✅ Uploaded successfully:", uploaded);
+    } catch (error: any) {
+      console.error("❌ Upload failed:", error.message);
+      showMessage(t("messages.file.error"), "error");
+    } finally {
+      setUploading(false);
+      e.target.value = ""; // reset input
     }
   };
 
-  const handleSubmit = async (e:FormEvent) => {
+  // Delete from Cloudinary
+  const deleteFromCloudinary = async () => {
+    if (!form.mediaUrl || !form.publicId) return;
+
+    try {
+      setDeleting(true);
+      const isVideo = /\.(mp4|mov|avi)$/i.test(form.mediaUrl);
+
+      const res = await fetch("/api/delete-cloudinary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          public_id: form.publicId,
+          resource_type: isVideo ? "video" : "image",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete file");
+
+      // Remove from state
+      setForm(prev => ({ ...prev, mediaUrl: "", publicId: "" }));
+      setPreview(null);
+      showMessage(t("messages.file.remove.success"), "success");
+      console.log("✅ File deleted:", form.publicId);
+    } catch (error: any) {
+      console.error("❌ Delete failed:", error.message);
+      showMessage(t("messages.file.remove.error"), "error");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage({ text: "", type: "" });
-    
+
     try {
       const res = await fetch("/api/complaints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+
       const data = await res.json();
-      
+
       if (data.success) {
         showMessage(t("messages.success"), "success");
         setForm({
           title: "",
           department: "",
           subDepartment: "",
+          status: "Pending",
           level: "",
           description: "",
+          mediaUrl: "",
+          publicId: "",
         });
-        setTimeout(()=>window.location.reload(),3500)
+        setPreview(null);
+        setTimeout(() => window.location.reload(), 3500);
       } else {
         showMessage("Error: " + data.error, "error");
       }
@@ -91,22 +157,18 @@ useEffect(() => {
   };
 
   const getMessageStyles = () => {
-    const baseStyles = "my-4 p-4 rounded-lg border text-center font-medium animate-fade-in";
-    
+    const base = "my-4 p-4 rounded-lg border text-center font-medium animate-fade-in";
     switch (message.type) {
-      case "success":
-        return `${baseStyles} bg-green-50 text-green-800 border-green-200`;
-      case "error":
-        return `${baseStyles} bg-red-50 text-red-800 border-red-200`;
-      default:
-        return `${baseStyles} bg-blue-50 text-blue-800 border-blue-200`;
+      case "success": return `${base} bg-green-50 text-green-800 border-green-200`;
+      case "error": return `${base} bg-red-50 text-red-800 border-red-200`;
+      default: return `${base} bg-blue-50 text-blue-800 border-blue-200`;
     }
   };
 
   return (
     <main className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 text-slate-800 py-8">
       <section className="fixed top-2 right-2">
-        <LanguageSwitcher/>
+        <LanguageSwitcher />
       </section>
       <form
         onSubmit={handleSubmit}
@@ -168,50 +230,48 @@ useEffect(() => {
               className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
               value={form.department}
               onChange={(e) =>
-    setForm({
-      ...form,
-      department: e.target.value as DepartmentKey,
-      subDepartment: "",
-    })
-  }
+                setForm({
+                  ...form,
+                  department: e.target.value as DepartmentKey,
+                  subDepartment: "",
+                })
+              }
               required
             >
-               <option value="" selected disabled>{t("messages.selectDepartment")}</option>
-  {Object.entries(departments).map(([key, dept]) => (
-    <option key={key} value={key}>
-      {dept[language] || dept.am}
-    </option>
-  ))}
+              <option value="" disabled>{t("messages.selectDepartment")}</option>
+              {Object.entries(departments).map(([key, dept]) => (
+                <option key={key} value={key}>
+                  {dept[language] || dept.en}
+                </option>
+              ))}
             </select>
           </div>
 
           {/* Sub-department Dropdown */}
-         {form.department &&
-  departments[form.department as DepartmentKey].subDepartments.length > 0 && (
-    <div>
-      <label className="block text-sm font-semibold text-gray-700 mb-2">
-        {t("form.subDepartment")}
-      </label>
-
-      <select
-        className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
-        value={form.subDepartment}
-        onChange={(e) =>
-          setForm({ ...form, subDepartment: e.target.value })
-        }
-      >
-        <option value="" selected disabled>{t("messages.selectSubDepartment")}</option>
-        {departments[form.department as DepartmentKey].subDepartments.map(
-          (sub, index) => (
-            <option key={index} value={sub.am}>
-              {sub[language] || sub.am}
-            </option>
-          )
-        )}
-      </select>
-    </div>
-  )}
-
+          {form.department &&
+            departments[form.department as DepartmentKey].subDepartments.length > 0 && (
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  {t("form.subDepartment")}
+                </label>
+                <select
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
+                  value={form.subDepartment}
+                  onChange={(e) =>
+                    setForm({ ...form, subDepartment: e.target.value })
+                  }
+                >
+                  <option value="" disabled>{t("messages.selectSubDepartment")}</option>
+                  {departments[form.department as DepartmentKey].subDepartments.map(
+                    (sub, index) => (
+                      <option key={index} value={sub.en}>
+                        {sub[language] || sub.en}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+            )}
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.priority")}</label>
@@ -221,7 +281,7 @@ useEffect(() => {
               onChange={(e) => setForm({ ...form, level: e.target.value })}
               required
             >
-              <option value="" selected disabled>{t("messages.selectLevel")}</option>
+              <option value="" disabled>{t("messages.selectLevel")}</option>
               {level.map((lvl) => (
                 <option key={lvl.key} value={lvl.key}>
                   {lvl.label}
@@ -240,12 +300,101 @@ useEffect(() => {
               required
             />
           </div>
-        </div>
+
+           {/* File Upload Section */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              {t("form.file_optional")}
+            </label>
+            
+            <div className="relative">
+              <input
+                type="file"
+                onChange={handleFileUpload}
+                accept="image/*,video/*"
+                className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200 cursor-pointer opacity-0 absolute inset-0 z-10"
+                disabled={uploading || deleting || (preview ? true : false)}
+              />
+              
+              {/* Custom styled file input */}
+              <div className="w-full p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 text-center">
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <FaCloudUploadAlt className="text-3xl text-gray-400 mb-2" />
+                  <p className="text-sm text-gray-600 font-medium">
+                    {t("form.click_to_upload")}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    PNG, JPG, MP4, MOV ({t("form.max_size")})
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {uploading && (
+              <div className="flex items-center justify-center mt-4 p-3 bg-blue-50 rounded-lg">
+                <FaSpinner className="animate-spin text-blue-500 mr-2" />
+                <p className="text-sm text-blue-700">{t("form.uploading")}</p>
+              </div>
+            )}
+
+            {preview && (
+              <div className="mt-4 relative bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    {preview.includes("image") ? (
+                      <FaImage className="text-green-500" />
+                    ) : (
+                      <FaVideo className="text-blue-500" />
+                    )}
+                    <span className="text-sm font-medium text-gray-700">
+                      {preview.includes("image") ? t("form.image") : t("form.video")} {t("form.uploaded")}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={deleteFromCloudinary}
+                    disabled={deleting}
+                    className="flex items-center space-x-2 px-3 py-1 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:cursor-pointer"
+                  >
+                    {deleting ? (
+                      <>
+                        <FaSpinner className="animate-spin text-sm" />
+                        <span className="text-sm">{t("form.removing")}</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaTrash className="text-sm" />
+                        <span className="text-sm">{t("form.remove")}</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                
+                {preview.includes("image") ? (
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    className="w-full rounded-lg shadow-sm max-h-64 object-cover"
+                  />
+                ) : (
+                  <video
+                    src={preview}
+                    controls
+                    className="w-full rounded-lg shadow-sm max-h-64 object-cover"
+                  />
+                )}
+              </div>
+            )}
+          </div>
+       
+
+</div>
+
 
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || uploading}
           className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-semibold mt-8 hover:from-blue-700 hover:to-indigo-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] hover:cursor-pointer"
         >
           {loading ? (
@@ -254,7 +403,7 @@ useEffect(() => {
               <span>{t("form.submitting")}</span>
             </div>
           ) : (
-            `${t("form.submit")}`
+            t("form.submit")
           )}
         </button>
 

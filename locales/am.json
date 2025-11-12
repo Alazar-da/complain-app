@@ -6,7 +6,7 @@
    "title": "ቅሬታ ያቅርቡ",
           "subtitle": "እባክዎ ቅሬታዎን ለመላክ ቅጹን ይሙሉ።",
           "form": {
-            "title": "ርዕስ",
+            "title": "የቅሬታ ርዕስ",
             "department": "ዲፓርትመንት",
             "subDepartment": "ንዑስ ዲፓርትመንት",
             "priority": "ቅድሚያ ደረጃ",
@@ -15,7 +15,16 @@
             "submitting": "በመላክ ላይ...",
             "success": "ቅሬታዎ በተሳካ ሁኔታ ተላከ! በቅርቡ ትመለሳለች...",
             "error": "አንዳንድ ችግኝ ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
-            "note": "ቅሬታዎ በቅርቡ ታየና መልስ ይሰጣል።"
+            "note": "ቅሬታዎ በቅርቡ ታየና መልስ ይሰጣል።",
+            "file_optional": "ፋይል (አማራጭ)",
+            "click_to_upload": "ምስል ወይም ቪዲዮ ለመላከ ይጫኑ",
+            "max_size": "ከፍተኛ መጠን፡ 10MB",
+            "uploading": "ፋይሉን በመላከ ላይ...",
+            "uploaded": "ተላከ",
+            "image": "ምስል",
+            "video": "ቪዲዮ",
+            "removing": "በማስወገድ ላይ...",
+            "remove": "አስወግድ"
           },
           "levels": { "low": "ዝቅተኛ", "medium": "መካከለኛ", "high": "ከፍተኛ" },
           "departments": {
@@ -24,6 +33,14 @@
   "teacherTraining": "የት/መና የመም/ል/የልዩ/ፍ/የሱፐ/ስራ ቡዱን አስተባባራ"
 },
 "messages": {
+  "file": {
+    "remove":{
+      "success": "ፋይሉን በተሳካ ሁኔታ ተሰርዟል!",
+      "error": "ፋይሉን ማስወገድ አልተቻለም።"
+    },
+  "success": "ፋይሉ በተሳካ ሁኔታ ተላከ!",
+    "error": "ፋይሉን ማስቀመጥ አልተቻለም።"
+  },
     "success": "ቅሬታዎ በተሳካ ሁኔታ ተልኳል። በቅርቡ ታስተላለፋለህ...",
     "error": "የሆነ ስህተት ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
     "enterTitle": "የቅሬታ ርዕስ ያስገቡ",
@@ -55,6 +72,7 @@
     "pending": "በመጠባበቅ ላይ",
   "in_progress": "በሂደት ላይ",
   "completed": "ተጠናቋል",
+  "canceled": "ተሰርዟል",
   "complaint": "ቅሬታ",
   "department": "መምሪያ ክፍል",
   "priority": "ቅድሚያ",
@@ -128,6 +146,7 @@
     "complaint_title": "የቅሬታ ርዕስ",
     "main_description": "ዋና የጉዳዩ መግለጫ",
     "detailed_description": "ዝርዝር መግለጫ",
+    "attached_media":"የተያያዙ ሚዲያ",
     "full_details": "የቅሬታ ሙሉ መረጃ",
     "department": "ክፍል",
     "main_department": "ዋና ክፍል",
@@ -141,6 +160,34 @@
     "assigned_department":"የተመደበ ክፍል",
     "days":"ቀናት"
 
+  },
+
+  "profile":{
+    "title":"መገለጫ",
+    "profileSettings": "የመገለጫ ቅንብሮች",
+    "manageAccount": "የመለያዎን ቅንብሮች እና ቅድሚያዎችን ያስተካክሉ",
+    "accessRequired": "መዳረሻ ያስፈልጋል",
+    "loginPrompt": "ወደ መገለጫዎ ለመዳረስ እባክዎን ይግቡ።",
+    "profileInformation": "የመገለጫ መረጃ",
+    "updateUsername": "የተጠቃሚ ስምዎን ያሻሽሉ",
+    "username": "የተጠቃሚ ስም",
+    "saveChanges": "ለውጦችን አስቀምጥ",
+    "securitySettings": "የደህንነት ቅንብሮች",
+    "changePassword": "የሚስጥር ቁልፍ ይቀይሩ",
+    "currentPassword": "የአሁኑ የሚስጥር ቁልፍ",
+    "newPassword": "አዲስ የሚስጥር ቁልፍ",
+    "confirmPassword": "የሚስጥር ቁልፍን ያረጋግጡ",
+    "passwordStrengthGood": "✓ የሚስጥር ቁልፍ ኃይል: ጥሩ",
+    "passwordMinLength": "⚠ የሚስጥር ቁልፍ ቢያንስ 6 ቁምፊ መሆን አለበት",
+    "passwordsDoNotMatch": "⚠ የሚስጥር ቁልፎች አይዛመዱም",
+    "passwordsMatch": "✓ የሚስጥር ቁልፎች ዛመዱ",
+    "needHelp": "እርዳታ ይፈልጋሉ? በመለያዎ ጉዳት ላይ ከሆነ ድጋፍን ያግኙ።",
+    "saving": "በመቀመጥ ላይ...",
+    "updating": "በመቀየር ላይ...",
+    "failedToLoadProfile": "የመገለጫ መረጃ ማውረድ አልተቻለም",
+    "failed": "አልተሳካም",
+    "usernameUpdated": "የተጠቃሚ ስም በተሳካ ሁኔታ ተሻሽሏል",
+    "passwordChanged": "የሚስጥር ቁልፍ በተሳካ ሁኔታ ተቀይሯል"
   }
 
 
