@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(countdownInterval);
-            router.push('/admin/login');
+            router.push('/admin/dashboard');
             return 0;
           }
           return prev - 1;

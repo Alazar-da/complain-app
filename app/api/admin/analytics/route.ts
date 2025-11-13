@@ -14,92 +14,62 @@ export async function GET(req: Request) {
     const department = searchParams.get("department");
     const subDepartment = searchParams.get("subDepartment");
 
-    const match: any = {};
+    // 🧠 Build dynamic filter
+    const filter: any = {};
 
-    // ✅ Only add filters when they're actually provided
-    if (startDate || endDate) {
-      match.date = {};
-      if (startDate) match.date.$gte = new Date(startDate);
-      if (endDate) {
-        const endOfDay = new Date(endDate);
-        endOfDay.setHours(23, 59, 59, 999);
-        match.date.$lte = endOfDay;
-      }
+    if (startDate && endDate) {
+      filter.date = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
     }
 
-    if (status && status !== "all") match.status = status;
-    if (level && level !== "all") match.level = level;
-    if (department && department !== "all") match.department = department;
-    if (subDepartment && subDepartment !== "all") match.subDepartment = subDepartment;
+    if (status && status !== "All") filter.status = status;
+    if (level && level !== "All") filter.level = level;
+    if (department && department !== "All") filter.department = department;
+    if (subDepartment && subDepartment !== "All")
+      filter.subDepartment = subDepartment;
 
-    // ✅ If no filters applied, show all complaints
-    const isFiltered = Object.keys(match).length > 0;
+    // 🔹 Fetch complaints that match filters
+    const complaints = await Complaint.find(filter);
 
-    const [
-      statusAgg,
-      levelAgg,
-      departmentAgg,
-      dailyAgg,
-      items,
-      allDepartments,
-      allSubs,
-      totalCount,
-    ] = await Promise.all([
-      Complaint.aggregate([{ $match: match }, { $group: { _id: "$status", count: { $sum: 1 } } }]),
-      Complaint.aggregate([{ $match: match }, { $group: { _id: "$level", count: { $sum: 1 } } }]),
-      Complaint.aggregate([{ $match: match }, { $group: { _id: "$department", count: { $sum: 1 } } }]),
-      Complaint.aggregate([
-        { $match: match },
-        {
-          $group: {
-            _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
-            count: { $sum: 1 },
-          },
-        },
-        { $sort: { _id: 1 } },
-      ]),
-      Complaint.find(match)
-        .sort({ date: -1 })
-        .select("title department subDepartment level status date")
-        .lean(),
-      Complaint.distinct("department"),
-      Complaint.distinct("subDepartment"),
-      Complaint.countDocuments(match),
-    ]);
+    // 🔹 Aggregations
+    const total = complaints.length;
 
-    const statusCounts = Object.fromEntries(statusAgg.map(r => [r._id || "Unknown", r.count || 0]));
-    const levelCounts = Object.fromEntries(levelAgg.map(r => [r._id || "Unknown", r.count || 0]));
-    const departmentCounts = Object.fromEntries(departmentAgg.map(r => [r._id || "Unknown", r.count || 0]));
-    const dailyCounts = dailyAgg.map(r => ({ date: r._id, count: r.count }));
+    const statusCounts = complaints.reduce((acc: Record<string, number>, c) => {
+      acc[c.status] = (acc[c.status] || 0) + 1;
+      return acc;
+    }, {});
 
-    const summary = {
-      totalComplaints: totalCount,
-      totalDepartments: allDepartments.filter(Boolean).length,
-      totalSubDepartments: allSubs.filter(Boolean).length,
-      dateRange: {
-        start: startDate || "N/A",
-        end: endDate || "N/A",
-      },
-      isFiltered,
-    };
+    const levelCounts = complaints.reduce((acc: Record<string, number>, c) => {
+      acc[c.level] = (acc[c.level] || 0) + 1;
+      return acc;
+    }, {});
 
-    return NextResponse.json({
-      success: true,
-      data: {
-        statusCounts,
-        levelCounts,
-        departmentCounts,
-        dailyCounts,
-        items,
-        departments: allDepartments.filter(Boolean),
-        subDepartments: allSubs.filter(Boolean),
-        summary,
-      },
+    // 🔹 Daily count aggregation (for charts)
+    const dailyCountsMap: Record<string, number> = {};
+    complaints.forEach((c) => {
+      const date = new Date(c.date).toISOString().split("T")[0];
+      dailyCountsMap[date] = (dailyCountsMap[date] || 0) + 1;
     });
-  } catch (error: any) {
-    console.error("Analytics API Error:", error);
+
+    const dailyCounts = Object.entries(dailyCountsMap).map(([date, count]) => ({
+      date,
+      count,
+    }));
+
+    // ✅ Match frontend shape
+    return NextResponse.json({
+      total,
+      complaints,
+      statusCounts,
+      levelCounts,
+      dailyCounts,
+    });
+  } catch (error) {
+    console.error("❌ Error in analytics API:", error);
     return NextResponse.json(
-      { success: false, error: "Internal server error", message: error.message },
+      { error: "Failed to fetch analytics data" },
       { status: 500 }
     );
   }
