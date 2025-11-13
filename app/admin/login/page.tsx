@@ -1,8 +1,9 @@
 'use client';
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { Preferences } from '@capacitor/preferences';
 
 export default function LoginPage() {
   const [form, setForm] = useState({ username: "", password: "" });
@@ -10,7 +11,19 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-    const { t } = useTranslation();
+  const { t } = useTranslation();
+
+    const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
+
+  // Load saved login on startup
+  useEffect(() => {
+    const loadUser = async () => {
+      const { value } = await Preferences.get({ key: 'user' });
+      if (value) setLoggedInUser(value);
+    };
+    loadUser();
+  }, []);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +40,8 @@ export default function LoginPage() {
       const data = await res.json();
       
       if (res.ok) {
+         await Preferences.set({ key: 'user', value: form.username });
+    setLoggedInUser(form.username);
         localStorage.setItem("adminToken", data.token);
         setMessage({ 
           text: t("login.success"), 
