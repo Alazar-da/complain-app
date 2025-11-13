@@ -30,8 +30,13 @@ import {
   FaClock,
   FaTimes,
   FaUsers,
-  FaUniversity
+  FaUniversity,
+  FaTimesCircle
 } from "react-icons/fa";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
+import { BsGraphUpArrow } from "react-icons/bs";
+import { useTranslation } from 'react-i18next';
+import {departments,DepartmentKey} from '@/data/departments';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -42,48 +47,53 @@ export default function AnalyticsPage() {
   const [levelFilter, setLevelFilter] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [subDepartmentFilter, setSubDepartmentFilter] = useState("");
-
   const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [departments, setDepartments] = useState<string[]>([]);
-  const [subDepartments, setSubDepartments] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<any[]>([]);
+  const { t, i18n } = useTranslation();
+  const language = i18n.language as "am" | "en" | "om";
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      params.set("startDate", startDate);
-      params.set("endDate", endDate);
-      if (statusFilter) params.set("status", statusFilter);
-      if (levelFilter) params.set("level", levelFilter);
-      if (departmentFilter) params.set("department", departmentFilter);
-      if (subDepartmentFilter) params.set("subDepartment", subDepartmentFilter);
+      const level = [
+    { key: "Low", label: t("level.Low") },
+    { key: "Medium", label: t("level.Medium") },
+    { key: "High", label: t("level.High") },
+  ];
+        const status = [
+    { key: "Pending", label: t("update_status.status_options.pending.label") },
+    { key: "In Progress", label: t("update_status.status_options.in_progress.label") },
+    { key: "Completed", label: t("update_status.status_options.completed.label") },
+     { key: "Canceled", label: t("update_status.status_options.canceled.label") },
+  ];
 
-      const res = await fetch(`/api/admin/analytics?${params.toString()}`, {
-    method: "GET",
-  });
+const fetchData = async () => {
+  setLoading(true);
+  try {
+    const params = new URLSearchParams({
+      startDate,
+      endDate,
+      status: statusFilter || "All",
+      level: levelFilter || "All",
+      department: departmentFilter || "All",
+      subDepartment: subDepartmentFilter || "All",
+    });
 
-      if (!res.ok) throw new Error('Failed to fetch data');
-      const json = await res.json();
-      setData(json);
-      setItems(json.items || []);
-      setDepartments(json.departments || []);
-      setSubDepartments(json.subDepartments || []);
-    } catch (err) {
-      console.error("Fetch error:", err);
-      setData(null);
-      setItems([]);
-      setDepartments([]);
-      setSubDepartments([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const res = await fetch(`/api/admin/analytics?${params.toString()}`);
+    const data = await res.json();
+    setData(data);
+    console.log("data",data)
+    setItems(data.complaints);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchData();
   }, []);
+
+
 
   // Chart data with better colors and styling
   const statusLabels = Object.keys(data?.statusCounts || {});
@@ -168,20 +178,45 @@ export default function AnalyticsPage() {
     maintainAspectRatio: false,
   };
 
-  // Download CSV
-  const downloadCSV = () => {
-    if (!items.length) return;
-    const headers = ["title", "department", "subDepartment", "level", "status", "date"];
-    const csv = [
-      headers.join(","),
-      ...items.map((r) => headers.map((h) => `"${r[h] || ""}"`).join(",")),
-    ].join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `complaints_${startDate}_${endDate}.csv`;
-    a.click();
-  };
+// Download CSV
+const downloadCSV = () => {
+  if (!items.length) return;
+
+  const keys = ["title", "description", "department", "subDepartment", "level", "status", "date"];
+
+  const headers = [
+    t("analytics.table_title"),
+    t("analytics.table_description"),
+    t("analytics.department"),
+    t("analytics.sub_department"),
+    t("analytics.level"),
+    t("analytics.status"),
+    t("analytics.table_date"),
+  ];
+
+  const csv = [
+    headers.join(","), // header row
+    ...items.map((r) =>
+      keys
+        .map((k) => {
+          // Format date nicely
+          if (k === "date") {
+            return `"${dayjs(r[k]).format("MMM DD, YYYY")}"`;
+          }
+          return `"${r[k] || ""}"`;
+        })
+        .join(",")
+    ),
+  ].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `complaints_${startDate}_${endDate}.csv`;
+  a.click();
+};
+
+
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -203,14 +238,33 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-8 px-4 text-slate-800">
-      <div className="max-w-7xl mx-auto">
+    <main className="min-h-screen bg-gray-50 text-slate-800">
+                {/* Header */}
+                <header className="bg-white shadow-sm border-b border-gray-200">
+                  <div className="px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-start h-16">
+                        <div className="shrink-0 lg:block hidden">
+                          <div className="w-8 h-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                            <BsGraphUpArrow className="w-4 h-4 text-white" />
+                          </div>
+                        </div>
+                        <div className="lg:ml-3 ml-15">
+                          <h1 className="text-xl font-bold text-gray-900">{t("analytics.title")}</h1>
+                        </div>
+                    </div>
+                  </div>
+                </header>
+          
+          
+                {/* Language Switcher */}
+           <section className="fixed top-3.5 right-5 z-50">
+              <LanguageSwitcher />
+            </section>  
+      <div className="max-w-7xl mx-auto my-5">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Analytics Dashboard
-          </h1>
-          <p className="text-gray-600 mt-2">Comprehensive insights and analytics for complaints management</p>
+          <h2 className="sm:text-2xl text-lg font-bold text-gray-900">{t("analytics.dashboard")}</h2>
+          <p className="text-gray-600 mt-1 sm:text-md text-sm">{t("analytics.description")}</p>
         </div>
 
         {/* Filters Card */}
@@ -220,8 +274,8 @@ export default function AnalyticsPage() {
               <FaFilter className="text-white text-lg" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold text-gray-800">Filters & Controls</h2>
-              <p className="text-gray-500 text-sm">Refine your analytics data</p>
+              <h2 className="text-xl font-semibold text-gray-800">{t("analytics.filters")}</h2>
+              <p className="text-gray-500 text-sm">{t("analytics.filters_description")}</p>
             </div>
           </div>
 
@@ -229,7 +283,7 @@ export default function AnalyticsPage() {
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <FaCalendarAlt className="mr-2 text-gray-400" />
-                Start Date
+                {t("analytics.start_date")}
               </label>
               <input 
                 type="date" 
@@ -241,7 +295,7 @@ export default function AnalyticsPage() {
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <FaCalendarAlt className="mr-2 text-gray-400" />
-                End Date
+                {t("analytics.end_date")}
               </label>
               <input 
                 type="date" 
@@ -253,68 +307,99 @@ export default function AnalyticsPage() {
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <FaCheckCircle className="mr-2 text-gray-400" />
-                Status
+                {t("analytics.status")}
               </label>
               <select 
                 value={statusFilter} 
                 onChange={(e) => setStatusFilter(e.target.value)} 
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               >
-                <option value="">All Status</option>
-                {["Pending", "In Progress", "Completed", "Canceled"].map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
+                         <option value="All">{t("analytics.All")} {t("analytics.status")}</option>
+                        {status.map((value) => (
+                <option key={value.key} value={value.key}>
+                  {value.label}
+                </option>
+              ))}
               </select>
             </div>
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <FaExclamationTriangle className="mr-2 text-gray-400" />
-                Level
+                {t("analytics.level")}
               </label>
               <select 
                 value={levelFilter} 
                 onChange={(e) => setLevelFilter(e.target.value)} 
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               >
-                <option value="">All Levels</option>
-                {["Low", "Medium", "High"].map((l) => (
-                  <option key={l} value={l}>{l}</option>
-                ))}
+                <option value="All">{t("analytics.All")} {t("analytics.level")}</option>
+                        {level.map((lvl) => (
+                <option key={lvl.key} value={lvl.key}>
+                  {lvl.label}
+                </option>
+              ))}
+            
               </select>
             </div>
             <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <FaBuilding className="mr-2 text-gray-400" />
-                Department
+                {t("analytics.department")}
               </label>
-              <select 
-                value={departmentFilter} 
-                onChange={(e) => setDepartmentFilter(e.target.value)} 
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              >
-                <option value="">All Departments</option>
-                {departments.map((d) => (
-                  <option key={d} value={d}>{d}</option>
-                ))}
-              </select>
+           <select
+             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+               value={departmentFilter}
+              onChange={(e) =>
+              {setDepartmentFilter(e.target.value)
+              setSubDepartmentFilter("All");
+              }
+              }
+              required
+            >
+              <option value="" disabled>{t("messages.selectDepartment")}</option>
+              <option value={"All"}>{t("analytics.All")}</option>
+              {Object.entries(departments).map(([key, dept]) => (
+                <option key={key} value={key}>
+                  {dept[language] || dept.en}
+                </option>
+              ))}
+            </select>
             </div>
             <div>
+              {departmentFilter && departmentFilter!=="All" && departmentFilter!=="General" &&(
+                <div>
               <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                 <FaLayerGroup className="mr-2 text-gray-400" />
-                Sub Department
+                {t("analytics.sub_department")}
               </label>
-              <select 
-                value={subDepartmentFilter} 
-                onChange={(e) => setSubDepartmentFilter(e.target.value)} 
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              >
-                <option value="">All Sub-Departments</option>
-                {subDepartments.map((s) => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
+               
+            {departments[departmentFilter as DepartmentKey].subDepartments.length > 0 && (
+              <div>
+                <select
+                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+               value={subDepartmentFilter}
+                  onChange={(e) =>
+                    setSubDepartmentFilter(e.target.value)
+                  }
+                >
+                   
+                  <option value="" disabled>{t("messages.selectSubDepartment")}</option>
+                  <option value={"All"}>{t("analytics.All")}</option>
+                  {departments[departmentFilter as DepartmentKey].subDepartments.map(
+                    (sub, index) => (
+                      <option key={index} value={sub.en}>
+                        {sub[language] || sub.en}
+                      </option>
+                    )
+                  )}
+                </select>
+              </div>
+            )}
             </div>
+             )}
           </div>
+          </div>
+         
 
           <div className="flex gap-3">
             <button
@@ -330,7 +415,7 @@ export default function AnalyticsPage() {
               ) : (
                 <>
                   <FaSync className="mr-2" />
-                  Apply Filters
+                  {t("analytics.apply_filters")}
                 </>
               )}
             </button>
@@ -347,63 +432,95 @@ export default function AnalyticsPage() {
               className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 flex items-center"
             >
               <FaTimes className="mr-2" />
-              Clear All
+             {t("analytics.clear_all")}
             </button>
           </div>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Total Complaints</p>
-                <h3 className="text-3xl font-bold text-gray-800 mt-2">{items.length}</h3>
-              </div>
-              <div className="w-12 h-12 bg-linear-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <FaChartBar className="text-white text-xl" />
-              </div>
-            </div>
-          </div>
+  {/* Total Complaints */}
+  <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-gray-500 font-medium">{t("analytics.total_complaints")}</p>
+        <h3 className="text-3xl font-bold text-gray-800 mt-2">{items.length}</h3>
+      </div>
+      <div className="w-12 h-12 bg-linear-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+        <FaChartBar className="text-white text-xl" />
+      </div>
+    </div>
+  </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Departments</p>
-                <h3 className="text-3xl font-bold text-gray-800 mt-2">{departments.length}</h3>
-              </div>
-              <div className="w-12 h-12 bg-linear-to-r from-green-500 to-teal-600 rounded-xl flex items-center justify-center">
-                <FaUniversity className="text-white text-xl" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Sub-Departments</p>
-                <h3 className="text-3xl font-bold text-gray-800 mt-2">{subDepartments.length}</h3>
-              </div>
-              <div className="w-12 h-12 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
-                <FaLayerGroup className="text-white text-xl" />
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-500 font-medium">Date Range</p>
-                <h3 className="text-lg font-semibold text-gray-800 mt-2">
-                  {dayjs(startDate).format('MMM DD')} - {dayjs(endDate).format('MMM DD, YYYY')}
-                </h3>
-              </div>
-              <div className="w-12 h-12 bg-linear-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
-                <FaCalendarAlt className="text-white text-xl" />
-              </div>
-            </div>
-          </div>
+  {/* Active Cases */}
+  <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-gray-500 font-medium">{t("analytics.active_cases")}</p>
+        <h3 className="text-3xl font-bold text-amber-600 mt-2">
+          {items.filter(item => item.status === 'Pending' || item.status === 'In Progress').length}
+        </h3>
+        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+          <div 
+            className="bg-amber-500 h-1.5 rounded-full" 
+            style={{ 
+              width: `${((items.filter(item => item.status === 'Pending' || item.status === 'In Progress').length / items.length) * 100) || 0}%` 
+            }}
+          ></div>
         </div>
+      </div>
+      <div className="w-12 h-12 bg-linear-to-r from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+        <FaSync className="text-white text-xl animate-pulse" />
+      </div>
+    </div>
+  </div>
+
+  {/* Completed Cases */}
+  <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-gray-500 font-medium">{t("analytics.completed_complaints")}</p>
+        <h3 className="text-3xl font-bold text-green-600 mt-2">
+          {items.filter(item => item.status === 'Completed').length}
+        </h3>
+        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+          <div 
+            className="bg-green-500 h-1.5 rounded-full" 
+            style={{ 
+              width: `${((items.filter(item => item.status === 'Completed').length / items.length) * 100) || 0}%` 
+            }}
+          ></div>
+        </div>
+      </div>
+      <div className="w-12 h-12 bg-linear-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+        <FaCheckCircle className="text-white text-xl" />
+      </div>
+    </div>
+  </div>
+
+  {/* Canceled Cases */}
+  <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+    <div className="flex items-center justify-between">
+      <div>
+        <p className="text-sm text-gray-500 font-medium">{t("analytics.canceled_complaints")}</p>
+        <h3 className="text-3xl font-bold text-red-600 mt-2">
+          {items.filter(item => item.status === 'Canceled').length}
+        </h3>
+        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+          <div 
+            className="bg-red-500 h-1.5 rounded-full" 
+            style={{ 
+              width: `${((items.filter(item => item.status === 'Canceled').length / items.length) * 100) || 0}%` 
+            }}
+          ></div>
+        </div>
+      </div>
+      <div className="w-12 h-12 bg-linear-to-r from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
+        <FaTimesCircle className="text-white text-xl" />
+      </div>
+    </div>
+  </div>
+</div>
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
@@ -414,8 +531,8 @@ export default function AnalyticsPage() {
                 <FaChartBar className="text-white text-lg" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">Status Distribution</h3>
-                <p className="text-gray-500 text-sm">Breakdown by complaint status</p>
+                <h3 className="text-lg font-semibold text-gray-800">{t("analytics.status_distribution")}</h3>
+                <p className="text-gray-500 text-sm">{t("analytics.status_distribution_desc")}</p>
               </div>
             </div>
             <div className="h-64">
@@ -430,8 +547,8 @@ export default function AnalyticsPage() {
                 <FaChartPie className="text-white text-lg" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">Level Breakdown</h3>
-                <p className="text-gray-500 text-sm">Priority level distribution</p>
+                <h3 className="text-lg font-semibold text-gray-800">{t("analytics.level_breakdown")}</h3>
+                <p className="text-gray-500 text-sm">{t("analytics.level_breakdown_desc")}</p>
               </div>
             </div>
             <div className="h-64">
@@ -446,8 +563,8 @@ export default function AnalyticsPage() {
                 <FaChartLine className="text-white text-lg" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">Daily Trends</h3>
-                <p className="text-gray-500 text-sm">Complaints over time</p>
+                <h3 className="text-lg font-semibold text-gray-800">{t("analytics.daily_trends")}</h3>
+                <p className="text-gray-500 text-sm">{t("analytics.daily_trends_desc")}</p>
               </div>
             </div>
             <div className="h-64">
@@ -464,8 +581,8 @@ export default function AnalyticsPage() {
                 <FaTable className="text-white text-lg" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">Complaints Data</h3>
-                <p className="text-gray-500 text-sm">Detailed view of all complaints</p>
+                <h3 className="text-lg font-semibold text-gray-800">{t("analytics.complaints_data")}</h3>
+                <p className="text-gray-500 text-sm">{t("analytics.complaints_data_desc")}</p>
               </div>
             </div>
             <button 
@@ -474,7 +591,7 @@ export default function AnalyticsPage() {
               className="bg-linear-to-r from-green-600 to-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:from-green-700 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
             >
               <FaDownload className="mr-2" />
-              Export CSV
+              {t("analytics.export_csv")}
             </button>
           </div>
 
@@ -482,12 +599,13 @@ export default function AnalyticsPage() {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">Title</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">Department</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">Sub-Department</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">Level</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">Status</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">Date</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.table_title")}</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.table_description")}</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.department")}</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.sub_department")}</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.level")}</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.status")}</th>
+                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.table_date")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -495,6 +613,7 @@ export default function AnalyticsPage() {
                   items.map((r) => (
                     <tr key={r._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
                       <td className="px-4 py-3 text-sm text-gray-800">{r.title}</td>
+                      <td className="px-4 py-3 text-sm text-gray-800">{r.description}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{r.department}</td>
                       <td className="px-4 py-3 text-sm text-gray-600">{r.subDepartment || "-"}</td>
                       <td className="px-4 py-3">
@@ -518,8 +637,8 @@ export default function AnalyticsPage() {
                     <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
                       <div className="flex flex-col items-center">
                         <FaChartBar className="text-4xl text-gray-300 mb-2" />
-                        <p className="text-lg">No complaints data found</p>
-                        <p className="text-sm">Try adjusting your filters or date range</p>
+                        <p className="text-lg">{t("analytics.no_data")}</p>
+                        <p className="text-sm">{t("analytics.try_adjusting")}</p>
                       </div>
                     </td>
                   </tr>

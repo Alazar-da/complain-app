@@ -181,7 +181,50 @@
     "failed": "Failed",
     "usernameUpdated": "Username updated successfully",
     "passwordChanged": "Password changed successfully"
+  },
+
+  
+  "analytics": {
+    "title": "Analytics",
+    "dashboard": "Analytics Dashboard",
+    "description": "Comprehensive insights and analytics for complaints management",
+
+    "filters": "Filters & Controls",
+    "filters_description": "Refine your analytics data",
+
+    "start_date": "Start Date",
+    "end_date": "End Date",
+    "status": "Status",
+    "level": "Level",
+    "department": "Department",
+    "sub_department": "Sub Department",
+    "apply_filters": "Apply Filters",
+    "clear_all": "Clear All",
+    "All":"All",
+
+    "total_complaints": "Total Complaints",
+     "completed_complaints": "Completed Complaints",
+    "canceled_complaints": "Canceled Complaints",
+    "active_cases": "Active Cases",
+    "status_distribution": "Status Distribution",
+    "status_distribution_desc": "Breakdown by complaint status",
+    "level_breakdown": "Level Breakdown",
+    "level_breakdown_desc": "Priority level distribution",
+    "daily_trends": "Daily Trends",
+    "daily_trends_desc": "Complaints over time",
+    "complaints_data": "Complaints Data",
+    "complaints_data_desc": "Detailed view of all complaints",
+
+    "export_csv": "Export CSV",
+    "table_title": "Title",
+    "table_description": "Description",
+    "table_date": "Date",
+
+    "no_data": "No complaints data found",
+    "try_adjusting": "Try adjusting your filters or date range."
   }
+
+
 
 
 

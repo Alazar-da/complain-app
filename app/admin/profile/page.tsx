@@ -9,7 +9,7 @@ import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { FiUser } from 'react-icons/fi';
 
 export default function ProfilePage() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [token, setToken] = useState<string | null>(null);
   const [username, setUsername] = useState('');
   const [oldPassword, setOldPassword] = useState('');
@@ -27,23 +27,6 @@ export default function ProfilePage() {
     const storedToken = localStorage.getItem('adminToken');
     if (storedToken) setToken(storedToken);
   }, []);
-
-  // Fetch profile
-  useEffect(() => {
-    async function fetchProfile() {
-      try {
-        const res = await fetch('/api/admin/profile', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (res.ok) setUsername(data.username);
-        else setError(data.message || t('profile.failedToLoadProfile'));
-      } catch {
-        setError(t('profile.failedToLoadProfile'));
-      }
-    }
-    if (token) fetchProfile();
-  }, [token, i18n.language, t]);
 
   // Update username
   async function updateUsername(e: React.FormEvent) {
@@ -141,7 +124,7 @@ export default function ProfilePage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-           <h2 className="sm:text-2xl text-lg font-bold text-gray-900">   {t('profile.profileSettings')}
+           <h2 className="sm:text-2xl text-lg font-bold text-gray-900"> {t('profile.profileSettings')}
           </h2>
           <p className="text-gray-600 mt-1 sm:text-md text-sm">{t('profile.manageAccount')}</p>
         </div>

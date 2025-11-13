@@ -182,7 +182,47 @@
     "failed": "Hin milkoofne",
     "usernameUpdated": "Maqaan fayyadamaa milkaa’inaan haaromfame",
     "passwordChanged": "Jechi darbii milkaa’inaan jijjiirame"
+  },
+  "analytics": {
+    "title": "Xiinxala",
+    "dashboard": "Daashboordii Xiinxalaa",
+    "description": "Gabaasa bal’aa fi xiinxala to’annoo komii irratti",
+
+    "filters": "Faayilaa fi To’annoo",
+    "filters_description": "Daataa xiinxalaa kee fooyyessi",
+
+    "start_date": "Guyyaa Jalqabaa",
+    "end_date": "Guyyaa Xumuraa",
+    "status": "Haala",
+    "level": "Sadarkaa",
+    "department": "Kutaa",
+    "sub_department": "Kutaa Xiqqaa",
+    "apply_filters": "Faayila Hujiirra Oolchi",
+    "clear_all": "Hunda Haqi",
+     "All":"Hunda",
+
+    "total_complaints": "Komiiwwan Guutuu",
+  "completed_complaints": "Komiiwwan Xumuraman",
+    "canceled_complaints": "Komiiwwan Haqaman",
+    "active_cases": "Komiiwwan Hojiirra jiran",
+    "status_distribution": "Haalota Qoodinsa",
+    "status_distribution_desc": "Qoodinsa komii haalota irratti",
+    "level_breakdown": "Qoodinsa Sadarkaa",
+    "level_breakdown_desc": "Qoodinsa sadarkaa dursa",
+    "daily_trends": "Mala Guyyaa Guyyaa",
+    "daily_trends_desc": "Komii yeroo darbe irratti",
+    "complaints_data": "Daataa Komii",
+    "complaints_data_desc": "Bal’ina ilaalcha komiiwwan hundaaf",
+
+    "export_csv": "Gara CSV baasi",
+    "table_title": "Mata-Duree",
+    "table_description": "Ibsa",
+    "table_date": "Guyyaa",
+
+    "no_data": "Daataan komii hin argamne",
+    "try_adjusting": "Faayilota ykn daataa guyyaa jijjiiri."
   }
+
 
 
 }

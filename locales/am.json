@@ -188,7 +188,48 @@
     "failed": "አልተሳካም",
     "usernameUpdated": "የተጠቃሚ ስም በተሳካ ሁኔታ ተሻሽሏል",
     "passwordChanged": "የሚስጥር ቁልፍ በተሳካ ሁኔታ ተቀይሯል"
+  },
+  "analytics": {
+    "title": "ትንታኔ",
+    "dashboard": "የትንታኔ ዳሽቦርድ",
+    "description": "የቅሬታ አስተዳደርን ለማበረታታት ዝርዝር መረጃና ትንታኔዎች",
+
+    "filters": "ማጣሪያዎች እና መቆጣጠሪያዎች",
+    "filters_description": "የትንታኔዎን መረጃ ያቀናብሩ",
+
+    "start_date": "መነሻ ቀን",
+    "end_date": "መጨረሻ ቀን",
+    "status": "ሁኔታ",
+    "level": "ደረጃ",
+    "department": "መድፍ",
+    "sub_department": "ንዑስ መድፍ",
+    "apply_filters": "ማጣሪያ ይተግብሩ",
+    "clear_all": "ሁሉንም አጽዳ",
+    "All": "ሁሉም",
+
+    "total_complaints": "ጠቅላላ ቅሬታዎች",
+   "completed_complaints": "የተጠናቀቁ ቅሬታዎች",
+    "canceled_complaints": "የተሰረዙ ቅሬታዎች",
+    "active_cases": "እየተካሄደ ያሉ ቅሬታዎች",
+    "status_distribution": "የሁኔታ ቅንፍ",
+    "status_distribution_desc": "ቅሬታ በሁኔታ መመዝገቢያ",
+    "level_breakdown": "የደረጃ መመዝገቢያ",
+    "level_breakdown_desc": "የቅሬታ ቅድሚያ እና መከፋፈያ",
+    "daily_trends": "ዕለታዊ እንቅስቃሴዎች",
+    "daily_trends_desc": "ቅሬታዎች በጊዜ ላይ",
+    "complaints_data": "የቅሬታ መረጃ",
+    "complaints_data_desc": "የቅሬታዎች ዝርዝር እይታ",
+
+    "export_csv": "ወደ CSV አውርድ",
+    "table_title": "አርእስት",
+    "table_description": "መግለጫ",
+    "table_date": "ቀን",
+
+    "no_data": "የቅሬታ መረጃ አልተገኘም",
+    "try_adjusting": "ማጣሪያዎችን ወይም የቀን ክልልን ይቀይሩ።"
   }
+
+
 
 
 
