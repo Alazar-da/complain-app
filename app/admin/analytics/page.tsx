@@ -617,17 +617,24 @@ const downloadCSV = () => {
                     <tr key={r._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
                       <td className="px-4 py-3 text-sm text-gray-800">{r.title}</td>
                       <td className="px-4 py-3 text-sm text-gray-800">{r.description}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{r.department}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{r.subDepartment || "-"}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{departments[r.department as DepartmentKey]?.[language] || r.department}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{
+        departments[r.department as DepartmentKey]?.subDepartments.find(
+          (sub:any) =>
+            sub.en === r.subDepartment || // if you store the English label
+            sub.am === r.subDepartment || // or Amharic
+            sub.om === r.subDepartment    // or Oromo
+        )?.[language] || r.subDepartment
+      || "-"}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getLevelColor(r.level)}`}>
-                          {r.level}
+                          {t(`level.${r.level}`)}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           {getStatusIcon(r.status)}
-                          <span className="text-sm text-gray-700">{r.status}</span>
+                          <span className="text-sm text-gray-700">{t(`status.${r.status}`)}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">

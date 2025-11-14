@@ -93,7 +93,9 @@ if (value && token) {
 
   return (
     <main className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-emerald-50 py-8 px-4 text-slate-800">
-     <section className="fixed top-7 right-3.5 lg:top-2">
+              <section className="relative p-4 py-6 sm:p-6 lg:px-8 lg:py-10 mt-20 lg:mt-0 w-full flex items-center justify-center">
+           {/* Language Switcher */}
+              <section className="fixed lg:top-3.5 top-12 right-5 z-50">
              <LanguageSwitcher/>
            </section>
       <div className="w-full max-w-md">
@@ -270,6 +272,7 @@ if (value && token) {
           animation: progress 2s ease-in-out;
         }
       `}</style>
+      </section>
     </main>
   );
 }

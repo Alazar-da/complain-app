@@ -185,7 +185,7 @@ const AdminSidebar = () => {
         </ul>
 
         {/* Logout Item - Fixed at bottom */}
-        <div className="absolute bottom-5 left-5 right-5 w-full">
+        <div className="absolute lg:bottom-5 bottom-8 left-5 right-5 w-full">
           <button onClick={handleLogout} className={` ${isOpen ? 'w-5/6' : 'w-2/3'}`}>
             <div
               className={`
