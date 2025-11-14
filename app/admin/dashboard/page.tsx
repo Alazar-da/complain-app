@@ -141,7 +141,7 @@ const lang = i18n.language as "en" | "am" | "om";
   return (
     <main className="min-h-screen bg-gray-50 text-slate-800">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200 w-full fixed top-0 z-50 pt-8 lg:pt-0 lg:static">
+      <header className="lg:bg-white bg-slate-900 lg:text-slate-800 text-white shadow-sm border-b border-gray-200 w-full fixed top-0 z-50 pt-8 lg:pt-0 lg:static">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-start h-16">
               <div className="shrink-0 lg:block hidden">
@@ -150,7 +150,7 @@ const lang = i18n.language as "en" | "am" | "om";
                 </div>
               </div>
               <div className="lg:ml-3 ml-15">
-                <h1 className="text-xl font-bold text-gray-900">{t('admin_dashboard.title')}</h1>
+                <h1 className="text-xl font-bold lg:text-gray-900">{t('admin_dashboard.title')}</h1>
               </div>
           </div>
         </div>

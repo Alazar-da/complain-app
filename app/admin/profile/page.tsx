@@ -98,7 +98,8 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen bg-gray-50 text-slate-800">
             {/* Header */}
-            <header className="bg-white shadow-sm border-b border-gray-200">
+            <header className="lg:bg-white bg-slate-900 lg:text-slate-800 text-white shadow-sm border-b border-gray-200 w-full fixed top-0 z-50 pt-8 lg:pt-0 lg:static">
+      
               <div className="px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-start h-16">
                     <div className="shrink-0 lg:block hidden">
@@ -107,23 +108,24 @@ export default function ProfilePage() {
                       </div>
                     </div>
                     <div className="lg:ml-3 ml-15">
-                      <h1 className="text-xl font-bold text-gray-900">{t('profile.title')}</h1>
+                      <h1 className="text-xl font-bold lg:text-gray-900">{t('profile.title')}</h1>
                     </div>
                 </div>
               </div>
             </header>
       
       
-            {/* Language Switcher */}
-       <section className="fixed top-3.5 right-5 z-50">
+              <section className="relative p-4 py-6 sm:p-6 lg:px-8 lg:py-10 mt-20 lg:mt-0">
+           {/* Language Switcher */}
+              <section className="fixed lg:top-3.5 top-12 right-5 z-50">
           <LanguageSwitcher />
         </section>
 
-      <div className="max-w-4xl mx-auto my-5">
+      <div className="max-w-4xl mx-auto">
   
 
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="mb-8">
            <h2 className="sm:text-2xl text-lg font-bold text-gray-900"> {t('profile.profileSettings')}
           </h2>
           <p className="text-gray-600 mt-1 sm:text-md text-sm">{t('profile.manageAccount')}</p>
@@ -261,6 +263,7 @@ export default function ProfilePage() {
 
         <div className="mt-8 text-center text-gray-500 text-sm">{t('profile.needHelp')}</div>
       </div>
+      </section>
     </main>
   );
 }
