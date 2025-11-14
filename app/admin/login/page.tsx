@@ -15,14 +15,28 @@ export default function LoginPage() {
 
     const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
 
+    const token = typeof window !== "undefined" ? localStorage.getItem("adminToken") : null;
+
+
   // Load saved login on startup
-  useEffect(() => {
-    const loadUser = async () => {
-      const { value } = await Preferences.get({ key: 'user' });
-      if (value) setLoggedInUser(value);
-    };
-    loadUser();
-  }, []);
+useEffect(() => {
+  const loadUser = async () => {
+    const { value } = await Preferences.get({ key: 'user' });
+
+    if (value) {
+      setLoggedInUser(value);
+      router.replace("/admin/dashboard"); // Redirect immediately
+    }
+    
+if (value && token) {
+  router.replace("/admin/dashboard");
+}
+  };
+
+  loadUser();
+}, [router]);
+
+
 
 
   const handleSubmit = async (e: React.FormEvent) => {
