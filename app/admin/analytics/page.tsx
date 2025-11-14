@@ -113,7 +113,7 @@ const fetchData = async () => {
     labels: statusLabels,
     datasets: [
       {
-        label: "Complaints by Status",
+        label: t("analytics.Complaints_by_Status"),
         data: statusValues,
         backgroundColor: [
           'rgba(255, 99, 132, 0.8)',
@@ -136,7 +136,7 @@ const fetchData = async () => {
     labels: levelLabels,
     datasets: [
       {
-        label: "Complaints by Level",
+        label: t("analytics.Complaints_by_Level"),
         data: levelValues,
         backgroundColor: [
           'rgba(75, 192, 192, 0.8)',
@@ -157,7 +157,7 @@ const fetchData = async () => {
     labels: dailyLabels,
     datasets: [
       {
-        label: "Daily Complaints",
+        label: t("analytics.Daily_Complaints"),
         data: dailyValues,
         borderColor: 'rgb(139, 92, 246)',
         backgroundColor: 'rgba(139, 92, 246, 0.1)',
@@ -182,9 +182,9 @@ const fetchData = async () => {
 const downloadCSV = () => {
   if (!items.length) return;
 
-  const keys = ["title", "description", "department", "subDepartment", "level", "status", "date"];
+  const headers = ["title", "description", "department", "subDepartment", "level", "status", "date"];
 
-  const headers = [
+/*   const headers = [
     t("analytics.table_title"),
     t("analytics.table_description"),
     t("analytics.department"),
@@ -192,12 +192,12 @@ const downloadCSV = () => {
     t("analytics.level"),
     t("analytics.status"),
     t("analytics.table_date"),
-  ];
+  ]; */
 
   const csv = [
     headers.join(","), // header row
     ...items.map((r) =>
-      keys
+      headers
         .map((k) => {
           // Format date nicely
           if (k === "date") {
@@ -408,12 +408,12 @@ const downloadCSV = () => {
             <button
               onClick={fetchData}
               disabled={loading}
-              className="bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center hover:cursor-pointer"
             >
               {loading ? (
                 <>
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Loading...
+                 {t("analytics.Loading")}
                 </>
               ) : (
                 <>
@@ -432,7 +432,7 @@ const downloadCSV = () => {
                 setStartDate(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
                 setEndDate(dayjs().format("YYYY-MM-DD"));
               }}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 flex items-center"
+              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 flex items-center hover:cursor-pointer"
             >
               <FaTimes className="mr-2" />
              {t("analytics.clear_all")}
@@ -591,7 +591,7 @@ const downloadCSV = () => {
             <button 
               onClick={downloadCSV}
               disabled={!items.length}
-              className="bg-linear-to-r from-green-600 to-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:from-green-700 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+              className="bg-linear-to-r from-green-600 to-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:from-green-700 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center hover:cursor-pointer"
             >
               <FaDownload className="mr-2" />
               {t("analytics.export_csv")}

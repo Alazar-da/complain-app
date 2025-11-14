@@ -24,7 +24,8 @@
             "image": "ምስል",
             "video": "ቪዲዮ",
             "removing": "በማስወገድ ላይ...",
-            "remove": "አስወግድ"
+            "remove": "አስወግድ",
+            "download": "አውርድ"
           },
           "levels": { "low": "ዝቅተኛ", "medium": "መካከለኛ", "high": "ከፍተኛ" },
           "departments": {
@@ -204,6 +205,7 @@
     "department": "መድፍ",
     "sub_department": "ንዑስ መድፍ",
     "apply_filters": "ማጣሪያ ይተግብሩ",
+    "Loading":"በመጫን ላይ...",
     "clear_all": "ሁሉንም አጽዳ",
     "All": "ሁሉም",
 
@@ -226,7 +228,11 @@
     "table_date": "ቀን",
 
     "no_data": "የቅሬታ መረጃ አልተገኘም",
-    "try_adjusting": "ማጣሪያዎችን ወይም የቀን ክልልን ይቀይሩ።"
+    "try_adjusting": "ማጣሪያዎችን ወይም የቀን ክልልን ይቀይሩ።",
+
+"Daily_Complaints":	"ዕለታዊ ቅሬታዎች",
+"Complaints_by_Level":	"ቅሬታዎች በደረጃ",
+"Complaints_by_Status":	"ቅሬታዎች በሁኔታ"
   }
 
 

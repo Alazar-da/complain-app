@@ -24,7 +24,8 @@
             "video": "Video",
             "uploaded": "uploaded",
             "removing": "Removing...",
-            "remove": "Remove"
+            "remove": "Remove",
+            "download": "Download"
 },
           "departments": {
   "general": "General",
@@ -199,6 +200,7 @@
     "department": "Department",
     "sub_department": "Sub Department",
     "apply_filters": "Apply Filters",
+    "Loading":"Loading...",
     "clear_all": "Clear All",
     "All":"All",
 
@@ -221,7 +223,11 @@
     "table_date": "Date",
 
     "no_data": "No complaints data found",
-    "try_adjusting": "Try adjusting your filters or date range."
+    "try_adjusting": "Try adjusting your filters or date range.",
+
+    "Daily_Complaints":	"Daily Complaints",
+"Complaints_by_Level":	"Complaints by Level",
+"Complaints_by_Status":	"Complaints by Status"
   }
 
 

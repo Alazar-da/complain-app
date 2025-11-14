@@ -24,7 +24,8 @@
             "image": "Suuraa",
             "video": "Viidiyoo",
             "removing":"Haqaa jira...",
-            "remove": "Haqi"
+            "remove": "Haqi",
+            "download": "Buusi"
           },
           "levels": { "low": "Gadii", "medium": "Giddugaleessa", "high": "Olaanaa" },
           "departments": {
@@ -198,6 +199,7 @@
     "department": "Kutaa",
     "sub_department": "Kutaa Xiqqaa",
     "apply_filters": "Faayila Hujiirra Oolchi",
+    "Loading":"Feʼamaa jira...",
     "clear_all": "Hunda Haqi",
      "All":"Hunda",
 
@@ -220,7 +222,11 @@
     "table_date": "Guyyaa",
 
     "no_data": "Daataan komii hin argamne",
-    "try_adjusting": "Faayilota ykn daataa guyyaa jijjiiri."
+    "try_adjusting": "Faayilota ykn daataa guyyaa jijjiiri.",
+
+    "Daily_Complaints":	"Komiiwwan Guyyaa-guyyaa",
+"Complaints_by_Level":	"Komiiwwan Sadarkaa Irratti",
+"Complaints_by_Status":	"Komiiwwan Haala Irratti"
   }
 
 

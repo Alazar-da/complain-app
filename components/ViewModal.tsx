@@ -5,7 +5,7 @@ import { TbBuilding, TbBuildingSkyscraper } from 'react-icons/tb';
 import { useTranslation } from "react-i18next";
 import { departments, DepartmentKey } from "@/data/departments";
 import { useState, useEffect } from 'react';
-import { FaSpinner, FaTrash, FaImage, FaVideo, FaCloudUploadAlt } from 'react-icons/fa';
+import { FaSpinner, FaTrash, FaImage, FaVideo, FaCloudUploadAlt, FaDownload } from 'react-icons/fa';
 import { time } from 'console';
 
 interface ViewModalProps {
@@ -148,6 +148,46 @@ const deleteFromCloudinary = async () => {
     await deleteFromCloudinary();
   };
 
+  const handleDownload = async () => {
+  try {
+    // Fetch the media file
+    const response = await fetch(complaint.mediaUrl);
+    const blob = await response.blob();
+    
+    // Create a download link
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    
+    // Set the filename
+    const fileExtension = isImage ? 'jpg' : 'mp4';
+    const fileName = `complaint-media-${complaint._id || 'attachment'}.${fileExtension}`;
+    a.download = fileName;
+    
+    // Trigger download
+    document.body.appendChild(a);
+    a.click();
+    
+    // Clean up
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    // Optional: Show success message
+    setMessage({
+      type: 'success',
+      text: 'Media downloaded successfully!'
+    });
+    
+  } catch (error) {
+    console.error('Download failed:', error);
+    setMessage({
+      type: 'error',
+      text: 'Failed to download media. Please try again.'
+    });
+  }
+};
+
   const getStatusConfig = (status: string) => {
     const configs: any = {
       "Pending": {
@@ -289,93 +329,105 @@ const deleteFromCloudinary = async () => {
               </div>
 
               {/* Media Section */}
-              {complaint.mediaUrl && (
-                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        {isImage ? (
-                          <FaImage className="w-5 h-5 text-purple-600" />
-                        ) : (
-                          <FaVideo className="w-5 h-5 text-purple-600" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900 text-lg">
-                          {t("complaint_details.attached_media")}
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                          {isImage ? t("form.image") : t("form.video")}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={handleDelete}
-                      disabled={deleting}
-                      className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:cursor-pointer"
-                    >
-                      {deleting ? (
-                        <>
-                          <FaSpinner className="animate-spin text-sm" />
-                          <span className="text-sm">{t("form.removing")}</span>
-                        </>
-                      ) : (
-                        <>
-                          <FaTrash className="text-sm" />
-                          <span className="text-sm">{t("form.remove")}</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
+         {complaint.mediaUrl && (
+  <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+    <div className="flex items-center justify-between mb-4">
+      <div className="sm:flex items-center space-x-3 hidden">
+        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+          {isImage ? (
+            <FaImage className="w-5 h-5 text-purple-600" />
+          ) : (
+            <FaVideo className="w-5 h-5 text-purple-600" />
+          )}
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900 text-lg">
+            {t("complaint_details.attached_media")}
+          </h3>
+          <p className="text-gray-600 text-sm">
+            {isImage ? t("form.image") : t("form.video")}
+          </p>
+        </div>
+      </div>
+      <div className="flex items-center space-x-2">
+        {/* Download Button */}
+        <button
+          onClick={handleDownload}
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 shadow-lg hover:cursor-pointer"
+        >
+          <FaDownload className="text-sm" />
+          <span className="text-sm">{t("form.download")}</span>
+        </button>
+        
+        {/* Delete Button */}
+        <button
+          onClick={handleDelete}
+          disabled={deleting}
+          className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:cursor-pointer"
+        >
+          {deleting ? (
+            <>
+              <FaSpinner className="animate-spin text-sm" />
+              <span className="text-sm">{t("form.removing")}</span>
+            </>
+          ) : (
+            <>
+              <FaTrash className="text-sm" />
+              <span className="text-sm">{t("form.remove")}</span>
+            </>
+          )}
+        </button>
+      </div>
+    </div>
 
-                  {message.text && (
-                    <div className={getMessageStyles()}>
-                      <div className="flex items-center justify-center space-x-2">
-                        {message.type === "success" && (
-                          <FiCheckCircle className="w-5 h-5 text-green-600" />
-                        )}
-                        {message.type === "error" && (
-                          <FiAlertCircle className="w-5 h-5 text-red-600" />
-                        )}
-                        <span>{message.text}</span>
-                      </div>
-                      {message.type === "success" && countdown > 0 && (
-                        <div className="mt-2 text-sm text-gray-600">
-                          Closing in {countdown} second{countdown !== 1 ? 's' : ''}...
-                        </div>
-                      )}
-                    </div>
-                  )}
+    {message.text && (
+      <div className={getMessageStyles()}>
+        <div className="flex items-center justify-center space-x-2">
+          {message.type === "success" && (
+            <FiCheckCircle className="w-5 h-5 text-green-600" />
+          )}
+          {message.type === "error" && (
+            <FiAlertCircle className="w-5 h-5 text-red-600" />
+          )}
+          <span>{message.text}</span>
+        </div>
+        {message.type === "success" && countdown > 0 && (
+          <div className="mt-2 text-sm text-gray-600">
+            Closing in {countdown} second{countdown !== 1 ? 's' : ''}...
+          </div>
+        )}
+      </div>
+    )}
 
-                  <div className="bg-white rounded-xl p-4 border-2 border-dashed border-gray-200">
-                    {isImage ? (
-                      <div className="relative group">
-                        <img
-                          src={complaint.mediaUrl}
-                          alt="Complaint attachment"
-                          className="w-full rounded-lg shadow-sm max-h-96 object-contain bg-gray-50"
-                        />
-                        <div className="absolute inset-0 bg-black/50 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <FaImage className="w-8 h-8 text-white" />
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="relative">
-                        <video
-                          src={complaint.mediaUrl}
-                          controls
-                          className="w-full rounded-lg shadow-sm max-h-96 bg-black"
-                        />
-                        <div className="absolute top-4 right-4 bg-black/50 rounded-full p-2">
-                          <FaVideo className="w-4 h-4 text-white" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+    <div className="bg-white rounded-xl p-4 border-2 border-dashed border-gray-200">
+      {isImage ? (
+        <div className="relative group">
+          <img
+            src={complaint.mediaUrl}
+            alt="Complaint attachment"
+            className="w-full rounded-lg shadow-sm max-h-96 object-contain bg-gray-50"
+          />
+          <div className="absolute inset-0 bg-black/50 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
+            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <FaImage className="w-8 h-8 text-white" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="relative">
+          <video
+            src={complaint.mediaUrl}
+            controls
+            className="w-full rounded-lg shadow-sm max-h-96 bg-black"
+          />
+          <div className="absolute top-4 right-4 bg-black/50 rounded-full p-2">
+            <FaVideo className="w-4 h-4 text-white" />
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+)}
             </div>
 
             {/* Right Column - Metadata */}
