@@ -4,6 +4,7 @@ import { FaTachometerAlt, FaChartBar, FaUser, FaSignOutAlt, FaBars, FaTimes, FaC
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import { usePathname } from 'next/navigation';
+import { Preferences } from '@capacitor/preferences';
 
 const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -11,6 +12,17 @@ const AdminSidebar = () => {
        const pathname = usePathname();
   const [activeItem, setActiveItem] = useState(pathname);
     const router = useRouter();
+
+      const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
+
+  // Load saved login on startup
+  useEffect(() => {
+    const loadUser = async () => {
+      const { value } = await Preferences.get({ key: 'user' });
+      if (value) setLoggedInUser(value);
+    };
+    loadUser();
+  }, []);
 
 
   // Check screen size and set initial state
@@ -45,8 +57,10 @@ const AdminSidebar = () => {
     setIsOpen(!isOpen);
   };
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
     localStorage.removeItem("adminToken");
+    await Preferences.remove({ key: 'user' });
+    setLoggedInUser(null);
     router.push('/admin/login');
   };
 
