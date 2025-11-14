@@ -68,7 +68,7 @@ const AdminSidebar = () => {
   if (isMobile && !isOpen) {
     return (
       <button
-        className="fixed top-3 left-4 z-50 w-10 h-10 bg-linear-to-r from-blue-500 to-purple-600 
+        className="fixed lg:top-3 top-11 left-4 z-60 w-10 h-10 bg-linear-to-r from-blue-500 to-purple-600 
                    text-white rounded-xl shadow-2xl flex items-center justify-center
                    hover:scale-110 transition-transform duration-200 lg:hidden"
         onClick={() => setIsOpen(true)}

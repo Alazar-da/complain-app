@@ -141,7 +141,7 @@ const lang = i18n.language as "en" | "am" | "om";
   return (
     <main className="min-h-screen bg-gray-50 text-slate-800">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white shadow-sm border-b border-gray-200 w-full fixed top-0 z-50 pt-8 lg:pt-0 lg:static">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-start h-16">
               <div className="shrink-0 lg:block hidden">
@@ -156,8 +156,8 @@ const lang = i18n.language as "en" | "am" | "om";
         </div>
       </header>
 
-      <section className="relative p-4 sm:p-6 lg:px-8 lg:py-10">
-              <section className="fixed top-3.5 right-5 z-50">
+      <section className="relative p-4 py-6 sm:p-6 lg:px-8 lg:py-10 mt-20 lg:mt-0">
+              <section className="fixed lg:top-3.5 top-12 right-5 z-50">
               <LanguageSwitcher/>
             </section>
         {/* Stats and Controls */}

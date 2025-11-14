@@ -93,7 +93,7 @@ if (value && token) {
 
   return (
     <main className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-slate-50 to-emerald-50 py-8 px-4 text-slate-800">
-     <section className="fixed top-2 right-2">
+     <section className="fixed top-7 right-3.5 lg:top-2">
              <LanguageSwitcher/>
            </section>
       <div className="w-full max-w-md">
