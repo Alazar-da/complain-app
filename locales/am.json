@@ -64,7 +64,7 @@
       "signingIn": "በመግቢያ ላይ..."
   },
     "admin_dashboard":{
-  "title": "የአስተዳዳሪ ዳሽቦርድ",
+  "title":"ዳሽቦርድ",
   "logout": "ውጣ",
   "complaint_management": "የቅሬታ አስተዳደር",
   "manage_and_track": "የቀረቡ ቅሬታዎችን ያስተዳድሩና ይከታተሉ",

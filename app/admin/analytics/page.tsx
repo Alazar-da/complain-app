@@ -406,7 +406,7 @@ const downloadCSV = async () => {
           </div>
          
 
-          <div className="flex gap-3 text-sm md:text-base">
+          <div className="flex flex-col sm:flex-row gap-3 text-sm md:text-base">
             <button
               onClick={fetchData}
               disabled={loading}

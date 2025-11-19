@@ -63,7 +63,7 @@
     "signingIn": "Signing In..."
   },
   "admin_dashboard":{
-     "title": "Admin Dashboard",
+     "title": "Dashboard",
   "logout": "Logout",
   "complaint_management": "Complaint Management",
   "manage_and_track": "Manage and track all submitted complaints",
