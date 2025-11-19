@@ -7,10 +7,19 @@ import {
 } from 'react-icons/fa';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { FiUser } from 'react-icons/fi';
+import {jwtDecode} from "jwt-decode";
+
+
+interface AdminToken {
+  id: string;
+  username: string;
+  exp: number;
+  iat: number;
+}
 
 export default function ProfilePage() {
   const { t } = useTranslation();
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string>('');
   const [username, setUsername] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -21,12 +30,24 @@ export default function ProfilePage() {
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [id, setId] = useState('');
 
   // Fetch token
-  useEffect(() => {
-    const storedToken = localStorage.getItem('adminToken');
-    if (storedToken) setToken(storedToken);
-  }, []);
+useEffect(() => {
+  const storedToken = localStorage.getItem('adminToken') || '';
+
+  if (storedToken) {
+    const decoded = jwtDecode<AdminToken>(storedToken);
+    setId(decoded.id);
+    setToken(storedToken);
+
+    // Fetch username from DB instead of token
+    fetch(`/api/admin/profile?id=${decoded.id}`)
+      .then(res => res.json())
+      .then(data => setUsername(data.username));
+  }
+}, []);
+
 
   // Update username
   async function updateUsername(e: React.FormEvent) {
@@ -35,14 +56,25 @@ export default function ProfilePage() {
     setMessage('');
     setError('');
     try {
-      const res = await fetch('/api/admin/profile', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ username }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || t('profile.failed'));
-      setMessage(t('profile.usernameUpdated'));
+const res = await fetch(`/api/admin/profile?id=${id}`, {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ username }),
+});
+
+const data = await res.json();
+if (!res.ok) throw new Error(data.message);
+
+// Store new token
+localStorage.setItem("adminToken", data.token);
+
+// Decode new token and update UI
+const decoded = jwtDecode<AdminToken>(data.token);
+setUsername(decoded.username);
+setId(decoded.id);
+
+setMessage(t('profile.usernameUpdated'));
+
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -65,7 +97,7 @@ export default function ProfilePage() {
     setMessage('');
     setError('');
     try {
-      const res = await fetch('/api/admin/profile/password', {
+      const res = await fetch(`/api/admin/profile/password?id=${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ oldPassword, newPassword }),
@@ -176,7 +208,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 flex items-center justify-center"
+                className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 flex items-center justify-center hover:cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -243,7 +275,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={loading || newPassword !== confirmPassword || newPassword.length < 6}
-                className="w-full bg-linear-to-r from-rose-600 to-orange-600 text-white py-3 px-4 rounded-xl font-medium hover:from-rose-700 hover:to-orange-700 focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 flex items-center justify-center"
+                className="w-full bg-linear-to-r from-rose-600 to-orange-600 text-white py-3 px-4 rounded-xl font-medium hover:from-rose-700 hover:to-orange-700 focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 flex items-center justify-center hover:cursor-pointer"
               >
                 {loading ? (
                   <>

@@ -39,7 +39,8 @@
       "error": "File removal failed."
     },
   "success": "File uploaded successfully!",
-    "error": "File upload failed."
+    "error": "File upload failed.",
+     "too_large": "File size must be less than 10MB."
   },
     "success": "Complaint submitted successfully! Redirecting...",
     "error": "Something went wrong. Please try again.",

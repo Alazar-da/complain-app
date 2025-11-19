@@ -404,7 +404,7 @@ const downloadCSV = () => {
           </div>
          
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 text-sm md:text-base">
             <button
               onClick={fetchData}
               disabled={loading}
@@ -578,25 +578,25 @@ const downloadCSV = () => {
 
         {/* Complaints Table */}
         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center mr-3">
-                <FaTable className="text-white text-lg" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800">{t("analytics.complaints_data")}</h3>
-                <p className="text-gray-500 text-sm">{t("analytics.complaints_data_desc")}</p>
-              </div>
-            </div>
-            <button 
-              onClick={downloadCSV}
-              disabled={!items.length}
-              className="bg-linear-to-r from-green-600 to-teal-600 text-white px-6 py-3 rounded-xl font-medium hover:from-green-700 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center hover:cursor-pointer"
-            >
-              <FaDownload className="mr-2" />
-              {t("analytics.export_csv")}
-            </button>
-          </div>
+       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+  <div className="flex items-center">
+    <div className="w-10 h-10 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center mr-3 shrink">
+      <FaTable className="text-white text-lg" />
+    </div>
+    <div className="min-w-0">
+      <h3 className="text-lg font-semibold text-gray-800 truncate">{t("analytics.complaints_data")}</h3>
+      <p className="text-gray-500 text-sm truncate">{t("analytics.complaints_data_desc")}</p>
+    </div>
+  </div>
+  <button 
+    onClick={downloadCSV}
+    disabled={!items.length}
+    className="bg-linear-to-r from-green-600 to-teal-600 text-white px-4 py-3 sm:px-6 rounded-xl font-medium hover:from-green-700 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:cursor-pointer w-full sm:w-auto"
+  >
+    <FaDownload className="mr-2 shrink" />
+    <span className="truncate">{t("analytics.export_csv")}</span>
+  </button>
+</div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left">

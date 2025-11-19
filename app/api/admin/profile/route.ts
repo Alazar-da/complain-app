@@ -6,16 +6,12 @@ import bcrypt from "bcryptjs";
 
 export async function GET(req: Request) {
   try {
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
+   
+      const { searchParams } = new URL(req.url);
+      const id = searchParams.get("id");
 
     await connectDB();
-    const admin = await Admin.findById(decoded.id).select("username");
+    const admin = await Admin.findById(id).select("username");
     if (!admin) {
       return NextResponse.json({ message: "Admin not found" }, { status: 404 });
     }
@@ -28,17 +24,12 @@ export async function GET(req: Request) {
 
 export async function PUT(req: Request) {
   try {
-    const authHeader = req.headers.get("authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as { id: string };
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
     const { username } = await req.json();
 
     await connectDB();
-    const admin = await Admin.findById(decoded.id);
+    const admin = await Admin.findById(id);
     if (!admin) {
       return NextResponse.json({ message: "Admin not found" }, { status: 404 });
     }
@@ -46,8 +37,19 @@ export async function PUT(req: Request) {
     admin.username = username;
     await admin.save();
 
-    return NextResponse.json({ message: "Username updated successfully" });
+    // Create NEW TOKEN with updated username
+    const newToken = jwt.sign(
+      { id: admin._id, username: admin.username },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1d" }
+    );
+
+    return NextResponse.json({
+      message: "User Name updated successfully",
+      token: newToken,
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

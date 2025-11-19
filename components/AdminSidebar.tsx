@@ -39,13 +39,12 @@ const AdminSidebar = () => {
   }, []);
 
   const menuItems = [
-    { name: 'Dashboard', icon: <FaTachometerAlt />, href: '/admin/dashboard' },
-    { name: 'Analytics', icon: <FaChartBar />, href: '/admin/analytics' },
-    { name: 'Profile', icon: <FaUser />, href: '/admin/profile' },
+    { name: 'Dashboard', icon: <FaTachometerAlt title='Dashboard' />, href: '/admin/dashboard' },
+    { name: 'Analytics', icon: <FaChartBar title='Analytics' />, href: '/admin/analytics' },
+    { name: 'Profile', icon: <FaUser title='Profile' />, href: '/admin/profile' },
   ];
 
-  const logoutItem = { name: 'Logout', icon: <FaSignOutAlt />, href: '/logout' };
-
+  const logoutItem = { name: 'Logout', icon: <FaSignOutAlt title='Logout' />, href: '/logout' };
   const handleItemClick = (href: string) => {
     setActiveItem(href);
     if (isMobile) {
