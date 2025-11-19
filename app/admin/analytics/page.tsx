@@ -580,7 +580,7 @@ const downloadCSV = () => {
         <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
   <div className="flex items-center">
-    <div className="w-10 h-10 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center mr-3 flex-shrink-0">
+    <div className="w-10 h-10 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center mr-3 shrink">
       <FaTable className="text-white text-lg" />
     </div>
     <div className="min-w-0">
@@ -593,7 +593,7 @@ const downloadCSV = () => {
     disabled={!items.length}
     className="bg-linear-to-r from-green-600 to-teal-600 text-white px-4 py-3 sm:px-6 rounded-xl font-medium hover:from-green-700 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:cursor-pointer w-full sm:w-auto"
   >
-    <FaDownload className="mr-2 flex-shrink-0" />
+    <FaDownload className="mr-2 shrink" />
     <span className="truncate">{t("analytics.export_csv")}</span>
   </button>
 </div>
