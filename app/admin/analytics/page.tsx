@@ -37,6 +37,7 @@ import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { BsGraphUpArrow } from "react-icons/bs";
 import { useTranslation } from 'react-i18next';
 import {departments,DepartmentKey} from '@/data/departments';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -179,27 +180,16 @@ const fetchData = async () => {
   };
 
 // Download CSV
-const downloadCSV = () => {
+const downloadCSV = async () => {
   if (!items.length) return;
 
   const headers = ["title", "description", "department", "subDepartment", "level", "status", "date"];
 
-/*   const headers = [
-    t("analytics.table_title"),
-    t("analytics.table_description"),
-    t("analytics.department"),
-    t("analytics.sub_department"),
-    t("analytics.level"),
-    t("analytics.status"),
-    t("analytics.table_date"),
-  ]; */
-
   const csv = [
-    headers.join(","), // header row
+    headers.join(","),
     ...items.map((r) =>
       headers
         .map((k) => {
-          // Format date nicely
           if (k === "date") {
             return `"${dayjs(r[k]).format("MMM DD, YYYY")}"`;
           }
@@ -209,11 +199,23 @@ const downloadCSV = () => {
     ),
   ].join("\n");
 
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `complaints_${startDate}_${endDate}.csv`;
-  a.click();
+  try {
+    const fileName = `complaints_${startDate}_${endDate}.csv`;
+
+    // Save in device Documents folder
+    await Filesystem.writeFile({
+      path: fileName,
+      data: csv,
+      directory: Directory.Documents,
+      encoding: Encoding.UTF8,
+    });
+
+    alert(`CSV saved to Documents as: ${fileName}`);
+
+  } catch (err) {
+    console.error("Failed to save CSV", err);
+    alert("Error saving file");
+  }
 };
 
 
