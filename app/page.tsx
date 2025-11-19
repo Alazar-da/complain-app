@@ -57,33 +57,44 @@ export default function Home() {
   };
 
   // Upload image/video
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    try {
-      setUploading(true);
+  // ❗ MAX FILE SIZE (10MB)
+  const MAX_SIZE_MB = 10;
+  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-      // Compress and upload media
-      const uploaded = await compressAndUploadMedia(file, "complain_app/uploads");
+  if (file.size > MAX_SIZE_BYTES) {
+    showMessage(t("messages.file.too_large"), "error");
+    e.target.value = ""; // reset input
+    return;
+  }
 
-      setForm(prev => ({
-        ...prev,
-        mediaUrl: uploaded.secure_url,
-        publicId: uploaded.public_id, // store public_id for deletion
-      }));
+  try {
+    setUploading(true);
 
-      setPreview(uploaded.secure_url);
-           showMessage(t("messages.file.success"), "success");
-      console.log("✅ Uploaded successfully:", uploaded);
-    } catch (error: any) {
-      console.error("❌ Upload failed:", error.message);
-      showMessage(t("messages.file.error"), "error");
-    } finally {
-      setUploading(false);
-      e.target.value = ""; // reset input
-    }
-  };
+    // Compress + upload
+    const uploaded = await compressAndUploadMedia(file, "complain_app/uploads");
+
+    setForm(prev => ({
+      ...prev,
+      mediaUrl: uploaded.secure_url,
+      publicId: uploaded.public_id,
+    }));
+
+    setPreview(uploaded.secure_url);
+    showMessage(t("messages.file.success"), "success");
+
+  } catch (error: any) {
+    console.error("❌ Upload failed:", error.message);
+    showMessage(t("messages.file.error"), "error");
+  } finally {
+    setUploading(false);
+    e.target.value = "";
+  }
+};
+
 
   // Delete from Cloudinary
   const deleteFromCloudinary = async () => {

@@ -32,13 +32,30 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'card'>('table');
-  const router = useRouter();
     const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const limit = 10; // complaints per page
 const { t } = useTranslation();
 const { i18n } = useTranslation();
 const lang = i18n.language as "en" | "am" | "om";
+
+useEffect(() => {
+  // Function to update view mode based on screen width
+  const handleResize = () => {
+    if (window.innerWidth < 1024) {
+      // md and sm devices
+      setViewMode('card');
+    } else {
+      // large screens
+      setViewMode('table');
+    }
+  };
+
+  handleResize(); // Run once on load
+  window.addEventListener('resize', handleResize);
+
+  return () => window.removeEventListener('resize', handleResize);
+}, []);
 
  const fetchComplaints = async (pageNumber = 1) => {
     const res = await fetch(

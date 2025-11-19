@@ -40,7 +40,8 @@
       "error": "Faayiliin haquun hin milkaa'inne."
     },
   "success": "Faayiliin Ergame olkaa’ame!",
-  "error": "Faayilii olkaa’uun hin milkaa’inne."
+  "error": "Faayilii olkaa’uun hin milkaa’inne.",
+  "too_large": "Faayiliin 10MB ol ka'uu hin danda'u."
   },
     "success": "Madda komii kee milkaaʼinaan ergame! Gara fuula biraatti geeffamaa jira...",
     "error": "Dogoggorri uumame. Mee irra deebi'ii yaali.",
