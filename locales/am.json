@@ -3,9 +3,28 @@
     "title": "የከተማ ትምህርት ቅሬታ ጽ/ቤት",
     "description": "ቅሬታ መቀበያ መተግበሪያ"
   },
+  "view_complaints": "ቅሬታዎችን ይመልከቱ",
    "title": "ቅሬታ ያቅርቡ",
           "subtitle": "እባክዎ ቅሬታዎን ለመላክ ቅጹን ይሙሉ።",
+  "personal_info": {
+    "personal_info": "የግል መረጃ",
+    "complaint_details": "የቅሬታ ዝርዝሮች"
+  },
+
           "form": {
+             "full_name": "ሙሉ ስም",
+    "enter_full_name": "ሙሉ ስም ያስገቡ",
+    "phone_number": "የስልክ ቁጥር",
+    "enter_phone_number": "የስልክ ቁጥር ያስገቡ",
+    "gender": "ፆታ",
+    "select_gender": "ፆታ ይምረጡ",
+    "education_community": "የትምህርት ማህበር",
+    "select_education_community": "የትምህርት ማህበር ይምረጡ",
+    "school_name": "የትምህርት ቤት ስም",
+    "enter_school": "የትምህርት ቤት ስም ያስገቡ",
+    "wereda": "ወረዳ",
+    "enter_wereda": "ወረዳ ያስገቡ",
+
             "title": "የቅሬታ ርዕስ",
             "department": "ዲፓርትመንት",
             "subDepartment": "ንዑስ ዲፓርትመንት",
@@ -25,8 +44,21 @@
             "video": "ቪዲዮ",
             "removing": "በማስወገድ ላይ...",
             "remove": "አስወግድ",
-            "download": "አውርድ"
+            "download": "አውርድ",
+             "next": "ቀጣይ",
+    "back": "ተመለስ"
           },
+          "education": {
+      "student": "ተማሪ",
+      "student_family": "የተማሪ ቤተሰብ",
+      "teacher": "መምህር",
+      "supervisor": "ኃላፊ",
+      "expert": "ሙያተኛ"
+    },
+    "gender": {
+      "male": "ወንድ",
+      "female": "ሴት"
+    },
           "levels": { "low": "ዝቅተኛ", "medium": "መካከለኛ", "high": "ከፍተኛ" },
           "departments": {
   "general": "አጠቃላይ",
@@ -234,11 +266,26 @@
 "Daily_Complaints":	"ዕለታዊ ቅሬታዎች",
 "Complaints_by_Level":	"ቅሬታዎች በደረጃ",
 "Complaints_by_Status":	"ቅሬታዎች በሁኔታ"
+  },
+
+  "success": {
+    "title": "ቅሬታ በተሳካ ሁኔታ ተላከ",
+    "description": "ቅሬታዎ በተሳካ ሁኔታ ተላከ።",
+
+    "submission_details": "ዝርዝሮች የተላከው",
+    "tracking_number": "የተከታተል ቁጥር",
+
+    "complaint_id": "የቅሬታ መለያ",
+    "title_field": "ርዕስ",
+    "status": "ሁኔታ",
+    "submission_date": "የተላከበት ቀን",
+
+    "important_notice": "አስፈላጊ ማስታወሻ",
+
+    "save_tracking": "የተከታተል ቁጥር አስቀምጥ",
+    "download_receipt": "መረጃ አውርድ",
+    "submit_another": "በሌላ ቅሬታ ይላኩ"
   }
-
-
-
-
 
 
 }

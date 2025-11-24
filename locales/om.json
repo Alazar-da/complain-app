@@ -5,7 +5,37 @@
   },
    "title": "Dhiyeessi Komii",
           "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
+  "personal_info": {
+    "personal_info": "Odeeffannoo Dhunfaa",
+    "complaint_details": "Faayila Komii"    
+  },
+  "education": {
+      "student": "Barataa",
+      "student_family": "Maatii Barataa",
+      "teacher": "Barsiisaa",
+      "supervisor": "To’annaa",
+      "expert": "Ogeessa"
+    },
+    "gender": {
+      "male": "Dhiira",
+      "female": "Dubartii"
+    },
+
+
           "form": {
+               "full_name": "Maqaa Guutuu",
+    "enter_full_name": "Maqaa guutuu galchi",
+    "phone_number": "Lakkoofsa Bilbila",
+    "enter_phone_number": "Lakkoofsa bilbila galchi",
+    "gender": "Saala",
+    "select_gender": "Saala filadhu",
+    "education_community": "Hawaasa Barnootaa",
+    "select_education_community": "Hawaasa barnootaa filadhu",
+    "school_name": "Maqaa Mana Barumsaa",
+    "enter_school": "Maqaa mana barumsaa galchi",
+    "wereda": "Woreeda",
+    "enter_wereda": "Woreeda galchi",
+
             "title": "Maqaa Komii",
             "department": "Kutaa hojii",
             "subDepartment": "Kutaa xiqqaa",
@@ -25,7 +55,9 @@
             "video": "Viidiyoo",
             "removing":"Haqaa jira...",
             "remove": "Haqi",
-            "download": "Buusi"
+            "download": "Buusi",
+                "next": "Kan itti aanu",
+    "back": "Deebi’i"
           },
           "levels": { "low": "Gadii", "medium": "Giddugaleessa", "high": "Olaanaa" },
           "departments": {
@@ -228,8 +260,26 @@
     "Daily_Complaints":	"Komiiwwan Guyyaa-guyyaa",
 "Complaints_by_Level":	"Komiiwwan Sadarkaa Irratti",
 "Complaints_by_Status":	"Komiiwwan Haala Irratti"
-  }
+  },
+  "view_complaints": "Komiiwwan Ilaali",
+  "success": {
+    "title": "Komii Keessan Milkaa’inaan Ergame",
+    "description": "Komii keessan milkaa’inaan ergamee jira.",
 
+    "submission_details": "Faayila Ergame",
+    "tracking_number": "Lakkoofsa To’ataa",
+
+    "complaint_id": "ID Komii",
+    "title_field": "Mata-Duree",
+    "status": "Haala",
+    "submission_date": "Guyyaa Ergame",
+
+    "important_notice": "Beeksisa Murteessaa",
+
+    "save_tracking": "Lakkoofsa To’ataa Kuusi",
+    "download_receipt": "Gabaasa Buusi",
+    "submit_another": "Komii Haaraa Ergi"
+  }
 
 
 }

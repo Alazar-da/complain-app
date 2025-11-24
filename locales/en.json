@@ -3,9 +3,39 @@
     "title": "City Education Complaint Office",
     "description": "Complaint app"
   },
+   "view_complaints": "View Complaints",
   "title": "Submit a Complaint",
           "subtitle": "Fill out the form below to submit your complaint.",
+  "personal_info": {
+    "personal_info": "Personal Info",
+    "complaint_details": "Complaint Details"
+  },
+  "education": {
+      "student": "Student",
+      "student_family": "Student Family",
+      "teacher": "Teacher",
+      "supervisor": "Supervisor",
+      "expert": "Expert"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female"
+    },
           "form": {
+                "full_name": "Full Name",
+    "enter_full_name": "Enter full name",
+    "phone_number": "Phone Number",
+    "enter_phone_number": "Enter phone number",
+    "gender": "Gender",
+    "select_gender": "Select gender",
+    "education_community": "Education Community",
+    "select_education_community": "Select education community",
+    "school_name": "School Name",
+    "enter_school": "Enter school",
+    "wereda": "Wereda",
+    "enter_wereda": "Enter wereda",
+
+
             "title": "Complaint Title",
             "department": "Department",
             "subDepartment": "Sub Department",
@@ -25,7 +55,9 @@
             "uploaded": "uploaded",
             "removing": "Removing...",
             "remove": "Remove",
-            "download": "Download"
+            "download": "Download",
+             "next": "Next",
+    "back": "Back"
 },
           "departments": {
   "general": "General",
@@ -229,11 +261,25 @@
     "Daily_Complaints":	"Daily Complaints",
 "Complaints_by_Level":	"Complaints by Level",
 "Complaints_by_Status":	"Complaints by Status"
+  },
+
+  "success": {
+    "title": "Submission Successful",
+    "description": "Your complaint has been submitted successfully.",
+
+    "submission_details": "Submission Details",
+    "tracking_number": "Tracking Number",
+
+    "complaint_id": "Complaint ID",
+    "title_field": "Title",
+    "status": "Status",
+    "submission_date": "Submission Date",
+
+    "important_notice": "Important Notice",
+
+    "save_tracking": "Save Tracking Number",
+    "download_receipt": "Download Receipt",
+    "submit_another": "Submit Another Complaint"
   }
-
-
-
-
-
 
 }

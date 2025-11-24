@@ -4,12 +4,52 @@ import { useState, useEffect, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { departments, DepartmentKey } from "@/data/departments";
 import { compressAndUploadMedia } from "@/utils/uploadImage";
-import { FaCloudUploadAlt, FaImage, FaSpinner, FaTimes, FaTrash, FaVideo } from "react-icons/fa";
+import { 
+  FaCloudUploadAlt, 
+  FaImage, 
+  FaSpinner, 
+  FaTrash, 
+  FaVideo,
+  FaUser,
+  FaFileAlt,
+  FaArrowLeft,
+  FaArrowRight,
+  FaPhone,
+  FaGraduationCap,
+  FaSchool,
+  FaMapMarkerAlt,
+  FaCheck,
+  FaExclamationTriangle,
+  FaDownload,
+  FaCopy,
+  FaHome,
+  FaFilePdf
+} from "react-icons/fa";
 
 type Department = keyof typeof departments;
 
+type EducationCommunity = "student" | "student_family" | "teacher" | "supervisor" | "expert";
+type Gender = "male" | "female";
+
+interface SubmissionData {
+  id: string;
+  trackingNumber: string;
+  status: string;
+  title: string;
+}
+
 export default function Home() {
-   const [form, setForm] = useState<{
+  const [currentStep, setCurrentStep] = useState(1);
+  const [form, setForm] = useState<{
+    // Step 1: Personal Information
+    fullName: string;
+    phoneNumber: string;
+    gender: Gender | "";
+    educationCommunity: EducationCommunity | "";
+    schoolName: string;
+    wereda: string;
+    
+    // Step 2: Complaint Information
     title: string;
     department: Department | "";
     subDepartment: string;
@@ -17,8 +57,17 @@ export default function Home() {
     level: string;
     description: string;
     mediaUrl?: string;
-    publicId?: string; // store Cloudinary public_id
+    publicId?: string;
   }>({
+    // Step 1
+    fullName: "",
+    phoneNumber: "",
+    gender: "",
+    educationCommunity: "",
+    schoolName: "",
+    wereda: "",
+    
+    // Step 2
     title: "",
     department: "",
     subDepartment: "",
@@ -35,6 +84,7 @@ export default function Home() {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [countdown, setCountdown] = useState(0);
   const [preview, setPreview] = useState<string | null>(null);
+  const [submissionData, setSubmissionData] = useState<SubmissionData | null>(null);
   const { t, i18n } = useTranslation();
   const language = i18n.language as "am" | "en" | "om";
 
@@ -42,6 +92,19 @@ export default function Home() {
     { key: "Low", label: t("level.Low") },
     { key: "Medium", label: t("level.Medium") },
     { key: "High", label: t("level.High") },
+  ];
+
+  const educationOptions = [
+    { key: "student", label: t("education.student") },
+    { key: "student_family", label: t("education.student_family") },
+    { key: "teacher", label: t("education.teacher") },
+    { key: "supervisor", label: t("education.supervisor") },
+    { key: "expert", label: t("education.expert") },
+  ];
+
+  const genderOptions = [
+    { key: "male", label: t("gender.male") },
+    { key: "female", label: t("gender.female") },
   ];
 
   useEffect(() => {
@@ -57,44 +120,40 @@ export default function Home() {
   };
 
   // Upload image/video
-const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  // ❗ MAX FILE SIZE (10MB)
-  const MAX_SIZE_MB = 10;
-  const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
+    const MAX_SIZE_MB = 10;
+    const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
-  if (file.size > MAX_SIZE_BYTES) {
-    showMessage(t("messages.file.too_large"), "error");
-    e.target.value = ""; // reset input
-    return;
-  }
+    if (file.size > MAX_SIZE_BYTES) {
+      showMessage(t("messages.file.too_large"), "error");
+      e.target.value = "";
+      return;
+    }
 
-  try {
-    setUploading(true);
+    try {
+      setUploading(true);
+      const uploaded = await compressAndUploadMedia(file, "complain_app/uploads");
 
-    // Compress + upload
-    const uploaded = await compressAndUploadMedia(file, "complain_app/uploads");
+      setForm(prev => ({
+        ...prev,
+        mediaUrl: uploaded.secure_url,
+        publicId: uploaded.public_id,
+      }));
 
-    setForm(prev => ({
-      ...prev,
-      mediaUrl: uploaded.secure_url,
-      publicId: uploaded.public_id,
-    }));
+      setPreview(uploaded.secure_url);
+      showMessage(t("messages.file.success"), "success");
 
-    setPreview(uploaded.secure_url);
-    showMessage(t("messages.file.success"), "success");
-
-  } catch (error: any) {
-    console.error("❌ Upload failed:", error.message);
-    showMessage(t("messages.file.error"), "error");
-  } finally {
-    setUploading(false);
-    e.target.value = "";
-  }
-};
-
+    } catch (error: any) {
+      console.error("❌ Upload failed:", error.message);
+      showMessage(t("messages.file.error"), "error");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
 
   // Delete from Cloudinary
   const deleteFromCloudinary = async () => {
@@ -116,11 +175,9 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to delete file");
 
-      // Remove from state
       setForm(prev => ({ ...prev, mediaUrl: "", publicId: "" }));
       setPreview(null);
       showMessage(t("messages.file.remove.success"), "success");
-      console.log("✅ File deleted:", form.publicId);
     } catch (error: any) {
       console.error("❌ Delete failed:", error.message);
       showMessage(t("messages.file.remove.error"), "error");
@@ -144,19 +201,8 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
       const data = await res.json();
 
       if (data.success) {
-        showMessage(t("messages.success"), "success");
-        setForm({
-          title: "",
-          department: "",
-          subDepartment: "",
-          status: "Pending",
-          level: "",
-          description: "",
-          mediaUrl: "",
-          publicId: "",
-        });
-        setPreview(null);
-        setTimeout(() => window.location.reload(), 3500);
+        setSubmissionData(data.complaint);
+        setCurrentStep(3); // Move to success screen
       } else {
         showMessage("Error: " + data.error, "error");
       }
@@ -176,253 +222,621 @@ const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     }
   };
 
+  const nextStep = () => {
+    if (currentStep === 1) {
+      if (!form.fullName || !form.phoneNumber || !form.gender || !form.educationCommunity) {
+        showMessage(t("messages.fill_required"), "error");
+        return;
+      }
+    }
+    setCurrentStep(prev => prev + 1);
+  };
+
+  const prevStep = () => {
+    setCurrentStep(prev => prev - 1);
+  };
+
+  const resetForm = () => {
+    setForm({
+      fullName: "",
+      phoneNumber: "",
+      gender: "",
+      educationCommunity: "",
+      schoolName: "",
+      wereda: "",
+      title: "",
+      department: "",
+      subDepartment: "",
+      status: "Pending",
+      level: "",
+      description: "",
+      mediaUrl: "",
+      publicId: "",
+    });
+    setPreview(null);
+    setSubmissionData(null);
+    setCurrentStep(1);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    showMessage(t("messages.copied_to_clipboard"), "success");
+  };
+
+  const downloadTrackingNumber = () => {
+    if (!submissionData) return;
+
+    const content = `
+COMPLAINT SUBMISSION RECEIPT
+============================
+
+Tracking Number: ${submissionData.trackingNumber}
+Complaint ID: ${submissionData.id}
+Title: ${submissionData.title}
+Status: ${submissionData.status}
+Submission Date: ${new Date().toLocaleDateString()}
+Submission Time: ${new Date().toLocaleTimeString()}
+
+IMPORTANT: Keep this tracking number safe. You will need it to check the status of your complaint.
+
+Thank you for submitting your complaint. We will review it and get back to you soon.
+    `.trim();
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `complaint-${submissionData.trackingNumber}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const isStep1Valid = form.fullName && form.phoneNumber && form.gender && form.educationCommunity;
+
   return (
     <main className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 text-slate-800 py-8">
-      <section className="fixed top-2 right-2">
+     <section className="fixed top-2 left-2 z-50">
+  <button 
+  onClick={() => window.location.href = '/TrackComplaint'}
+  className="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95 hover:cursor-pointer group"
+>
+  <FaFileAlt className="w-5 h-5 transition-transform group-hover:scale-110" />
+  <span>{t("view_complaints")}</span>
+</button>
+   </section>
+      <section className="fixed top-2 right-2 z-50">
         <LanguageSwitcher />
       </section>
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-lg mx-4 my-8 border border-gray-100 transform transition-all duration-300 hover:shadow-3xl"
-      >
+      
+      <div className="bg-white shadow-2xl rounded-3xl p-8 w-full max-w-2xl mx-4 my-8 border border-gray-100 transform transition-all duration-300 hover:shadow-3xl">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+            <FaFileAlt className="w-8 h-8 text-blue-600" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2"> {t("title")}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t("title")}</h1>
           <p className="text-gray-600">{t("subtitle")}</p>
         </div>
+
+        {/* Progress Steps */}
+        {currentStep < 3 && (
+          <>
+            <div className="flex items-center justify-center mb-8">
+              <div className="flex items-center">
+                {/* Step 1 */}
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 ${
+                  currentStep >= 1 
+                    ? 'bg-blue-600 border-blue-600 text-white' 
+                    : 'border-gray-300 text-gray-300'
+                } transition-all duration-300`}>
+                  {currentStep > 1 ? <FaCheck className="text-sm" /> : <FaUser className="text-sm" />}
+                </div>
+                <div className={`w-20 h-1 ${
+                  currentStep >= 2 ? 'bg-blue-600' : 'bg-gray-300'
+                } transition-all duration-300`}></div>
+                
+                {/* Step 2 */}
+                <div className={`flex items-center justify-center w-12 h-12 rounded-full border-2 ${
+                  currentStep >= 2 
+                    ? 'bg-blue-600 border-blue-600 text-white' 
+                    : 'border-gray-300 text-gray-300'
+                } transition-all duration-300`}>
+                  <FaFileAlt className="text-sm" />
+                </div>
+              </div>
+            </div>
+
+            {/* Step Labels */}
+            <div className="flex justify-between mb-8 px-8">
+              <div className={`text-sm font-medium text-center ${
+                currentStep === 1 ? 'text-blue-600' : 'text-gray-500'
+              }`}>
+                {t("personal_info.personal_info")}
+              </div>
+              <div className={`text-sm font-medium text-center ${
+                currentStep === 2 ? 'text-blue-600' : 'text-gray-500'
+              }`}>
+                {t("personal_info.complaint_details")}
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Message Display */}
         {message.text && (
           <div className={getMessageStyles()}>
             <div className="flex items-center justify-center space-x-2">
-              {message.type === "success" && (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              )}
-              {message.type === "error" && (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              )}
+              {message.type === "success" && <FaCheck className="w-5 h-5" />}
+              {message.type === "error" && <FaExclamationTriangle className="w-5 h-5" />}
               <span>{message.text}</span>
             </div>
-            {message.type === "success" && countdown > 0 && (
-              <div className="mt-2 text-sm text-gray-600">
-                Redirecting in {countdown} second{countdown !== 1 ? 's' : ''}...
-              </div>
-            )}
           </div>
         )}
 
-        {/* Form Fields */}
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.title")}</label>
-            <input
-              type="text"
-              className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-              placeholder={t("messages.enterTitle")}
-              required
-            />
-          </div>
+        {/* Step 1: Personal Information */}
+        {currentStep === 1 && (
+          <form onSubmit={(e) => { e.preventDefault(); nextStep(); }} className="space-y-6 animate-fade-in">
+            {/* ... (Step 1 form content remains the same) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Full Name */}
+              <div className="md:col-span-2">
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                  <FaUser className="mr-2 text-blue-500" />
+                  {t("form.full_name")} *
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  value={form.fullName}
+                  onChange={(e) => setForm({ ...form, fullName: e.target.value })}
+                  placeholder={t("form.enter_full_name")}
+                  required
+                />
+              </div>
 
-          {/* Department Dropdown */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.department")}</label>
-            <select
-              className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
-              value={form.department}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  department: e.target.value as DepartmentKey,
-                  subDepartment: "",
-                })
-              }
-              required
-            >
-              <option value="" disabled>{t("messages.selectDepartment")}</option>
-              {Object.entries(departments).map(([key, dept]) => (
-                <option key={key} value={key}>
-                  {dept[language] || dept.en}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Sub-department Dropdown */}
-          {form.department &&
-            departments[form.department as DepartmentKey].subDepartments.length > 0 && (
+              {/* Phone Number */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  {t("form.subDepartment")}
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                  <FaPhone className="mr-2 text-green-500" />
+                  {t("form.phone_number")} *
+                </label>
+                <input
+                  type="tel"
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  value={form.phoneNumber}
+                  onChange={(e) => setForm({ ...form, phoneNumber: e.target.value })}
+                  placeholder={t("form.enter_phone_number")}
+                  required
+                />
+              </div>
+
+              {/* Gender */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                  <FaUser className="mr-2 text-purple-500" />
+                  {t("form.gender")} *
                 </label>
                 <select
-                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
-                  value={form.subDepartment}
-                  onChange={(e) =>
-                    setForm({ ...form, subDepartment: e.target.value })
-                  }
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  value={form.gender}
+                  onChange={(e) => setForm({ ...form, gender: e.target.value as Gender })}
+                  required
                 >
-                  <option value="" disabled>{t("messages.selectSubDepartment")}</option>
-                  {departments[form.department as DepartmentKey].subDepartments.map(
-                    (sub, index) => (
-                      <option key={index} value={sub.en}>
-                        {sub[language] || sub.en}
-                      </option>
-                    )
-                  )}
+                  <option value="" disabled>{t("form.select_gender")}</option>
+                  {genderOptions.map((option) => (
+                    <option key={option.key} value={option.key}>
+                      {option.label}
+                    </option>
+                  ))}
                 </select>
               </div>
-            )}
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.priority")}</label>
-            <select
-              className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 appearance-none bg-white"
-              value={form.level}
-              onChange={(e) => setForm({ ...form, level: e.target.value })}
-              required
-            >
-              <option value="" disabled>{t("messages.selectLevel")}</option>
-              {level.map((lvl) => (
-                <option key={lvl.key} value={lvl.key}>
-                  {lvl.label}
-                </option>
-              ))}
-            </select>
-          </div>
+              {/* Education Community */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                  <FaGraduationCap className="mr-2 text-orange-500" />
+                  {t("form.education_community")} *
+                </label>
+                <select
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  value={form.educationCommunity}
+                  onChange={(e) => setForm({ ...form, educationCommunity: e.target.value as EducationCommunity })}
+                  required
+                >
+                  <option value="" disabled>{t("form.select_education_community")}</option>
+                  {educationOptions.map((option) => (
+                    <option key={option.key} value={option.key}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">{t("form.description")}</label>
-            <textarea
-              className="w-full border border-gray-300 rounded-xl p-3 h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-              placeholder={t("messages.enterDescription")}
-              required
-            />
-          </div>
+              {/* School Name */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                  <FaSchool className="mr-2 text-red-500" />
+                  {t("form.school_name")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  value={form.schoolName}
+                  onChange={(e) => setForm({ ...form, schoolName: e.target.value })}
+                  placeholder={t("form.enter_school")}
+                />
+              </div>
 
-           {/* File Upload Section */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              {t("form.file_optional")}
-            </label>
-            
-            <div className="relative">
+              {/* Wereda */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
+                  <FaMapMarkerAlt className="mr-2 text-teal-500" />
+                  {t("form.wereda")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  value={form.wereda}
+                  onChange={(e) => setForm({ ...form, wereda: e.target.value })}
+                  placeholder={t("form.enter_wereda")}
+                />
+              </div>
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-end pt-4">
+              <button
+                type="submit"
+                disabled={!isStep1Valid}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:cursor-pointer"
+              >
+                <span>{t("form.next")}</span>
+                <FaArrowRight className="text-sm" />
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Step 2: Complaint Details */}
+        {currentStep === 2 && (
+          <form onSubmit={handleSubmit} className="space-y-6 animate-fade-in">
+            {/* ... (Step 2 form content remains the same) */}
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                {t("form.title")} *
+              </label>
               <input
-                type="file"
-                onChange={handleFileUpload}
-                accept="image/*,video/*"
-                className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200 cursor-pointer opacity-0 absolute inset-0 z-10"
-                disabled={uploading || deleting || (preview ? true : false)}
+                type="text"
+                className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                placeholder={t("messages.enterTitle")}
+                required
               />
-              
-              {/* Custom styled file input */}
-              <div className="w-full p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 text-center">
-                <div className="flex flex-col items-center justify-center space-y-2">
-                  <FaCloudUploadAlt className="text-3xl text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600 font-medium">
-                    {t("form.click_to_upload")}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    PNG, JPG, MP4, MOV ({t("form.max_size")})
-                  </p>
-                </div>
-              </div>
             </div>
 
-            {uploading && (
-              <div className="flex items-center justify-center mt-4 p-3 bg-blue-50 rounded-lg">
-                <FaSpinner className="animate-spin text-blue-500 mr-2" />
-                <p className="text-sm text-blue-700">{t("form.uploading")}</p>
+            {/* Department & Sub-department */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  {t("form.department")} *
+                </label>
+                <select
+                  className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  value={form.department}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      department: e.target.value as DepartmentKey,
+                      subDepartment: "",
+                    })
+                  }
+                  required
+                >
+                  <option value="" disabled>{t("messages.selectDepartment")}</option>
+                  {Object.entries(departments).map(([key, dept]) => (
+                    <option key={key} value={key}>
+                      {dept[language] || dept.en}
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
 
-            {preview && (
-              <div className="mt-4 relative bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center space-x-2">
-                    {preview.includes("image") ? (
-                      <FaImage className="text-green-500" />
-                    ) : (
-                      <FaVideo className="text-blue-500" />
-                    )}
-                    <span className="text-sm font-medium text-gray-700">
-                      {preview.includes("image") ? t("form.image") : t("form.video")} {t("form.uploaded")}
-                    </span>
+              {form.department &&
+                departments[form.department as DepartmentKey].subDepartments.length > 0 && (
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      {t("form.subDepartment")}
+                    </label>
+                    <select
+                      className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                      value={form.subDepartment}
+                      onChange={(e) =>
+                        setForm({ ...form, subDepartment: e.target.value })
+                      }
+                    >
+                      <option value="" disabled>{t("messages.selectSubDepartment")}</option>
+                      {departments[form.department as DepartmentKey].subDepartments.map(
+                        (sub, index) => (
+                          <option key={index} value={sub.en}>
+                            {sub[language] || sub.en}
+                          </option>
+                        )
+                      )}
+                    </select>
                   </div>
-                  <button
-                    type="button"
-                    onClick={deleteFromCloudinary}
-                    disabled={deleting}
-                    className="flex items-center space-x-2 px-3 py-1 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:cursor-pointer"
-                  >
-                    {deleting ? (
-                      <>
-                        <FaSpinner className="animate-spin text-sm" />
-                        <span className="text-sm">{t("form.removing")}</span>
-                      </>
-                    ) : (
-                      <>
-                        <FaTrash className="text-sm" />
-                        <span className="text-sm">{t("form.remove")}</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-                
-                {preview.includes("image") ? (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    className="w-full rounded-lg shadow-sm max-h-64 object-cover"
-                  />
-                ) : (
-                  <video
-                    src={preview}
-                    controls
-                    className="w-full rounded-lg shadow-sm max-h-64 object-cover"
-                  />
                 )}
-              </div>
-            )}
-          </div>
-       
-
-</div>
-
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading || uploading}
-          className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-semibold mt-8 hover:from-blue-700 hover:to-indigo-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] hover:cursor-pointer"
-        >
-          {loading ? (
-            <div className="flex items-center justify-center space-x-2">
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span>{t("form.submitting")}</span>
             </div>
-          ) : (
-            t("form.submit")
-          )}
-        </button>
+
+            {/* Priority Level */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                {t("form.priority")} *
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-xl p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                value={form.level}
+                onChange={(e) => setForm({ ...form, level: e.target.value })}
+                required
+              >
+                <option value="" disabled>{t("messages.selectLevel")}</option>
+                {level.map((lvl) => (
+                  <option key={lvl.key} value={lvl.key}>
+                    {lvl.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                {t("form.description")} *
+              </label>
+              <textarea
+                className="w-full border border-gray-300 rounded-xl p-3 h-32 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                placeholder={t("messages.enterDescription")}
+                required
+              />
+            </div>
+
+            {/* File Upload Section */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                {t("form.file_optional")}
+              </label>
+              
+              <div className="relative">
+                <input
+                  type="file"
+                  onChange={handleFileUpload}
+                  accept="image/*,video/*"
+                  className="w-full p-4 border-2 border-dashed border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-blue-400 transition-all duration-200 cursor-pointer opacity-0 absolute inset-0 z-10"
+                  disabled={uploading || deleting || !!preview}
+                />
+                
+                {/* Custom styled file input */}
+                <div className="w-full p-6 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 hover:bg-gray-100 transition-all duration-200 text-center">
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <FaCloudUploadAlt className="text-3xl text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-600 font-medium">
+                      {t("form.click_to_upload")}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, MP4, MOV ({t("form.max_size")})
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {uploading && (
+                <div className="flex items-center justify-center mt-4 p-3 bg-blue-50 rounded-lg">
+                  <FaSpinner className="animate-spin text-blue-500 mr-2" />
+                  <p className="text-sm text-blue-700">{t("form.uploading")}</p>
+                </div>
+              )}
+
+              {preview && (
+                <div className="mt-4 relative bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center space-x-2">
+                      {preview.includes("image") ? (
+                        <FaImage className="text-green-500" />
+                      ) : (
+                        <FaVideo className="text-blue-500" />
+                      )}
+                      <span className="text-sm font-medium text-gray-700">
+                        {preview.includes("image") ? t("form.image") : t("form.video")} {t("form.uploaded")}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={deleteFromCloudinary}
+                      disabled={deleting}
+                      className="flex items-center space-x-2 px-3 py-1 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:cursor-pointer"
+                    >
+                      {deleting ? (
+                        <>
+                          <FaSpinner className="animate-spin text-sm" />
+                          <span className="text-sm">{t("form.removing")}</span>
+                        </>
+                      ) : (
+                        <>
+                          <FaTrash className="text-sm" />
+                          <span className="text-sm">{t("form.remove")}</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  
+                  {preview.includes("image") ? (
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      className="w-full rounded-lg shadow-sm max-h-64 object-cover"
+                    />
+                  ) : (
+                    <video
+                      src={preview}
+                      controls
+                      className="w-full rounded-lg shadow-sm max-h-64 object-cover"
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between pt-4">
+              <button
+                type="button"
+                onClick={prevStep}
+                className="flex items-center space-x-2 bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-all duration-200 hover:cursor-pointer"
+              >
+                <FaArrowLeft className="text-sm" />
+                <span>{t("form.back")}</span>
+              </button>
+
+              <button
+                type="submit"
+                disabled={loading || uploading}
+                className="flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 focus:ring-4 focus:ring-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:cursor-pointer"
+              >
+                {loading ? (
+                  <>
+                    <FaSpinner className="animate-spin" />
+                    <span>{t("form.submitting")}</span>
+                  </>
+                ) : (
+                  <>
+                    <FaCheck className="text-sm" />
+                    <span>{t("form.submit")}</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Step 3: Success Screen */}
+        {currentStep === 3 && submissionData && (
+          <div className="text-center space-y-6 animate-fade-in">
+            {/* Success Icon */}
+            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <FaCheck className="w-10 h-10 text-green-600" />
+            </div>
+
+            {/* Success Message */}
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                {t("success.title")}
+              </h2>
+              <p className="text-gray-600 mb-6">
+                {t("success.description")}
+              </p>
+            </div>
+
+            {/* Submission Details Card */}
+            <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">
+                {t("success.submission_details")}
+              </h3>
+              
+              <div className="space-y-3 text-left">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 font-medium">{t("success.tracking_number")}:</span>
+                  <div className="flex items-center space-x-2">
+                    <code className="bg-white px-3 py-1 rounded-lg border font-mono text-blue-600">
+                      {submissionData.trackingNumber}
+                    </code>
+                    <button
+                      onClick={() => copyToClipboard(submissionData.trackingNumber)}
+                      className="p-2 text-gray-400 hover:text-blue-600 transition-colors hover:cursor-pointer"
+                      title={t("success.copy_tracking")}
+                    >
+                      <FaCopy className="text-sm" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">{t("success.complaint_id")}:</span>
+                  <span className="text-gray-800 font-mono">{submissionData.id}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">{t("success.title")}:</span>
+                  <span className="text-gray-800">{submissionData.title}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">{t("success.status")}:</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                    submissionData.status === 'Pending' 
+                      ? 'bg-yellow-100 text-yellow-800'
+                      : submissionData.status === 'Completed'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-blue-100 text-blue-800'
+                  }`}>
+                    {t("status." + submissionData.status)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="text-gray-600 font-medium">{t("success.submission_date")}:</span>
+                  <span className="text-gray-800">{new Date().toLocaleDateString()}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Important Notice */}
+            <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+              <div className="flex items-start space-x-3">
+                <FaExclamationTriangle className="w-5 h-5 text-blue-600 mt-0.5" />
+                <div className="text-left">
+                  <p className="text-sm text-blue-800 font-medium">
+                    {t("success.important_notice")}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    {t("success.save_tracking")}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+              <button
+                onClick={downloadTrackingNumber}
+                className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all duration-200 hover:cursor-pointer"
+              >
+                <FaDownload className="text-sm" />
+                <span>{t("success.download_receipt")}</span>
+              </button>
+
+              <button
+                onClick={resetForm}
+                className="flex items-center space-x-2 bg-green-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-green-700 transition-all duration-200 hover:cursor-pointer"
+              >
+                <FaHome className="text-sm" />
+                <span>{t("success.submit_another")}</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Footer Note */}
-        <p className="text-center text-gray-500 text-sm mt-6">
-          {t("form.note")}
-        </p>
-      </form>
+        {currentStep < 3 && (
+          <p className="text-center text-gray-500 text-sm mt-6">
+            {t("form.note")}
+          </p>
+        )}
+      </div>
 
       <style jsx global>{`
         @keyframes fade-in {
