@@ -152,7 +152,13 @@
     "label": "ተሰርዟል",
     "description": "ቅሬታው ተሰርዟል ወይም ተሰረዘ"
   }
-}
+},
+    "reason_required": "እባክዎ ለዚህ የሁኔታ ለውጥ ምክንያት ያብራሩ",
+  "completion_reason": "የመጨረሻ ምክንያት",
+  "cancellation_reason": "የመሰረዝ ምክንያት",
+  "completion_placeholder": "ይህ ቅሬታ እንዴት እንደተፈታ ይግለጹ...",
+  "cancellation_placeholder": "ይህ ቅሬታ ለምን እንደሚሰረዝ ይግለጹ...",
+  "reason_help": "ይህ ምክንያት ለተጠቃሚው ይታያል"
 
 
 
@@ -192,7 +198,17 @@
     "status":"ሁኔታ",
     "priority": "ከፍተኛ ጥራት",
     "assigned_department":"የተመደበ ክፍል",
-    "days":"ቀናት"
+    "days":"ቀናት",
+    "personal_info": "የግል መረጃ",
+  "complainant_details": "የተቀራረበው ዝርዝር",
+  "reason": "ምክንያት",
+  "completion_explanation": "ለመጨረሻው ምክንያት ማብራሪያ",
+  "cancellation_explanation": "ለመሰረዝ ምክንያት ማብራሪያ",
+  "status_reason": "የሁኔታ ለውጥ ምክንያት",
+  "no_reason_provided": "ምክንያት አልተሰጠም",
+  "resolved_on": "የተፈታበት ቀን",
+  "tracking_number": "የተከታተል ቁጥር",
+  "submission_date": "የተላከበት ቀን"
 
   },
 
@@ -285,7 +301,66 @@
     "save_tracking": "የተከታተል ቁጥር አስቀምጥ",
     "download_receipt": "መረጃ አውርድ",
     "submit_another": "በሌላ ቅሬታ ይላኩ"
+  },
+  "tracking": {
+    "title": "ቅሬታዎን ይከታተሉ",
+    "description": "የቅሬታዎን ሁኔታ እና ዝርዝሮች ለመፈተሽ የመከታተያ ቁጥርዎን ያስገቡ",
+    "tracking_number": "የመከታተያ ቁጥር",
+    "enter_tracking_number": "የመከታተያ ቁጥርዎን ያስገቡ (ለምሳሌ፦ CMP-ABC123XYZ)",
+    "searching": "በመፈለግ ላይ...",
+    "search": "ፈልግ",
+    "complaint_details": "የቅሬታ ዝርዝሮች",
+    "copy_tracking": "የመከታተያ ቁጥር ገልብጥ",
+    "downloads": "አውርድ",
+    "print": "አትም",
+    "status": "ሁኔታ",
+    "priority": "የቅድሚያ ደረጃ",
+    "personal_information": "የግል መረጃ",
+    "complaint_information": "የቅሬታ መረጃ",
+    "media_attachment": "የሚዲያ አባሪ",
+    "timeline": "የጊዜ መስመር",
+    "submission_date": "የቀረበበት ቀን",
+    "last_updated": "የተመረመረበት ቀን",
+    "resolved_at": "የተፈታበት ቀን",
+    "resolution_reason": "የመፍትሄ ዝርዝሮች",
+    "cancellation_reason": "የስረዛ ምክንያት",
+    "errors": {
+      "not_found": "ቅሬታ አልተገኘም",
+      "fetch_failed": "የቅሬታ ዝርዝሮች ማምጣት አልተሳካም"
+    },
+    "download": {
+      "title": "የቅሬታ ዝርዝሮች",
+      "tracking_number": "የመከታተያ ቁጥር",
+      "separator": "==============================================================",
+      "personal_info_section": "የግል መረጃ፡",
+      "complaint_section": "የቅሬታ ዝርዝሮች፡",
+      "description_section": "መግለጫ፡",
+      "reason_section": "የመፍትሄ ምክንያት፡",
+      "tracking_section": "የመከታተያ መረጃ፡",
+      "important_note": "ጠቃሚ፡",
+      "section_separator": "---------------------",
+      "submission_date": "የቀረበበት ቀን",
+      "complaint_id": "የቅሬታ መለያ",
+      "created_at": "የተፈጠረበት ቀን",
+      "updated_at": "የተመረመረበት ቀን",
+      "resolved_at": "የተፈታበት ቀን",
+      "keep_tracking": "ይህን የመከታተያ ቁጥር ለወደፊት ለማጣቀስ ይያዙት።",
+      "tracking_usage": "የቅሬታዎን ሁኔታ በማንኛውም ጊዜ ለመፈተሽ ሊጠቀሙበት ይችላሉ።"
+    },
+    "form": {
+    "full_name": "ሙሉ ስም",
+    "phone_number": "ስልክ ቁጥር",
+    "gender": "ጾታ",
+    "education_community": "የትምህርት ማህበረሰብ",
+    "school_name": "የትምህርት ቤት ስም",
+    "wereda": "ወረዳ",
+    "title": "ርዕስ",
+    "department": "ዳይሬክቶሬት",
+    "subDepartment": "ንዑስ ዳይሬክቶሬት",
+    "description": "መግለጫ"
   }
+  }
+  
 
 
 }

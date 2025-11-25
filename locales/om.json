@@ -151,7 +151,13 @@
       "label": "Haquu",
       "description": "Hojii irraa haqame"
     }
-  }
+  },
+      "reason_required": "Mee sababaa jijjiirama haala kanaa kaa'aa",
+  "completion_reason": "Sababaa Xumuramaa",
+  "cancellation_reason": "Sababaa Haquu",
+  "completion_placeholder": "Komii kana akkamitti furame ibsa...",
+  "cancellation_placeholder": "Komiin kun maaliif akka haqamu ibsa...",
+  "reason_help": "Sababni kun itti gaafatamtootaaf ni mul'ata"
 },
 
 "level": {
@@ -188,7 +194,17 @@
       "status":"Haala",
     "priority": "Dursa",
     "assigned_department":"Kutaa ramadame",
-    "days":"Guyyaa"
+    "days":"Guyyaa",
+     "personal_info": "Odeeffannoo Dhuunfaa",
+  "complainant_details": "Faayila Dhiyeessaa Komii",
+  "reason": "Sababii",
+  "completion_explanation": "Ibsa xumuramaa",
+  "cancellation_explanation": "Ibsa haquu",
+  "status_reason": "Sababii jijjiirraa haala",
+  "no_reason_provided": "Sababni hin kennamne",
+  "resolved_on": "Guyyaa furame",
+  "tracking_number": "Lakkoofsa To’ataa",
+  "submission_date": "Guyyaa ergichaa"
   },
   "profile":{
     "title":"Profaayilii",
@@ -279,7 +295,67 @@
     "save_tracking": "Lakkoofsa To’ataa Kuusi",
     "download_receipt": "Gabaasa Buusi",
     "submit_another": "Komii Haaraa Ergi"
+  },
+  "tracking": {
+    "title": "Daawoomii Keessan Hordofi",
+    "description": "Haala daawoomii keessanii fi gahee isaa ilaaluuf lakkoofsa hordofaa keessan galchaa",
+    "tracking_number": "Lakkoofsa Hordofaa",
+    "enter_tracking_number": "Lakkoofsa hordofaa keessan galchaa (fakkeenyaaf: CMP-ABC123XYZ)",
+    "searching": "Barbaaduu keessaa...",
+    "search": "Barbaadi",
+    "complaint_details": "Gahee Daawoomii",
+    "copy_tracking": "Lakkoofsa hordofaa dursi",
+    "downloads": "Buusi",
+    "print": "Maxxansi",
+    "status": "Haala",
+    "priority": "Sadarkaa Duraa",
+    "personal_information": "Odeeffannoo Dhuumaa",
+    "complaint_information": "Odeeffannoo Daawoomii",
+    "media_attachment": "Media Dabalataa",
+    "timeline": "Saffisa Yeroo",
+    "submission_date": "Guyyaa Dhiyaatame",
+    "last_updated": "Guyyaa Dura Dhuunfaa",
+    "resolved_at": "Guyyaa Furmaata",
+    "resolution_reason": "Gahee Furmaata",
+    "cancellation_reason": "Sababa Dhiisu",
+    "errors": {
+      "not_found": "Daawoomii hin argamne",
+      "fetch_failed": "Gahee daawoomii fiduu hin dandeenye"
+    },
+    "download": {
+      "title": "GAHEE DAAWOOMII",
+      "tracking_number": "LAKKOOFSAA HORDOFAA",
+      "separator": "==============================================================",
+      "personal_info_section": "ODE EFFANNOO DHUUMAA:",
+      "complaint_section": "GAHEE DAAWOOMII:",
+      "description_section": "IBSU:",
+      "reason_section": "SABABA FURMAATA:",
+      "tracking_section": "ODE EFFANNOO HORDOFAA:",
+      "important_note": "BARBAA CHISAA:",
+      "section_separator": "---------------------",
+      "submission_date": "Guyyaa Dhiyaatame",
+      "complaint_id": "ID Daawoomii",
+      "created_at": "Guyyaa Uumame",
+      "updated_at": "Guyyaa Dura Dhuunfaa",
+      "resolved_at": "Guyyaa Furmaata",
+      "keep_tracking": "Lakkoofsa hordofaa kana yeroo booda ittiin deebi'an ilaaluuf qabadhaa.",
+      "tracking_usage": "Haala daawoomii keessan yeroo kamillee ilaaluuf itti fayyadamtu."
+    },
+     "form": {
+    "full_name": "Maqaa Guutuu",
+    "phone_number": "Lakkoofsa Bilbila",
+    "gender": "Saala",
+    "education_community": "Hawaasa Barumsaa",
+    "school_name": "Maqaa Manni Barumsaa",
+    "wereda": "Aanaa",
+    "title": "Mata-duree",
+    "department": "Aangoo",
+    "subDepartment": "Aangoo Xiqqaa",
+    "description": "Ibsu"
   }
+  }
+ 
+
 
 
 }

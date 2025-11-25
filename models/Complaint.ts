@@ -19,6 +19,8 @@ export interface IComplaint extends Document {
   mediaUrl?: string;
   publicId?: string;
   status: "Pending" | "Canceled" | "In Progress" | "Completed";
+  reason?: string; // New field for completion/cancellation reason
+  resolvedAt?: Date; // New field for when complaint was resolved
   date: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -54,6 +56,8 @@ const ComplaintSchema = new Schema<IComplaint>(
       required: true,
       default: "Pending",
     },
+    reason: { type: String, trim: true }, // New field
+    resolvedAt: { type: Date }, // New field
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }
@@ -63,6 +67,7 @@ const ComplaintSchema = new Schema<IComplaint>(
 ComplaintSchema.index({ department: 1 });
 ComplaintSchema.index({ status: 1 });
 ComplaintSchema.index({ date: 1 });
+ComplaintSchema.index({ resolvedAt: 1 }); // New index
 
 // 🔹 Pre-save hook for unique tracking number
 ComplaintSchema.pre("validate", async function (next) {

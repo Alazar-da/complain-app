@@ -1,4 +1,5 @@
 "use client";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { useState, FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { 
@@ -6,7 +7,6 @@ import {
   FaSpinner, 
   FaUser, 
   FaPhone, 
-  FaEnvelope, 
   FaSchool, 
   FaMapMarkerAlt,
   FaFileAlt,
@@ -18,7 +18,9 @@ import {
   FaCheckCircle,
   FaClock,
   FaSync,
-  FaTimesCircle
+  FaTimesCircle,
+  FaComment,
+  FaCheck
 } from "react-icons/fa";
 
 interface ComplaintData {
@@ -36,7 +38,10 @@ interface ComplaintData {
   level: "Low" | "Medium" | "High";
   description: string;
   mediaUrl?: string;
+  publicId?: string;
   status: "Pending" | "Canceled" | "In Progress" | "Completed";
+  reason?: string; // New field from model
+  resolvedAt?: string; // New field from model
   date: string;
   createdAt: string;
   updatedAt: string;
@@ -66,10 +71,10 @@ export default function TrackComplaint() {
       if (data.success) {
         setComplaint(data.complaint);
       } else {
-        setError(data.message || "Complaint not found");
+        setError(data.message || t("tracking.errors.not_found", "Complaint not found"));
       }
     } catch (err) {
-      setError("Failed to fetch complaint details");
+      setError(t("tracking.errors.fetch_failed", "Failed to fetch complaint details"));
     } finally {
       setLoading(false);
     }
@@ -85,41 +90,49 @@ export default function TrackComplaint() {
     if (!complaint) return;
 
     const content = `
-COMPLAINT DETAILS - TRACKING NUMBER: ${complaint.trackingNumber}
-==============================================================
+${t("tracking.download.title", "COMPLAINT DETAILS")} - ${t("tracking.download.tracking_number", "TRACKING NUMBER")}: ${complaint.trackingNumber}
+${t("tracking.download.separator", "==============================================================")}
 
-PERSONAL INFORMATION:
----------------------
-Full Name: ${complaint.fullName}
-Phone Number: ${complaint.phoneNumber}
-Gender: ${complaint.gender}
-Education Community: ${complaint.educationCommunity}
-School Name: ${complaint.schoolName}
-Wereda: ${complaint.wereda}
+${t("tracking.download.personal_info_section", "PERSONAL INFORMATION:")}
+${t("tracking.download.section_separator", "---------------------")}
+${t("form.full_name", "Full Name")}: ${complaint.fullName}
+${t("form.phone_number", "Phone Number")}: ${complaint.phoneNumber}
+${t("form.gender", "Gender")}: ${complaint.gender}
+${t("form.education_community", "Education Community")}: ${complaint.educationCommunity}
+${t("form.school_name", "School Name")}: ${complaint.schoolName}
+${t("form.wereda", "Wereda")}: ${complaint.wereda}
 
-COMPLAINT DETAILS:
-------------------
-Title: ${complaint.title}
-Department: ${complaint.department}
-${complaint.subDepartment ? `Sub-Department: ${complaint.subDepartment}` : ''}
-Priority Level: ${complaint.level}
-Status: ${complaint.status}
-Submission Date: ${new Date(complaint.createdAt).toLocaleDateString()}
+${t("tracking.download.complaint_section", "COMPLAINT DETAILS:")}
+${t("tracking.download.section_separator", "---------------------")}
+${t("form.title", "Title")}: ${complaint.title}
+${t("form.department", "Department")}: ${complaint.department}
+${complaint.subDepartment ? `${t("form.subDepartment", "Sub-Department")}: ${complaint.subDepartment}` : ''}
+${t("tracking.priority", "Priority Level")}: ${complaint.level}
+${t("tracking.status", "Status")}: ${complaint.status}
+${t("tracking.download.submission_date", "Submission Date")}: ${new Date(complaint.createdAt).toLocaleDateString()}
 
-DESCRIPTION:
-------------
+${t("tracking.download.description_section", "DESCRIPTION:")}
+${t("tracking.download.section_separator", "---------------------")}
 ${complaint.description}
 
-TRACKING INFORMATION:
----------------------
-Complaint ID: ${complaint._id}
-Tracking Number: ${complaint.trackingNumber}
-Last Updated: ${new Date(complaint.updatedAt).toLocaleString()}
+${complaint.reason ? `
+${t("tracking.download.reason_section", "RESOLUTION REASON:")}
+${t("tracking.download.section_separator", "---------------------")}
+${complaint.reason}
+` : ''}
 
-IMPORTANT:
-----------
-Keep this tracking number safe for future reference.
-You can use it to check the status of your complaint anytime.
+${t("tracking.download.tracking_section", "TRACKING INFORMATION:")}
+${t("tracking.download.section_separator", "---------------------")}
+${t("tracking.download.complaint_id", "Complaint ID")}: ${complaint._id}
+${t("tracking.download.tracking_number", "Tracking Number")}: ${complaint.trackingNumber}
+${t("tracking.download.created_at", "Created At")}: ${new Date(complaint.createdAt).toLocaleString()}
+${t("tracking.download.updated_at", "Last Updated")}: ${new Date(complaint.updatedAt).toLocaleString()}
+${complaint.resolvedAt ? `${t("tracking.download.resolved_at", "Resolved At")}: ${new Date(complaint.resolvedAt).toLocaleString()}` : ''}
+
+${t("tracking.download.important_note", "IMPORTANT:")}
+${t("tracking.download.section_separator", "---------------------")}
+${t("tracking.download.keep_tracking", "Keep this tracking number safe for future reference.")}
+${t("tracking.download.tracking_usage", "You can use it to check the status of your complaint anytime.")}
     `.trim();
 
     const blob = new Blob([content], { type: 'text/plain' });
@@ -191,9 +204,13 @@ You can use it to check the status of your complaint anytime.
   };
 
   return (
-    <main className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-8 text-slate-800">
+    <main className="relative min-h-screen bg-linear-to-br from-blue-50 to-indigo-100 py-8 text-slate-800">
+      <section className="fixed top-2 right-2 z-50">
+        <LanguageSwitcher />
+      </section>
+      
       <div className="max-w-4xl mx-auto px-4">
-        {/* Header */}
+        {/* Header Section - Displayed to provide clear purpose and instructions */}
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <FaSearch className="w-10 h-10 text-blue-600" />
@@ -206,7 +223,7 @@ You can use it to check the status of your complaint anytime.
           </p>
         </div>
 
-        {/* Search Section */}
+        {/* Search Section - Displayed to allow users to search for complaints */}
         <div className="bg-white rounded-2xl shadow-lg p-8 mb-8 border border-gray-100">
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
@@ -256,10 +273,10 @@ You can use it to check the status of your complaint anytime.
           )}
         </div>
 
-        {/* Complaint Details */}
+        {/* Complaint Details - Displayed when complaint data is found */}
         {complaint && (
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden animate-fade-in">
-            {/* Header with Tracking Number */}
+            {/* Header with Tracking Number - Displayed for quick reference and actions */}
             <div className="bg-linear-to-r from-blue-600 to-purple-600 p-6 text-white">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 <div>
@@ -285,7 +302,7 @@ You can use it to check the status of your complaint anytime.
                     className="flex items-center space-x-2 bg-white/20 px-4 py-2 rounded-lg hover:bg-white/30 transition-colors hover:cursor-pointer"
                   >
                     <FaDownload />
-                    <span className="hidden sm:inline">{t("tracking.download", "Download")}</span>
+                    <span className="hidden sm:inline">{t("tracking.downloads", "Download")}</span>
                   </button>
                   <button
                     onClick={printDetails}
@@ -299,7 +316,7 @@ You can use it to check the status of your complaint anytime.
             </div>
 
             <div className="p-6 space-y-6">
-              {/* Status and Priority */}
+              {/* Status and Priority - Displayed for quick status overview */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center space-x-2 mb-2">
@@ -326,7 +343,25 @@ You can use it to check the status of your complaint anytime.
                 </div>
               </div>
 
-              {/* Personal Information */}
+              {/* Resolution Reason - Displayed when complaint is completed or canceled */}
+              {(complaint.status === 'Completed' || complaint.status === 'Canceled') && complaint.reason && (
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
+                    <FaComment className={complaint.status === 'Completed' ? "text-green-500" : "text-red-500"} />
+                    <span>
+                      {complaint.status === 'Completed' 
+                        ? t("tracking.resolution_reason", "Resolution Details")
+                        : t("tracking.cancellation_reason", "Cancellation Reason")
+                      }
+                    </span>
+                  </h3>
+                  <div className="bg-white p-4 rounded-lg border border-gray-200">
+                    <p className="text-gray-800 whitespace-pre-wrap">{complaint.reason}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Personal Information - Displayed to show complainant details */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
                   <FaUser className="text-blue-500" />
@@ -336,13 +371,13 @@ You can use it to check the status of your complaint anytime.
                   <div className="space-y-3">
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        {t("form.full_name", "Full Name")}
+                        {t("tracking.form.full_name", "Full Name")}
                       </label>
                       <p className="text-gray-800 font-medium">{complaint.fullName}</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        {t("form.phone_number", "Phone Number")}
+                        {t("tracking.form.phone_number", "Phone Number")}
                       </label>
                       <p className="text-gray-800 font-medium flex items-center space-x-2">
                         <FaPhone className="text-green-500 text-sm" />
@@ -351,7 +386,7 @@ You can use it to check the status of your complaint anytime.
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        {t("form.gender", "Gender")}
+                        {t("tracking.form.gender", "Gender")}
                       </label>
                       <p className="text-gray-800 font-medium capitalize">{complaint.gender}</p>
                     </div>
@@ -359,7 +394,7 @@ You can use it to check the status of your complaint anytime.
                   <div className="space-y-3">
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        {t("form.education_community", "Education Community")}
+                        {t("tracking.form.education_community", "Education Community")}
                       </label>
                       <p className="text-gray-800 font-medium capitalize">
                         {complaint.educationCommunity.replace('_', ' ')}
@@ -367,7 +402,7 @@ You can use it to check the status of your complaint anytime.
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        {t("form.school_name", "School Name")}
+                        {t("tracking.form.school_name", "School Name")}
                       </label>
                       <p className="text-gray-800 font-medium flex items-center space-x-2">
                         <FaSchool className="text-red-500 text-sm" />
@@ -376,7 +411,7 @@ You can use it to check the status of your complaint anytime.
                     </div>
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        {t("form.wereda", "Wereda")}
+                        {t("tracking.form.wereda", "Wereda")}
                       </label>
                       <p className="text-gray-800 font-medium flex items-center space-x-2">
                         <FaMapMarkerAlt className="text-teal-500 text-sm" />
@@ -387,7 +422,7 @@ You can use it to check the status of your complaint anytime.
                 </div>
               </div>
 
-              {/* Complaint Details */}
+              {/* Complaint Details - Displayed to show complaint content */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
                   <FaFileAlt className="text-purple-500" />
@@ -396,7 +431,7 @@ You can use it to check the status of your complaint anytime.
                 <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      {t("form.title", "Title")}
+                      {t("tracking.form.title", "Title")}
                     </label>
                     <p className="text-gray-800 font-medium text-lg">{complaint.title}</p>
                   </div>
@@ -404,14 +439,14 @@ You can use it to check the status of your complaint anytime.
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        {t("form.department", "Department")}
+                        {t("tracking.form.department", "Department")}
                       </label>
                       <p className="text-gray-800 font-medium">{complaint.department}</p>
                     </div>
                     {complaint.subDepartment && (
                       <div>
                         <label className="text-sm font-medium text-gray-600">
-                          {t("form.subDepartment", "Sub-Department")}
+                          {t("tracking.form.subDepartment", "Sub-Department")}
                         </label>
                         <p className="text-gray-800 font-medium">{complaint.subDepartment}</p>
                       </div>
@@ -420,7 +455,7 @@ You can use it to check the status of your complaint anytime.
 
                   <div>
                     <label className="text-sm font-medium text-gray-600">
-                      {t("form.description", "Description")}
+                      {t("tracking.form.description", "Description")}
                     </label>
                     <p className="text-gray-800 mt-1 bg-white p-4 rounded-lg border border-gray-200 whitespace-pre-wrap">
                       {complaint.description}
@@ -429,7 +464,7 @@ You can use it to check the status of your complaint anytime.
                 </div>
               </div>
 
-              {/* Media Attachment */}
+              {/* Media Attachment - Displayed when media is available */}
               {complaint.mediaUrl && (
                 <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                   <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -453,7 +488,7 @@ You can use it to check the status of your complaint anytime.
                 </div>
               )}
 
-              {/* Timeline */}
+              {/* Timeline - Displayed to show complaint timeline */}
               <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center space-x-2">
                   <FaCalendar className="text-orange-500" />
@@ -476,6 +511,18 @@ You can use it to check the status of your complaint anytime.
                       {formatDate(complaint.updatedAt)}
                     </span>
                   </div>
+                  {/* Resolution Date - Displayed when complaint is resolved */}
+                  {complaint.resolvedAt && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm font-medium text-gray-600 flex items-center space-x-2">
+                        <FaCheck className="text-green-500" />
+                        <span>{t("tracking.resolved_at", "Resolved Date")}</span>
+                      </span>
+                      <span className="text-gray-800 font-medium">
+                        {formatDate(complaint.resolvedAt)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
