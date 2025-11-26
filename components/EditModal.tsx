@@ -11,16 +11,27 @@ interface EditModalProps {
 
 export default function EditModal({ complaint, onClose, onUpdated }: EditModalProps) {
   const [status, setStatus] = useState(complaint.status);
+  const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
-    const { t } = useTranslation();
+  const { t } = useTranslation();
 
   const updateStatus = async () => {
+    if ((status === 'Completed' || status === 'Canceled') && !reason.trim()) {
+      alert(t('update_status.reason_required'));
+      return;
+    }
+
     setLoading(true);
     try {
+      const updateData: any = { status };
+      if (reason.trim()) {
+        updateData.reason = reason.trim();
+      }
+
       await fetch(`/api/complaints/update?id=${complaint._id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body: JSON.stringify(updateData),
       });
       onUpdated();
       onClose();
@@ -73,10 +84,11 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
   };
 
   const selectedStatus = statusOptions.find(opt => opt.name === status);
+  const requiresReason = status === 'Completed' || status === 'Canceled';
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-sm w-full transform transition-all duration-300 animate-scale-in">
+    <section className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-60 animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full transform transition-all duration-300 animate-scale-in">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div className="flex items-center space-x-3">
@@ -97,9 +109,9 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="p-6 space-y-4 overflow-y-auto max-h-[65vh]">
           {/* Complaint Preview */}
-          <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+          <div className="p-3 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-start space-x-2">
               <FiMessageSquare className="w-4 h-4 text-gray-400 mt-0.5 shrink-0" />
               <div className="min-w-0">
@@ -153,6 +165,31 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
                 </p>
               </div>
             )}
+
+            {/* Reason Input */}
+            {requiresReason && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  {status === 'Completed' 
+                    ? t('update_status.completion_reason') 
+                    : t('update_status.cancellation_reason')} *
+                </label>
+                <textarea
+                  value={reason}
+                  onChange={(e) => setReason(e.target.value)}
+                  placeholder={
+                    status === 'Completed'
+                      ? t('update_status.completion_placeholder')
+                      : t('update_status.cancellation_placeholder')
+                  }
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-200"
+                />
+                <p className="text-xs text-gray-500">
+                  {t('update_status.reason_help')}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -167,7 +204,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
           </button>
           <button
             onClick={updateStatus}
-            disabled={loading || status === complaint.status}
+            disabled={loading || (status === complaint.status && !reason) || (requiresReason && !reason.trim())}
             className="flex-1 py-2.5 px-4 text-white bg-blue-600 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:cursor-pointer"
           >
             {loading ? (
@@ -184,7 +221,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
           </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 

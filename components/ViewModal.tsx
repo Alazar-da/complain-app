@@ -1,12 +1,11 @@
 'use client';
 
-import { FiX, FiFileText, FiClock, FiTag, FiAlertCircle, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiTrendingUp, FiTrendingDown, FiMinus, FiInfo } from 'react-icons/fi';
+import { FiX, FiFileText, FiClock, FiTag, FiAlertCircle, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiTrendingUp, FiTrendingDown, FiMinus, FiInfo, FiUser, FiPhone, FiMapPin, FiBook, FiHome } from 'react-icons/fi';
 import { TbBuilding, TbBuildingSkyscraper } from 'react-icons/tb';
 import { useTranslation } from "react-i18next";
 import { departments, DepartmentKey } from "@/data/departments";
 import { useState, useEffect } from 'react';
-import { FaSpinner, FaTrash, FaImage, FaVideo, FaCloudUploadAlt, FaDownload } from 'react-icons/fa';
-import { time } from 'console';
+import { FaSpinner, FaTrash, FaImage, FaVideo, FaCloudUploadAlt, FaDownload, FaVenusMars, FaGraduationCap } from 'react-icons/fa';
 
 interface ViewModalProps {
   complaint: any;
@@ -77,116 +76,115 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
     }
   };
 
-// Check if the same media is used by other complaints
-const checkDuplicateMedia = async (mediaUrl: string, complaintId: string) => {
-  try {
-    const res = await fetch(`/api/complaints/check-duplicate?mediaUrl=${encodeURIComponent(mediaUrl)}&excludeId=${complaintId}`);
-    const data = await res.json();
+  // Check if the same media is used by other complaints
+  const checkDuplicateMedia = async (mediaUrl: string, complaintId: string) => {
+    try {
+      const res = await fetch(`/api/complaints/check-duplicate?mediaUrl=${encodeURIComponent(mediaUrl)}&excludeId=${complaintId}`);
+      const data = await res.json();
 
-    if (!res.ok) throw new Error(data.error || "Failed to check duplicates");
-    return data.isDuplicate; // boolean
-  } catch (error: any) {
-    console.error("❌ Duplicate check failed:", error.message);
-    return false;
-  }
-};
+      if (!res.ok) throw new Error(data.error || "Failed to check duplicates");
+      return data.isDuplicate; // boolean
+    } catch (error: any) {
+      console.error("❌ Duplicate check failed:", error.message);
+      return false;
+    }
+  };
 
-// Delete from Cloudinary (with duplicate check)
-const deleteFromCloudinary = async () => {
-  if (!complaint.mediaUrl) {
-    showMessage("No media file to delete", "error");
-    return;
-  }
-
-  try {
-    setDeleting(true);
-
-    // 🔍 Step 1: Check for duplicates
-    const isDuplicate = await checkDuplicateMedia(complaint.mediaUrl, complaint._id);
-
-    if (isDuplicate) {
-      console.log("⚠️ Media used in another complaint — skipping Cloudinary delete");
-      await clearMediaUrl(complaint._id);
-      showMessage(t("messages.file.remove.success"), "success");
+  // Delete from Cloudinary (with duplicate check)
+  const deleteFromCloudinary = async () => {
+    if (!complaint.mediaUrl) {
+      showMessage("No media file to delete", "error");
       return;
     }
 
-    // 🧩 Step 2: Extract Cloudinary public ID
-    const publicId = extractPublicId(complaint.mediaUrl);
-    if (!publicId) throw new Error("Could not extract file information");
+    try {
+      setDeleting(true);
 
-    const isVideo = /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
-    const resourceType = isVideo ? "video" : "image";
+      // 🔍 Step 1: Check for duplicates
+      const isDuplicate = await checkDuplicateMedia(complaint.mediaUrl, complaint._id);
 
-    // 🗑️ Step 3: Delete from Cloudinary
-    const res = await fetch("/api/delete-cloudinary", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        public_id: publicId,
-        resource_type: resourceType,
-      }),
-    });
+      if (isDuplicate) {
+        console.log("⚠️ Media used in another complaint — skipping Cloudinary delete");
+        await clearMediaUrl(complaint._id);
+        showMessage(t("messages.file.remove.success"), "success");
+        return;
+      }
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || "Failed to delete file");
+      // 🧩 Step 2: Extract Cloudinary public ID
+      const publicId = extractPublicId(complaint.mediaUrl);
+      if (!publicId) throw new Error("Could not extract file information");
 
-    console.log("✅ File deleted:", publicId);
+      const isVideo = /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
+      const resourceType = isVideo ? "video" : "image";
 
-    // 🧹 Step 4: Clear the URL in DB
-    await clearMediaUrl(complaint._id);
-  } catch (error: any) {
-    console.error("❌ Delete failed:", error.message);
-    showMessage(t("messages.file.remove.error"), "error");
-  } finally {
-    setDeleting(false);
-  }
-};
+      // 🗑️ Step 3: Delete from Cloudinary
+      const res = await fetch("/api/delete-cloudinary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          public_id: publicId,
+          resource_type: resourceType,
+        }),
+      });
 
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete file");
+
+      console.log("✅ File deleted:", publicId);
+
+      // 🧹 Step 4: Clear the URL in DB
+      await clearMediaUrl(complaint._id);
+    } catch (error: any) {
+      console.error("❌ Delete failed:", error.message);
+      showMessage(t("messages.file.remove.error"), "error");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const handleDelete = async () => {
     await deleteFromCloudinary();
   };
 
   const handleDownload = async () => {
-  try {
-    // Fetch the media file
-    const response = await fetch(complaint.mediaUrl);
-    const blob = await response.blob();
-    
-    // Create a download link
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.style.display = 'none';
-    a.href = url;
-    
-    // Set the filename
-    const fileExtension = isImage ? 'jpg' : 'mp4';
-    const fileName = `complaint-media-${complaint._id || 'attachment'}.${fileExtension}`;
-    a.download = fileName;
-    
-    // Trigger download
-    document.body.appendChild(a);
-    a.click();
-    
-    // Clean up
-    window.URL.revokeObjectURL(url);
-    document.body.removeChild(a);
-    
-    // Optional: Show success message
-    setMessage({
-      type: 'success',
-      text: 'Media downloaded successfully!'
-    });
-    
-  } catch (error) {
-    console.error('Download failed:', error);
-    setMessage({
-      type: 'error',
-      text: 'Failed to download media. Please try again.'
-    });
-  }
-};
+    try {
+      // Fetch the media file
+      const response = await fetch(complaint.mediaUrl);
+      const blob = await response.blob();
+      
+      // Create a download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      
+      // Set the filename
+      const fileExtension = isImage ? 'jpg' : 'mp4';
+      const fileName = `complaint-media-${complaint._id || 'attachment'}.${fileExtension}`;
+      a.download = fileName;
+      
+      // Trigger download
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      // Optional: Show success message
+      setMessage({
+        type: 'success',
+        text: 'Media downloaded successfully!'
+      });
+      
+    } catch (error) {
+      console.error('Download failed:', error);
+      setMessage({
+        type: 'error',
+        text: 'Failed to download media. Please try again.'
+      });
+    }
+  };
 
   const getStatusConfig = (status: string) => {
     const configs: any = {
@@ -243,6 +241,25 @@ const deleteFromCloudinary = async () => {
     };
   };
 
+  const getGenderLabel = (gender: string) => {
+    const genders: any = {
+      "male": t("gender.male") || "Male",
+      "female": t("gender.female") || "Female"
+    };
+    return genders[gender] || gender;
+  };
+
+  const getEducationLabel = (education: string) => {
+    const educations: any = {
+      "student": t("education.student") || "Student",
+      "student_family": t("education.student_family") || "Student Family",
+      "teacher": t("education.teacher") || "Teacher",
+      "supervisor": t("education.supervisor") || "Supervisor",
+      "expert": t("education.expert") || "Expert"
+    };
+    return educations[education] || education;
+  };
+
   const statusConfig = getStatusConfig(complaint.status);
   const levelConfig = getLevelConfig(complaint.level);
 
@@ -263,8 +280,8 @@ const deleteFromCloudinary = async () => {
   const isVideo = complaint.mediaUrl?.includes("video") || /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
 
   return (
-    <main className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[95vh] overflow-hidden transform transition-all duration-300 animate-scale-in">
+    <section className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-60 animate-fade-in">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden transform transition-all duration-300 animate-scale-in">
         {/* Header */}
         <div className="bg-linear-to-r from-purple-600 to-indigo-700 p-6">
           <div className="flex items-center justify-between">
@@ -291,14 +308,76 @@ const deleteFromCloudinary = async () => {
 
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[calc(95vh-180px)]">
-          <div className="grid grid-cols-1 xl:grid-cols-5 gap-6">
-            {/* Left Column - Basic Info */}
-            <div className="xl:col-span-3 space-y-6">
+          <div className="grid grid-cols-1 xl:grid-cols-7 gap-6">
+            {/* Left Column - Personal Info & Basic Info */}
+            <div className="xl:col-span-4 space-y-6">
+              {/* Personal Information Card */}
+              <div className="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200">
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <FiUser className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900 text-lg">{t("complaint_details.personal_info")}</h3>
+                    <p className="text-gray-600 text-sm">{t("complaint_details.complainant_details")}</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiUser className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm font-medium text-gray-500">{t("form.full_name")}</span>
+                    </div>
+                    <p className="text-gray-800 font-semibold">{complaint.fullName}</p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiPhone className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm font-medium text-gray-500">{t("form.phone_number")}</span>
+                    </div>
+                    <p className="text-gray-800 font-semibold">{complaint.phoneNumber}</p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FaVenusMars className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm font-medium text-gray-500">{t("form.gender")}</span>
+                    </div>
+                    <p className="text-gray-800 font-semibold capitalize">{getGenderLabel(complaint.gender)}</p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FaGraduationCap className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm font-medium text-gray-500">{t("form.education_community")}</span>
+                    </div>
+                    <p className="text-gray-800 font-semibold">{getEducationLabel(complaint.educationCommunity)}</p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiHome className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm font-medium text-gray-500">{t("form.school_name")}</span>
+                    </div>
+                    <p className="text-gray-800 font-semibold">{complaint.schoolName}</p>
+                  </div>
+                  
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <FiMapPin className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm font-medium text-gray-500">{t("form.wereda")}</span>
+                    </div>
+                    <p className="text-gray-800 font-semibold">{complaint.wereda}</p>
+                  </div>
+                </div>
+              </div>
+
               {/* Title Card */}
               <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <FiFileText className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                    <FiFileText className="w-5 h-5 text-orange-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 text-lg">{t("complaint_details.complaint_title")}</h3>
@@ -313,8 +392,8 @@ const deleteFromCloudinary = async () => {
               {/* Description Card */}
               <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <FiAlertCircle className="w-5 h-5 text-orange-600" />
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <FiAlertCircle className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-900 text-lg">{t("complaint_details.detailed_description")}</h3>
@@ -329,109 +408,109 @@ const deleteFromCloudinary = async () => {
               </div>
 
               {/* Media Section */}
-         {complaint.mediaUrl && (
-  <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-    <div className="flex items-center justify-between mb-4">
-      <div className="sm:flex items-center space-x-3 hidden">
-        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-          {isImage ? (
-            <FaImage className="w-5 h-5 text-purple-600" />
-          ) : (
-            <FaVideo className="w-5 h-5 text-purple-600" />
-          )}
-        </div>
-        <div>
-          <h3 className="font-semibold text-gray-900 text-lg">
-            {t("complaint_details.attached_media")}
-          </h3>
-          <p className="text-gray-600 text-sm">
-            {isImage ? t("form.image") : t("form.video")}
-          </p>
-        </div>
-      </div>
-      <div className="flex items-center space-x-2">
-        {/* Download Button */}
-        <button
-          onClick={handleDownload}
-          className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 shadow-lg hover:cursor-pointer"
-        >
-          <FaDownload className="text-sm" />
-          <span className="text-sm">{t("form.download")}</span>
-        </button>
-        
-        {/* Delete Button */}
-        <button
-          onClick={handleDelete}
-          disabled={deleting}
-          className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:cursor-pointer"
-        >
-          {deleting ? (
-            <>
-              <FaSpinner className="animate-spin text-sm" />
-              <span className="text-sm">{t("form.removing")}</span>
-            </>
-          ) : (
-            <>
-              <FaTrash className="text-sm" />
-              <span className="text-sm">{t("form.remove")}</span>
-            </>
-          )}
-        </button>
-      </div>
-    </div>
+              {complaint.mediaUrl && (
+                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="sm:flex items-center space-x-3 hidden">
+                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        {isImage ? (
+                          <FaImage className="w-5 h-5 text-purple-600" />
+                        ) : (
+                          <FaVideo className="w-5 h-5 text-purple-600" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-gray-900 text-lg">
+                          {t("complaint_details.attached_media")}
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                          {isImage ? t("form.image") : t("form.video")}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {/* Download Button */}
+                      <button
+                        onClick={handleDownload}
+                        className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 shadow-lg hover:cursor-pointer"
+                      >
+                        <FaDownload className="text-sm" />
+                        <span className="text-sm">{t("form.download")}</span>
+                      </button>
+                      
+                      {/* Delete Button */}
+                      <button
+                        onClick={handleDelete}
+                        disabled={deleting}
+                        className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:cursor-pointer"
+                      >
+                        {deleting ? (
+                          <>
+                            <FaSpinner className="animate-spin text-sm" />
+                            <span className="text-sm">{t("form.removing")}</span>
+                          </>
+                        ) : (
+                          <>
+                            <FaTrash className="text-sm" />
+                            <span className="text-sm">{t("form.remove")}</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
 
-    {message.text && (
-      <div className={getMessageStyles()}>
-        <div className="flex items-center justify-center space-x-2">
-          {message.type === "success" && (
-            <FiCheckCircle className="w-5 h-5 text-green-600" />
-          )}
-          {message.type === "error" && (
-            <FiAlertCircle className="w-5 h-5 text-red-600" />
-          )}
-          <span>{message.text}</span>
-        </div>
-        {message.type === "success" && countdown > 0 && (
-          <div className="mt-2 text-sm text-gray-600">
-            Closing in {countdown} second{countdown !== 1 ? 's' : ''}...
-          </div>
-        )}
-      </div>
-    )}
+                  {message.text && (
+                    <div className={getMessageStyles()}>
+                      <div className="flex items-center justify-center space-x-2">
+                        {message.type === "success" && (
+                          <FiCheckCircle className="w-5 h-5 text-green-600" />
+                        )}
+                        {message.type === "error" && (
+                          <FiAlertCircle className="w-5 h-5 text-red-600" />
+                        )}
+                        <span>{message.text}</span>
+                      </div>
+                      {message.type === "success" && countdown > 0 && (
+                        <div className="mt-2 text-sm text-gray-600">
+                          Closing in {countdown} second{countdown !== 1 ? 's' : ''}...
+                        </div>
+                      )}
+                    </div>
+                  )}
 
-    <div className="bg-white rounded-xl p-4 border-2 border-dashed border-gray-200">
-      {isImage ? (
-        <div className="relative group">
-          <img
-            src={complaint.mediaUrl}
-            alt="Complaint attachment"
-            className="w-full rounded-lg shadow-sm max-h-96 object-contain bg-gray-50"
-          />
-          <div className="absolute inset-0 bg-black/50 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
-            <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <FaImage className="w-8 h-8 text-white" />
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="relative">
-          <video
-            src={complaint.mediaUrl}
-            controls
-            className="w-full rounded-lg shadow-sm max-h-96 bg-black"
-          />
-          <div className="absolute top-4 right-4 bg-black/50 rounded-full p-2">
-            <FaVideo className="w-4 h-4 text-white" />
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-)}
+                  <div className="bg-white rounded-xl p-4 border-2 border-dashed border-gray-200">
+                    {isImage ? (
+                      <div className="relative group">
+                        <img
+                          src={complaint.mediaUrl}
+                          alt="Complaint attachment"
+                          className="w-full rounded-lg shadow-sm max-h-96 object-contain bg-gray-50"
+                        />
+                        <div className="absolute inset-0 bg-black/50 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
+                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <FaImage className="w-8 h-8 text-white" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="relative">
+                        <video
+                          src={complaint.mediaUrl}
+                          controls
+                          className="w-full rounded-lg shadow-sm max-h-96 bg-black"
+                        />
+                        <div className="absolute top-4 right-4 bg-black/50 rounded-full p-2">
+                          <FaVideo className="w-4 h-4 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Right Column - Metadata */}
-            <div className="space-y-6 xl:col-span-2">
+            <div className="space-y-6 xl:col-span-3">
               {/* Status & Priority */}
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
@@ -456,6 +535,43 @@ const deleteFromCloudinary = async () => {
                   </div>
                 </div>
               </div>
+
+              {/* Reason Section (if exists) */}
+              {(complaint.reason || complaint.status === 'Completed' || complaint.status === 'Canceled') && (
+                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                      <FiBook className="w-5 h-5 text-indigo-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">
+                        {complaint.status === 'Completed' 
+                          ? t("update_status.completion_reason") 
+                          : complaint.status === 'Canceled'
+                          ? t("update_status.cancellation_reason")
+                          : t("complaint_details.reason")}
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        {complaint.status === 'Completed' 
+                          ? t("complaint_details.completion_explanation")
+                          : complaint.status === 'Canceled'
+                          ? t("complaint_details.cancellation_explanation")
+                          : t("complaint_details.status_reason")}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
+                      {complaint.reason || t("complaint_details.no_reason_provided")}
+                    </p>
+                  </div>
+                  {complaint.resolvedAt && (
+                    <div className="mt-3 text-xs text-gray-500">
+                      {t("complaint_details.resolved_on")}: {new Date(complaint.resolvedAt).toLocaleDateString()}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Department Information */}
               <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
@@ -505,6 +621,12 @@ const deleteFromCloudinary = async () => {
                 </div>
                 <div className="space-y-3">
                   <div className="bg-white rounded-lg p-3 border border-gray-200">
+                    <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.tracking_number")}</p>
+                    <p className="text-gray-800 font-mono text-sm bg-gray-50 px-2 py-1 rounded">
+                      {complaint.trackingNumber}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border border-gray-200">
                     <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.complaint_id")}</p>
                     <p className="text-gray-800 font-mono text-sm bg-gray-50 px-2 py-1 rounded">
                       {complaint._id?.slice(-8) || 'N/A'}
@@ -521,6 +643,12 @@ const deleteFromCloudinary = async () => {
                         {daysSinceSubmission} {t("complaint_details.days")}
                       </p>
                     </div>
+                  </div>
+                  <div className="bg-white rounded-lg p-3 border border-gray-200">
+                    <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.submission_date")}</p>
+                    <p className="text-gray-800 font-semibold">
+                      {new Date(complaint.createdAt).toLocaleDateString()}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -545,6 +673,6 @@ const deleteFromCloudinary = async () => {
           animation: scale-in 0.2s ease-out;
         }
       `}</style>
-    </main>
+    </section>
   );
 }

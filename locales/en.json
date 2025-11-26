@@ -3,9 +3,39 @@
     "title": "City Education Complaint Office",
     "description": "Complaint app"
   },
+   "view_complaints": "View Complaints",
   "title": "Submit a Complaint",
           "subtitle": "Fill out the form below to submit your complaint.",
+  "personal_info": {
+    "personal_info": "Personal Info",
+    "complaint_details": "Complaint Details"
+  },
+  "education": {
+      "student": "Student",
+      "student_family": "Student Family",
+      "teacher": "Teacher",
+      "supervisor": "Supervisor",
+      "expert": "Expert"
+    },
+    "gender": {
+      "male": "Male",
+      "female": "Female"
+    },
           "form": {
+                "full_name": "Full Name",
+    "enter_full_name": "Enter full name",
+    "phone_number": "Phone Number",
+    "enter_phone_number": "Enter phone number",
+    "gender": "Gender",
+    "select_gender": "Select gender",
+    "education_community": "Education Community",
+    "select_education_community": "Select education community",
+    "school_name": "School Name",
+    "enter_school": "Enter school",
+    "wereda": "Wereda",
+    "enter_wereda": "Enter wereda",
+
+
             "title": "Complaint Title",
             "department": "Department",
             "subDepartment": "Sub Department",
@@ -25,7 +55,9 @@
             "uploaded": "uploaded",
             "removing": "Removing...",
             "remove": "Remove",
-            "download": "Download"
+            "download": "Download",
+             "next": "Next",
+    "back": "Back"
 },
           "departments": {
   "general": "General",
@@ -118,7 +150,13 @@
       "label": "Canceled",
       "description": "Cancelled"
     }
-  }
+  },
+    "reason_required": "Please provide a reason for this status change",
+  "completion_reason": "Completion Reason",
+  "cancellation_reason": "Cancellation Reason", 
+  "completion_placeholder": "Describe how this complaint was resolved...",
+  "cancellation_placeholder": "Explain why this complaint is being canceled...",
+  "reason_help": "This reason will be visible to the user"
 },
   "level": {
     "Low": "Low",
@@ -154,7 +192,17 @@
     "tracking_info": "Tracking information",
     "complaint_id": "Complaint ID",
     "days_active": "Days Active",
-"days":"days"
+"days":"days",
+ "personal_info": "Personal Information",
+  "complainant_details": "Complainant Details",
+  "reason": "Reason",
+  "completion_explanation": "Explanation for completion",
+  "cancellation_explanation": "Explanation for cancellation", 
+  "status_reason": "Reason for status change",
+  "no_reason_provided": "No reason provided",
+  "resolved_on": "Resolved on",
+  "tracking_number": "Tracking Number",
+  "submission_date": "Submission Date"
   },
 
   "profile":{
@@ -229,10 +277,85 @@
     "Daily_Complaints":	"Daily Complaints",
 "Complaints_by_Level":	"Complaints by Level",
 "Complaints_by_Status":	"Complaints by Status"
+  },
+
+  "success": {
+    "title": "Submission Successful",
+    "description": "Your complaint has been submitted successfully.",
+
+    "submission_details": "Submission Details",
+    "tracking_number": "Tracking Number",
+
+    "complaint_id": "Complaint ID",
+    "title_field": "Title",
+    "status": "Status",
+    "submission_date": "Submission Date",
+
+    "important_notice": "Important Notice",
+
+    "save_tracking": "Save Tracking Number",
+    "download_receipt": "Download Receipt",
+    "submit_another": "Submit Another Complaint"
+  },
+  
+  "tracking": {
+    "title": "Track Your Complaint",
+    "description": "Enter your tracking number to check the status and details of your complaint",
+    "tracking_number": "Tracking Number",
+    "enter_tracking_number": "Enter your tracking number (e.g., CMP-ABC123XYZ)",
+    "searching": "Searching...",
+    "search": "Search",
+    "complaint_details": "Complaint Details",
+    "copy_tracking": "Copy tracking number",
+    "downloads": "Download",
+    "print": "Print",
+    "status": "Status",
+    "priority": "Priority Level",
+    "personal_information": "Personal Information",
+    "complaint_information": "Complaint Information",
+    "media_attachment": "Media Attachment",
+    "timeline": "Timeline",
+    "submission_date": "Submission Date",
+    "last_updated": "Last Updated",
+    "resolved_at": "Resolved Date",
+    "resolution_reason": "Resolution Details",
+    "cancellation_reason": "Cancellation Reason",
+    "errors": {
+      "not_found": "Complaint not found",
+      "fetch_failed": "Failed to fetch complaint details"
+    },
+    "download": {
+      "title": "COMPLAINT DETAILS",
+      "tracking_number": "TRACKING NUMBER",
+      "separator": "==============================================================",
+      "personal_info_section": "PERSONAL INFORMATION:",
+      "complaint_section": "COMPLAINT DETAILS:",
+      "description_section": "DESCRIPTION:",
+      "reason_section": "RESOLUTION REASON:",
+      "tracking_section": "TRACKING INFORMATION:",
+      "important_note": "IMPORTANT:",
+      "section_separator": "---------------------",
+      "submission_date": "Submission Date",
+      "complaint_id": "Complaint ID",
+      "created_at": "Created At",
+      "updated_at": "Last Updated",
+      "resolved_at": "Resolved At",
+      "keep_tracking": "Keep this tracking number safe for future reference.",
+      "tracking_usage": "You can use it to check the status of your complaint anytime."
+    },
+      "form": {
+    "full_name": "Full Name",
+    "phone_number": "Phone Number",
+    "gender": "Gender",
+    "education_community": "Education Community",
+    "school_name": "School Name",
+    "wereda": "Wereda",
+    "title": "Title",
+    "department": "Department",
+    "subDepartment": "Sub-Department",
+    "description": "Description"
   }
-
-
-
+  }
 
 
 

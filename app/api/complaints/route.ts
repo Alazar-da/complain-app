@@ -1,17 +1,31 @@
-import connectDB  from "@/DB/connectDB";
+import connectDB from "@/DB/connectDB";
 import Complaint from "@/models/Complaint";
 import { NextResponse } from "next/server";
 
-export async function POST(req:Request) {
+export async function POST(req: Request) {
   try {
     const data = await req.json();
     await connectDB();
+
     const complaint = await Complaint.create(data);
-    return NextResponse.json({ success: true, complaint }, { status: 201 });
-  } catch (error:any) {
+
+    return NextResponse.json(
+      {
+        success: true,
+        complaint: {
+          id: complaint._id,
+          trackingNumber: complaint.trackingNumber,
+          status: complaint.status,
+          title: complaint.title,
+        },
+      },
+      { status: 201 }
+    );
+  } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
+
 
 export async function GET(req: Request) {
   try {
