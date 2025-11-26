@@ -1,6 +1,6 @@
 "use client";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { 
   FaSearch, 
@@ -22,6 +22,9 @@ import {
   FaComment,
   FaCheck
 } from "react-icons/fa";
+import { departments, DepartmentKey } from "@/data/departments";
+import { FiCheckCircle, FiClock, FiInfo, FiMinus, FiPauseCircle, FiPlayCircle, FiTrendingDown, FiTrendingUp } from "react-icons/fi";
+import { FaRightLeft } from "react-icons/fa6";
 
 interface ComplaintData {
   _id: string;
@@ -47,6 +50,7 @@ interface ComplaintData {
   updatedAt: string;
 }
 
+
 export default function TrackComplaint() {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [complaint, setComplaint] = useState<ComplaintData | null>(null);
@@ -54,7 +58,26 @@ export default function TrackComplaint() {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const { t, i18n } = useTranslation();
-  const language = i18n.language as "am" | "en" | "om";
+  const lang = i18n.language as "en" | "am" | "om";
+
+  const level = [
+    { key: "Low", label: t("level.Low") },
+    { key: "Medium", label: t("level.Medium") },
+    { key: "High", label: t("level.High") },
+  ];
+
+  const educationOptions = [
+    { key: "student", label: t("education.student") },
+    { key: "student_family", label: t("education.student_family") },
+    { key: "teacher", label: t("education.teacher") },
+    { key: "supervisor", label: t("education.supervisor") },
+    { key: "expert", label: t("education.expert") },
+  ];
+
+  const genderOptions = [
+    { key: "male", label: t("gender.male") },
+    { key: "female", label: t("gender.female") },
+  ];
 
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
@@ -150,48 +173,65 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
     window.print();
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'Completed':
-        return <FaCheckCircle className="text-green-500" />;
-      case 'In Progress':
-        return <FaSync className="text-blue-500 animate-spin" />;
-      case 'Pending':
-        return <FaClock className="text-yellow-500" />;
-      case 'Canceled':
-        return <FaTimesCircle className="text-red-500" />;
-      default:
-        return <FaExclamationTriangle className="text-gray-500" />;
-    }
+  const getStatusConfig = (status: string) => {
+    const configs: any = {
+      "Pending": {
+        color: "text-yellow-600 bg-yellow-50 border-yellow-200",
+        icon: <FiClock className="w-4 h-4" />,
+        label: t("status.Pending") || "Pending"
+      },
+      "Completed": {
+        color: "text-green-600 bg-green-50 border-green-200",
+        icon: <FiCheckCircle className="w-4 h-4" />,
+        label: t("status.Completed") || "Completed"
+      },
+      "In Progress": {
+        color: "text-blue-600 bg-blue-50 border-blue-200",
+        icon: <FiPlayCircle className="w-4 h-4" />,
+        label: t("status.In Progress") || "In Progress"
+      },
+      "Canceled": {
+        color: "text-red-600 bg-red-50 border-red-200",
+        icon: <FiPauseCircle className="w-4 h-4" />,
+        label: t("status.Canceled") || "Canceled"
+      }
+    };
+    return configs[status] || {
+      color: "text-gray-600 bg-gray-50 border-gray-200",
+      icon: <FiInfo className="w-4 h-4" />,
+      label: status
+    };
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Completed':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'In Progress':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'Pending':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Canceled':
-        return 'bg-red-100 text-red-800 border-red-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
+  const getLevelConfig = (level: string) => {
+    const configs: any = {
+      "High": {
+        color: "text-red-600 bg-red-50 border-red-200",
+        icon: <FiTrendingUp className="w-4 h-4" />,
+        label: t("level.High") || "High"
+      },
+      "Medium": {
+        color: "text-orange-600 bg-orange-50 border-orange-200",
+        icon: <FiMinus className="w-4 h-4" />,
+        label: t("level.Medium") || "Medium"
+      },
+      "Low": {
+        color: "text-green-600 bg-green-50 border-green-200",
+        icon: <FiTrendingDown className="w-4 h-4" />,
+        label: t("level.Low") || "Low"
+      }
+    };
+    return configs[level] || {
+      color: "text-gray-600 bg-gray-50 border-gray-200",
+      icon: <FiInfo className="w-4 h-4" />,
+      label: level
+    };
   };
-
-  const getLevelColor = (level: string) => {
-    switch (level) {
-      case 'High':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'Medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'Low':
-        return 'bg-green-100 text-green-800 border-green-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+ let statusConfig,levelConfig;
+ if (complaint){
+      statusConfig = getStatusConfig(complaint.status);
+   levelConfig = getLevelConfig(complaint.level);
+  }
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -318,16 +358,17 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
             <div className="p-6 space-y-6">
               {/* Status and Priority - Displayed for quick status overview */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
                   <div className="flex items-center space-x-2 mb-2">
-                    {getStatusIcon(complaint.status)}
+                    <FaRightLeft className="text-green-500" />
                     <span className="font-semibold text-gray-700">
                       {t("tracking.status", "Status")}
                     </span>
                   </div>
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(complaint.status)}`}>
-                    {complaint.status}
-                  </span>
+                <div className={`inline-flex items-center space-x-2 px-3 py-2 rounded-full text-sm font-medium border ${statusConfig.color}`}>
+                    {statusConfig.icon}
+                    <span className="font-semibold">{statusConfig.label}</span>
+                  </div>
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
@@ -337,9 +378,10 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                       {t("tracking.priority", "Priority Level")}
                     </span>
                   </div>
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getLevelColor(complaint.level)}`}>
-                    {complaint.level}
-                  </span>
+                  <div className={`inline-flex items-center space-x-2 px-3 py-2 rounded-full text-sm font-medium border ${levelConfig.color}`}>
+                    {levelConfig.icon}
+                    <span className="font-semibold">{levelConfig.label}</span>
+                  </div>
                 </div>
               </div>
 
@@ -388,7 +430,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                       <label className="text-sm font-medium text-gray-600">
                         {t("tracking.form.gender", "Gender")}
                       </label>
-                      <p className="text-gray-800 font-medium capitalize">{complaint.gender}</p>
+                      <p className="text-gray-800 font-medium capitalize">{genderOptions.find(option => option.key === complaint.gender)?.label}</p>
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -397,7 +439,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                         {t("tracking.form.education_community", "Education Community")}
                       </label>
                       <p className="text-gray-800 font-medium capitalize">
-                        {complaint.educationCommunity.replace('_', ' ')}
+                        {educationOptions.find(option => option.key === complaint.educationCommunity)?.label}
                       </p>
                     </div>
                     <div>
@@ -441,14 +483,21 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                       <label className="text-sm font-medium text-gray-600">
                         {t("tracking.form.department", "Department")}
                       </label>
-                      <p className="text-gray-800 font-medium">{complaint.department}</p>
+                      <p className="text-gray-800 font-medium">{departments[complaint.department as DepartmentKey]?.[lang] || complaint.department}</p>
                     </div>
                     {complaint.subDepartment && (
                       <div>
                         <label className="text-sm font-medium text-gray-600">
                           {t("tracking.form.subDepartment", "Sub-Department")}
                         </label>
-                        <p className="text-gray-800 font-medium">{complaint.subDepartment}</p>
+                        <p className="text-gray-800 font-medium">{
+                                                  departments[complaint.department as DepartmentKey]?.subDepartments.find(
+                                                    (sub: any) =>
+                                                      sub.en === complaint.subDepartment ||
+                                                      sub.am === complaint.subDepartment ||
+                                                      sub.om === complaint.subDepartment
+                                                  )?.[lang] || complaint.subDepartment
+                                                }</p>
                       </div>
                     )}
                   </div>
