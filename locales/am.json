@@ -11,7 +11,7 @@
     "complaint_details": "የቅሬታ ዝርዝሮች"
   },
 
-          "form": {
+  "form": {
              "full_name": "ሙሉ ስም",
     "enter_full_name": "ሙሉ ስም ያስገቡ",
     "phone_number": "የስልክ ቁጥር",
@@ -48,19 +48,21 @@
              "next": "ቀጣይ",
     "back": "ተመለስ"
           },
-          "education": {
+
+  "education": {
       "student": "ተማሪ",
       "student_family": "የተማሪ ቤተሰብ",
       "teacher": "መምህር",
       "supervisor": "ኃላፊ",
       "expert": "ሙያተኛ"
     },
+
     "gender": {
       "male": "ወንድ",
       "female": "ሴት"
     },
-          "levels": { "low": "ዝቅተኛ", "medium": "መካከለኛ", "high": "ከፍተኛ" },
-          "departments": {
+   "levels": { "low": "ዝቅተኛ", "medium": "መካከለኛ", "high": "ከፍተኛ" },
+    "departments": {
   "general": "አጠቃላይ",
   "educationTech": "የስርዓተ ትምህርት መረጃና ቴኪኖሎጆ ስራዎች አስተባባራ",
   "teacherTraining": "የት/መና የመም/ል/የልዩ/ፍ/የሱፐ/ስራ ቡዱን አስተባባራ"
@@ -81,7 +83,8 @@
     "selectDepartment": "መድፍ ይምረጡ",
     "selectSubDepartment": "ንዑስ መድፍ ይምረጡ",
     "selectLevel": "የቅሬታ ደረጃ ይምረጡ",
-    "enterDescription": "እባክዎን ዝርዝር መግለጫ ያቀርቡ።"
+    "enterDescription": "እባክዎን ዝርዝር መግለጫ ያቀርቡ።",
+     "copied_to_clipboard": "ወደ ክሊፕቦርድ ተገልብጧል!"
   },
    "login": {
     "title": "የአስተዳዳሪ መግቢያ",
