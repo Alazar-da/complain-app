@@ -80,7 +80,8 @@
     "selectDepartment": "Select Department",
     "selectSubDepartment": "Select Sub Department",
     "selectLevel": "Select Priority Level",
-    "enterDescription": "Please provide detailed description of your complaint..."
+    "enterDescription": "Please provide detailed description of your complaint...",
+    "copied_to_clipboard": "Copied to clipboard!"
   },
    "login": {
     "title": "Admin Login",

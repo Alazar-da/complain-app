@@ -81,7 +81,8 @@
     "selectDepartment": "Kutaa filadhu",
     "selectSubDepartment": "Kutaa xiqqaa filadhu",
     "selectLevel": "Sadarkaa Dursa filadhu",
-    "enterDescription": "Mee ibsa bal’aa komii kee kenni..."
+    "enterDescription": "Mee ibsa bal’aa komii kee kenni...",
+     "copied_to_clipboard": "Gara clipboard tti dursame!"
   },
   "login": {
     "title": "Seensa Bulchaa",

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FiEdit, FiX, FiClock, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiMessageSquare, FiSave } from "react-icons/fi";
-
+import { departments, DepartmentKey } from "@/data/departments";
 interface EditModalProps {
   complaint: any;
   onClose: () => void;
@@ -13,7 +13,8 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
   const [status, setStatus] = useState(complaint.status);
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language as "en" | "am" | "om";
 
   const updateStatus = async () => {
     if ((status === 'Completed' || status === 'Canceled') && !reason.trim()) {
@@ -119,7 +120,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
                   {complaint.title}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {complaint.department}
+                  {departments[complaint.department as DepartmentKey]?.[lang] || complaint.department}
                 </p>
               </div>
             </div>
