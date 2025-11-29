@@ -4,7 +4,9 @@
     "description": "Appii komii"
   },
    "title": "Dhiyeessi Komii",
-          "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
+    "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
+    "back_to_home":"",
+
   "personal_info": {
     "personal_info": "Odeeffannoo Dhunfaa",
     "complaint_details": "Faayila Komii"    
@@ -131,6 +133,12 @@
   "cancel": "Dhiisi",
   "saving": "Ol kaa'aa jira...",
   "update": "Haaromsi",
+    "responsible_person": "Namni Itti Gaafatamaa",
+  "responsible_person_placeholder": "Maqaa nama itti gaafatamaa galchi...",
+  "responsible_person_help": "Namni kun komii kana hojjechuuf ni ramadama.",
+
+  "inappropriate_reason": "Sababa dogoggora komii kanaa",
+  "inappropriate_placeholder": "Komiin kun maaliif dogoggoraa ta’e ibsi...",
    "status_options": {
     "pending": {
       "name": "Pending",
@@ -147,11 +155,17 @@
       "label": "Xumurame",
       "description": "Dhiheessi ni xumurame"
     },
-    "canceled": {
-      "name": "Canceled",
-      "label": "Haquu",
-      "description": "Hojii irraa haqame"
-    }
+"appropriate": {
+  "name": "Sirrii",
+  "label": "Sirrii",
+  "description": "Komii kun sirrii waan ta’eef ni fudhatama."
+},
+"inappropriate": {
+  "name": "Dogoggoraa",
+  "label": "Dogoggoraa",
+  "description": "Komiin kun sababaa sirrii hin taaneef ykn barbaachisaa hin taaneef ni haquu/didama."
+}
+
   },
       "reason_required": "Mee sababaa jijjiirama haala kanaa kaa'aa",
   "completion_reason": "Sababaa Xumuramaa",
@@ -170,7 +184,8 @@
     "Pending":"Eeggataa",
     "In Progress":"Jiraatti",
     "Completed": "Xumurame",
-    "Canceled": "Haquu"
+    "Appropriate": "Sirrii",
+    "Inappropriate": "Dogoggoraa"
   },
     "pagination": {
     "prev": "Dura",
@@ -286,6 +301,7 @@
     "submission_details": "Faayila Ergame",
     "tracking_number": "Lakkoofsa To’ataa",
 
+    "complaint_title":"Mata Duree Komii",
     "complaint_id": "ID Komii",
     "title_field": "Mata-Duree",
     "status": "Haala",
@@ -293,7 +309,7 @@
 
     "important_notice": "Beeksisa Murteessaa",
 
-    "save_tracking": "Lakkoofsa To’ataa Kuusi",
+    "save_tracking": "Lakkoofsa To’ataa Kuusi. Yeroo kamiyyuu komii keessan hordofuuf itti fayyadami.",
     "download_receipt": "Gabaasa Buusi",
     "submit_another": "Komii Haaraa Ergi"
   },
@@ -354,7 +370,21 @@
     "subDepartment": "Aangoo Xiqqaa",
     "description": "Ibsu"
   }
-  }
+  },
+
+  "receipt": {
+  "title": "RAGAA ERGII KOMII",
+  "tracking_number": "Lakkoofsa hordoffii:",
+  "complaint_id": "ID Komii:",
+  "complaint_title": "Mata Duree Komii:",
+  "status": "Haala:",
+  "submission_date": "Guyyaa Ergaa:",
+  "submission_time": "Yeroo Ergaa:",
+
+  "important_note": "MUCHA: Lakkoofsa hordoffii kana eeggadhaa. Haala komii keessanii hordoffuuf isin barbaachisa.",
+  "thank_you": "Komiin keessan nu ga’ee jira. Nuti ni ilaalla, osoo hin turin deebii ni kennina."
+}
+
  
 
 

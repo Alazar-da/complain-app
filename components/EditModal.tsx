@@ -1,8 +1,9 @@
 'use client';
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { FiEdit, FiX, FiClock, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiMessageSquare, FiSave } from "react-icons/fi";
+import { FiEdit, FiX, FiClock, FiCheckCircle, FiPlayCircle, FiCheck, FiAlertCircle, FiSave, FiUser, FiMessageSquare } from "react-icons/fi";
 import { departments, DepartmentKey } from "@/data/departments";
+
 interface EditModalProps {
   complaint: any;
   onClose: () => void;
@@ -11,20 +12,29 @@ interface EditModalProps {
 
 export default function EditModal({ complaint, onClose, onUpdated }: EditModalProps) {
   const [status, setStatus] = useState(complaint.status);
+  const [responsiblePerson, setResponsiblePerson] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
   const { t, i18n } = useTranslation();
   const lang = i18n.language as "en" | "am" | "om";
 
   const updateStatus = async () => {
-    if ((status === 'Completed' || status === 'Canceled') && !reason.trim()) {
+    if ((status === 'Completed' || status === 'Inappropriate') && !reason.trim()) {
       alert(t('update_status.reason_required'));
+      return;
+    }
+
+    if ((status === 'Completed' || status === 'Inappropriate') && !responsiblePerson.trim()) {
+      alert(t('update_status.responsible_person_required'));
       return;
     }
 
     setLoading(true);
     try {
       const updateData: any = { status };
+      if (responsiblePerson.trim()) {
+        updateData.responsiblePerson = responsiblePerson.trim();
+      }
       if (reason.trim()) {
         updateData.reason = reason.trim();
       }
@@ -52,6 +62,13 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
       color: 'yellow'
     },
     {
+      name: t('update_status.status_options.appropriate.name'),
+      label: t('update_status.status_options.appropriate.label'),
+      description: t('update_status.status_options.appropriate.description'),
+      icon: FiCheck,
+      color: 'green'
+    },
+    {
       name: t('update_status.status_options.in_progress.name'),
       label: t('update_status.status_options.in_progress.label'),
       description: t('update_status.status_options.in_progress.description'),
@@ -66,10 +83,10 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
       color: 'green'
     },
     {
-      name: t('update_status.status_options.canceled.name'),
-      label: t('update_status.status_options.canceled.label'),
-      description: t('update_status.status_options.canceled.description'),
-      icon: FiPauseCircle,
+      name: t('update_status.status_options.inappropriate.name'),
+      label: t('update_status.status_options.inappropriate.label'),
+      description: t('update_status.status_options.inappropriate.description'),
+      icon: FiAlertCircle,
       color: 'red'
     }
   ];
@@ -85,7 +102,33 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
   };
 
   const selectedStatus = statusOptions.find(opt => opt.name === status);
-  const requiresReason = status === 'Completed' || status === 'Canceled';
+  const requiresFinalization = status === 'Completed' || status === 'Inappropriate';
+
+  // Status flow validation
+  const getAvailableStatuses = () => {
+    const currentStatus = complaint.status;
+    
+    if (currentStatus === 'Pending') {
+      return statusOptions.filter(opt => 
+        opt.name === 'Pending' || opt.name === 'Appropriate' || opt.name === 'Inappropriate'
+      );
+    } else if (currentStatus === 'Appropriate') {
+      return statusOptions.filter(opt => 
+        opt.name === 'Appropriate' || opt.name === 'In Progress' || opt.name === 'Inappropriate'
+      );
+    } else if (currentStatus === 'In Progress') {
+      return statusOptions.filter(opt => 
+        opt.name === 'In Progress' || opt.name === 'Completed' || opt.name === 'Inappropriate'
+      );
+    } else if (currentStatus === 'Completed' || currentStatus === 'Inappropriate') {
+      // Once completed or inappropriate, can only stay in that status
+      return statusOptions.filter(opt => opt.name === currentStatus);
+    }
+    
+    return statusOptions;
+  };
+
+  const availableStatuses = getAvailableStatuses();
 
   return (
     <section className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-60 animate-fade-in">
@@ -122,6 +165,9 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
                 <p className="text-xs text-gray-500 mt-1">
                   {departments[complaint.department as DepartmentKey]?.[lang] || complaint.department}
                 </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Current Status: <span className="font-medium">{complaint.status}</span>
+                </p>
               </div>
             </div>
           </div>
@@ -133,9 +179,10 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
             </label>
             
             <div className="grid grid-cols-2 gap-2">
-              {statusOptions.map((option) => {
+              {availableStatuses.map((option) => {
                 const Icon = option.icon;
                 const isSelected = status === option.name;
+                const isCurrentStatus = complaint.status === option.name;
                 
                 return (
                   <button
@@ -144,14 +191,31 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
                     className={`p-3 rounded-lg border-2 transition-all duration-200 text-sm font-medium flex flex-col items-center space-y-1 hover:cursor-pointer ${
                       isSelected
                         ? `${getStatusColor(option.color)} border-current`
+                        : isCurrentStatus
+                        ? "border-gray-400 bg-gray-100 text-gray-700"
                         : "border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50"
-                    }`}
+                    } ${isCurrentStatus ? 'cursor-default' : 'cursor-pointer'}`}
+                    disabled={isCurrentStatus}
                   >
                     <Icon className="w-4 h-4" />
                     <span className="text-xs">{option.label}</span>
+                    {isCurrentStatus && (
+                      <span className="text-xs text-gray-500">(Current)</span>
+                    )}
                   </button>
                 );
               })}
+            </div>
+
+            {/* Status Flow Info */}
+            <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+              <p className="text-xs text-blue-700 font-medium mb-1">Status Flow:</p>
+              <p className="text-xs text-blue-600">
+                Pending → Appropriate → In Progress → Completed
+              </p>
+              <p className="text-xs text-blue-600 mt-1">
+                Can be marked as Inappropriate at any stage
+              </p>
             </div>
 
             {/* Selected Status Info */}
@@ -167,13 +231,35 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
               </div>
             )}
 
+            {/* Responsible Person Input */}
+            {requiresFinalization && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  {t('update_status.responsible_person')} *
+                </label>
+                <div className="relative">
+                  <FiUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <input
+                    type="text"
+                    value={responsiblePerson}
+                    onChange={(e) => setResponsiblePerson(e.target.value)}
+                    placeholder={t('update_status.responsible_person_placeholder')}
+                    className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  />
+                </div>
+                <p className="text-xs text-gray-500">
+                  {t('update_status.responsible_person_help')}
+                </p>
+              </div>
+            )}
+
             {/* Reason Input */}
-            {requiresReason && (
+            {requiresFinalization && (
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   {status === 'Completed' 
                     ? t('update_status.completion_reason') 
-                    : t('update_status.cancellation_reason')} *
+                    : t('update_status.inappropriate_reason')} *
                 </label>
                 <textarea
                   value={reason}
@@ -181,7 +267,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
                   placeholder={
                     status === 'Completed'
                       ? t('update_status.completion_placeholder')
-                      : t('update_status.cancellation_placeholder')
+                      : t('update_status.inappropriate_placeholder')
                   }
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none transition-all duration-200"
@@ -205,7 +291,10 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
           </button>
           <button
             onClick={updateStatus}
-            disabled={loading || (status === complaint.status && !reason) || (requiresReason && !reason.trim())}
+            disabled={loading || 
+              (status === complaint.status && !reason && !responsiblePerson) || 
+              (requiresFinalization && (!reason.trim() || !responsiblePerson.trim()))
+            }
             className="flex-1 py-2.5 px-4 text-white bg-blue-600 rounded-lg font-medium hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 hover:cursor-pointer"
           >
             {loading ? (

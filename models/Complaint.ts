@@ -18,9 +18,10 @@ export interface IComplaint extends Document {
   description: string;
   mediaUrl?: string;
   publicId?: string;
-  status: "Pending" | "Canceled" | "In Progress" | "Completed";
-  reason?: string; // New field for completion/cancellation reason
-  resolvedAt?: Date; // New field for when complaint was resolved
+  status: "Pending" | "Appropriate" | "In Progress" | "Completed" | "Inappropriate";
+  responsiblePerson?: string; // New field for person who resolved the issue
+  reason?: string; // Field for completion/inappropriate reason
+  resolvedAt?: Date; // Field for when complaint was resolved
   date: Date;
   createdAt: Date;
   updatedAt: Date;
@@ -52,12 +53,13 @@ const ComplaintSchema = new Schema<IComplaint>(
     publicId: { type: String },
     status: {
       type: String,
-      enum: ["Pending", "Canceled", "In Progress", "Completed"],
+      enum: ["Pending", "Appropriate", "In Progress", "Completed", "Inappropriate"],
       required: true,
       default: "Pending",
     },
-    reason: { type: String, trim: true }, // New field
-    resolvedAt: { type: Date }, // New field
+    responsiblePerson: { type: String, trim: true }, // New field
+    reason: { type: String, trim: true },
+    resolvedAt: { type: Date },
     date: { type: Date, default: Date.now },
   },
   { timestamps: true }
@@ -67,7 +69,8 @@ const ComplaintSchema = new Schema<IComplaint>(
 ComplaintSchema.index({ department: 1 });
 ComplaintSchema.index({ status: 1 });
 ComplaintSchema.index({ date: 1 });
-ComplaintSchema.index({ resolvedAt: 1 }); // New index
+ComplaintSchema.index({ resolvedAt: 1 });
+ComplaintSchema.index({ responsiblePerson: 1 }); // New index
 
 // 🔹 Pre-save hook for unique tracking number
 ComplaintSchema.pre("validate", async function (next) {

@@ -5,6 +5,7 @@
   },
   "view_complaints": "ቅሬታዎችን ይመልከቱ",
    "title": "ቅሬታ ያቅርቡ",
+   "back_to_home":"ወደ መነሻ ገጽ ተመለስ",
           "subtitle": "እባክዎ ቅሬታዎን ለመላክ ቅጹን ይሙሉ።",
   "personal_info": {
     "personal_info": "የግል መረጃ",
@@ -34,7 +35,7 @@
             "submitting": "በመላክ ላይ...",
             "success": "ቅሬታዎ በተሳካ ሁኔታ ተላከ! በቅርቡ ትመለሳለች...",
             "error": "አንዳንድ ችግኝ ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
-            "note": "ቅሬታዎ በቅርቡ ታየና መልስ ይሰጣል።",
+            "note": "ቅሬታዎ በቅርቡ ይታያል እና መልስ ይሰጥበታል።",
             "file_optional": "ፋይል (አማራጭ)",
             "click_to_upload": "ምስል ወይም ቪዲዮ ለመላከ ይጫኑ",
             "max_size": "ከፍተኛ መጠን፡ 10MB",
@@ -133,6 +134,12 @@
   "cancel": "ይቅር",
   "saving": "በመቀመጥ ላይ...",
   "update": "አዘምን",
+    "responsible_person": "ኃላፊ ሰው",
+  "responsible_person_placeholder": "የኃላፊውን ሰው ስም ያስገቡ...",
+  "responsible_person_help": "ይህ ሰው ቅሬታውን ለማስተናገድ ይመደባል።",
+
+  "inappropriate_reason": "እንደ ያልተገበረ ለመለየት ምክንያት",
+  "inappropriate_placeholder": "ይህ ቅሬታ ለምን ያልተገበረ መሆኑን ያብራሩ...",
 
  "status_options": {
   "pending": {
@@ -150,11 +157,17 @@
     "label": "ተጠናቋል",
     "description": "ቅሬታው ተፈትሎ ተጠናቋል"
   },
-  "canceled": {
-    "name": "Canceled",
-    "label": "ተሰርዟል",
-    "description": "ቅሬታው ተሰርዟል ወይም ተሰረዘ"
-  }
+ "appropriate": {
+  "name": "ተገቢ",
+  "label": "ተገቢ",
+  "description": "ይህ ቅሬታ ተቀባይነት አለው እና ተቀብሏል።"
+},
+"inappropriate": {
+  "name": "ያልተገበረ",
+  "label": "ያልተገበረ",
+  "description": "ይህ ቅሬታ ምክንያቱ የማይረባ ወይም ተስማሚ ያልሆነ ስለሆነ ተወስኗል።"
+}
+
 },
     "reason_required": "እባክዎ ለዚህ የሁኔታ ለውጥ ምክንያት ያብራሩ",
   "completion_reason": "የመጨረሻ ምክንያት",
@@ -176,7 +189,8 @@
     "Pending":"በመጠባበቅ ላይ",
     "In Progress":"በሂደት ላይ",
     "Completed": "ተጠናቋል",
-    "Canceled": "ተሰርዟል"
+    "Appropriate": "ተገቢ",
+    "Inappropriate": "ያልተገበረ"
   },
    "pagination": {
     "prev": "የቀድሞ",
@@ -288,12 +302,13 @@
   },
 
   "success": {
-    "title": "ቅሬታ በተሳካ ሁኔታ ተላከ",
-    "description": "ቅሬታዎ በተሳካ ሁኔታ ተላከ።",
+    "title": "ቅሬታ በተሳካ ሁኔታ ተልክዋል",
+    "description": "ቅሬታዎ በተሳካ ሁኔታ ተልክዋል።",
 
-    "submission_details": "ዝርዝሮች የተላከው",
+    "submission_details": "የተላከው ዝርዝሮች",
     "tracking_number": "የተከታተል ቁጥር",
 
+    "complaint_title":"የቅሬታ ርዕስ",
     "complaint_id": "የቅሬታ መለያ",
     "title_field": "ርዕስ",
     "status": "ሁኔታ",
@@ -301,9 +316,9 @@
 
     "important_notice": "አስፈላጊ ማስታወሻ",
 
-    "save_tracking": "የተከታተል ቁጥር አስቀምጥ",
-    "download_receipt": "መረጃ አውርድ",
-    "submit_another": "በሌላ ቅሬታ ይላኩ"
+    "save_tracking": "የቅሬታዎን ምላሽ እንዲያዩ የተከታተል ቁጥር በሚገባ ያስቀምጡ። ይህ ቁጥር በኋላ ቅሬታዎን ለማከታተል ይረዳዎታል።",
+    "download_receipt": "መረጃ አስቀምጥ",
+    "submit_another": "ሌላ ቅሬታ ይላኩ"
   },
   "tracking": {
     "title": "ቅሬታዎን ይከታተሉ",
@@ -362,7 +377,21 @@
     "subDepartment": "ንዑስ ዳይሬክቶሬት",
     "description": "መግለጫ"
   }
-  }
+  },
+
+  "receipt": {
+  "title": "የቅሬታ ማቅረቢያ ደረሰኝ",
+  "tracking_number": "የመከታተያ ቁጥር:",
+  "complaint_id": "የቅሬታ መታወቂያ:",
+  "complaint_title": "የቅሬታ ርዕስ:",
+  "status": "ሁኔታ:",
+  "submission_date": "የቀረበበት ቀን:",
+  "submission_time": "የቀረበበት ሰዓት:",
+
+  "important_note": "አስፈላጊ: ይህን የመከታተያ ቁጥር በደህና ይያዙት። የቅሬታዎን ሁኔታ ለመከታተል ይረዳዎታል።",
+  "thank_you": "ቅሬታዎን ስላቀረቡ እናመሰግናለን። ቅሬታውን አይተን በቅርቡ እንመልስልዎታለን።"
+}
+
   
 
 

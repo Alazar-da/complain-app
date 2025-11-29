@@ -5,6 +5,7 @@
   },
    "view_complaints": "View Complaints",
   "title": "Submit a Complaint",
+  "back_to_home":"Back to Home",
           "subtitle": "Fill out the form below to submit your complaint.",
   "personal_info": {
     "personal_info": "Personal Info",
@@ -130,6 +131,13 @@
   "cancel": "Cancel",
   "saving": "Saving...",
   "update": "Update",
+  "responsible_person": "Responsible Person",
+  "responsible_person_placeholder": "Enter the name of the person responsible...",
+  "responsible_person_help": "This person will be assigned to handle the complaint.",
+
+  "inappropriate_reason": "Reason for marking as inappropriate",
+  "inappropriate_placeholder": "Explain why this complaint is considered inappropriate...",
+
   "status_options": {
     "pending": {
       "name": "Pending",
@@ -146,11 +154,17 @@
       "label": "Completed",
       "description": "Resolved"
     },
-    "canceled": {
-      "name": "Canceled",
-      "label": "Canceled",
-      "description": "Cancelled"
-    }
+"appropriate": {
+  "name": "Appropriate",
+  "label": "Appropriate",
+  "description": "This complaint is valid and accepted."
+},
+"inappropriate": {
+  "name": "Inappropriate",
+  "label": "Inappropriate",
+  "description": "This complaint is rejected due to invalid or unacceptable content."
+}
+
   },
     "reason_required": "Please provide a reason for this status change",
   "completion_reason": "Completion Reason",
@@ -168,7 +182,8 @@
     "Pending":"Pending",
     "In Progress":"In Progress",
     "Completed": "Completed",
-    "Canceled": "Canceled"
+    "Appropriate": "Appropriate",
+    "Inappropriate": "Inappropriate"
   },
    "pagination": {
     "prev": "Prev",
@@ -287,6 +302,7 @@
     "submission_details": "Submission Details",
     "tracking_number": "Tracking Number",
 
+     "complaint_title":"Complaint Title",
     "complaint_id": "Complaint ID",
     "title_field": "Title",
     "status": "Status",
@@ -294,7 +310,7 @@
 
     "important_notice": "Important Notice",
 
-    "save_tracking": "Save Tracking Number",
+    "save_tracking": "Save Tracking Number. Keep it safe to track your complaint later.",
     "download_receipt": "Download Receipt",
     "submit_another": "Submit Another Complaint"
   },
@@ -356,7 +372,22 @@
     "subDepartment": "Sub-Department",
     "description": "Description"
   }
-  }
+  },
+
+
+  "receipt": {
+  "title": "COMPLAINT SUBMISSION RECEIPT",
+  "tracking_number": "Tracking Number:",
+  "complaint_id": "Complaint ID:",
+  "complaint_title": "Title:",
+  "status": "Status:",
+  "submission_date": "Submission Date:",
+  "submission_time": "Submission Time:",
+
+  "important_note": "IMPORTANT: Keep this tracking number safe. You will need it to check the status of your complaint.",
+  "thank_you": "Thank you for submitting your complaint. We will review it and get back to you soon."
+}
+
 
 
 

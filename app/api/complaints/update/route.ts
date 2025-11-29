@@ -5,27 +5,67 @@ import { NextResponse } from "next/server";
 export async function PUT(req: Request) {
   try {
     await connectDB();
-    const { status, reason } = await req.json();
+    const { status, reason, responsiblePerson } = await req.json();
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
-    // Validate required reason for completed/canceled status
-    if ((status === 'Completed' || status === 'Canceled') && !reason?.trim()) {
+    // Get current complaint to validate status transition
+    const currentComplaint = await Complaint.findById(id);
+    if (!currentComplaint) {
       return NextResponse.json(
-        { error: "Reason is required for completed or canceled status" },
+        { error: "Complaint not found" },
+        { status: 404 }
+      );
+    }
+
+    // Validate status transitions
+    const validTransitions: { [key: string]: string[] } = {
+      'Pending': ['Appropriate', 'Inappropriate'],
+      'Appropriate': ['In Progress', 'Inappropriate'],
+      'In Progress': ['Completed', 'Inappropriate'],
+      'Completed': [], // Final status
+      'Inappropriate': [] // Final status
+    };
+
+    const allowedTransitions = validTransitions[currentComplaint.status] || [];
+    if (!allowedTransitions.includes(status) && status !== currentComplaint.status) {
+      return NextResponse.json(
+        { error: `Invalid status transition from ${currentComplaint.status} to ${status}` },
+        { status: 400 }
+      );
+    }
+
+    // Validate required fields for completed/inappropriate status
+    if ((status === 'Completed' || status === 'Inappropriate') && !reason?.trim()) {
+      return NextResponse.json(
+        { error: "Reason is required for completed or inappropriate status" },
+        { status: 400 }
+      );
+    }
+
+    if ((status === 'Completed' || status === 'Inappropriate') && !responsiblePerson?.trim()) {
+      return NextResponse.json(
+        { error: "Responsible person is required for completed or inappropriate status" },
         { status: 400 }
       );
     }
 
     const updateData: any = { status };
+    if (responsiblePerson?.trim()) {
+      updateData.responsiblePerson = responsiblePerson.trim();
+    }
     if (reason?.trim()) {
       updateData.reason = reason.trim();
-      updateData.resolvedAt = new Date();
+      // Set resolvedAt only when moving to final states
+      if (status === 'Completed' || status === 'Inappropriate') {
+        updateData.resolvedAt = new Date();
+      }
     }
 
-    // If status is changing from completed/canceled to something else, clear the reason
-    if (status !== 'Completed' && status !== 'Canceled') {
+    // If status is changing from completed/inappropriate to something else, clear the fields
+    if (status !== 'Completed' && status !== 'Inappropriate') {
       updateData.reason = undefined;
+      updateData.responsiblePerson = undefined;
       updateData.resolvedAt = undefined;
     }
 
@@ -34,13 +74,6 @@ export async function PUT(req: Request) {
       updateData, 
       { new: true }
     );
-
-    if (!updated) {
-      return NextResponse.json(
-        { error: "Complaint not found" },
-        { status: 404 }
-      );
-    }
 
     return NextResponse.json(updated, { status: 200 });
   } catch (error: any) {

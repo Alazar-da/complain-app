@@ -89,23 +89,6 @@ useEffect(() => {
     setShowDeleteModal(true);
   };
 
-  const getStatusBadge = (status: string) => {
-    const baseStyles = "px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1 w-fit";
-    
-    switch (status) {
-      case "Pending":
-        return `${baseStyles} bg-yellow-100 text-yellow-800 border border-yellow-200`;
-      case "Completed":
-        return `${baseStyles} bg-green-100 text-green-800 border border-green-200`;
-      case "In Progress":
-        return `${baseStyles} bg-blue-100 text-blue-800 border border-blue-200`;
-        case "Canceled":
-        return `${baseStyles} bg-red-100 text-red-800 border border-red-200`;
-      default:
-        return `${baseStyles} bg-gray-100 text-gray-800 border border-gray-200`;
-    }
-  };
-
   const getLevelBadge = (level: string) => {
     const baseStyles = "px-2 py-1 rounded-full text-xs font-semibold";
     
@@ -121,20 +104,41 @@ useEffect(() => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "Pending":
-        return <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>;
-      case "Completed":
-        return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
-      case "In Progress":
-        return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>;
-         case "Canceled":
-        return <div className="w-2 h-2 bg-red-500 rounded-full"></div>;
-      default:
-        return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>;
-    }
-  };
+const getStatusBadge = (status: string) => {
+  const baseStyles = "px-3 py-1 rounded-full text-xs font-semibold flex items-center space-x-1 w-fit";
+  
+  switch (status) {
+    case "Pending":
+      return `${baseStyles} bg-yellow-100 text-yellow-800 border border-yellow-200`;
+    case "Appropriate":
+      return `${baseStyles} bg-green-100 text-green-800 border border-green-200`;
+    case "In Progress":
+      return `${baseStyles} bg-blue-100 text-blue-800 border border-blue-200`;
+    case "Completed":
+      return `${baseStyles} bg-green-100 text-green-800 border border-green-200`;
+    case "Inappropriate":
+      return `${baseStyles} bg-red-100 text-red-800 border border-red-200`;
+    default:
+      return `${baseStyles} bg-gray-100 text-gray-800 border border-gray-200`;
+  }
+};
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case "Pending":
+      return <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>;
+    case "Appropriate":
+      return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
+    case "In Progress":
+      return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>;
+    case "Completed":
+      return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
+    case "Inappropriate":
+      return <div className="w-2 h-2 bg-red-500 rounded-full"></div>;
+    default:
+      return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>;
+  }
+};
 
     const handlePrev = () => {
     if (page > 1) fetchComplaints(page - 1);
