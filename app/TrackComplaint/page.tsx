@@ -306,10 +306,10 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
   <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-end">
     <div className="flex-1 w-full">
       <label htmlFor="trackingNumber" className="flex items-center text-sm font-semibold text-gray-700 mb-3">
-        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+        <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
           <FaSearch className="text-white text-sm" />
         </div>
-        <span className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <span className="text-lg font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           {t("tracking.tracking_number", "Tracking Number")}
         </span>
       </label>
@@ -323,7 +323,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
           className="w-full px-6 py-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl focus:shadow-2xl group-hover:border-blue-300 text-lg font-medium"
           required
         />
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+        <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
       </div>
     </div>
     
@@ -331,13 +331,13 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
       <button
         type="submit"
         disabled={loading || !trackingNumber.trim()}
-        className="group relative w-full sm:w-48 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-5 rounded-2xl font-bold hover:from-blue-600 hover:to-purple-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-purple-600 transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95 overflow-hidden"
+        className="group relative w-full sm:w-48 bg-linear-to-r from-blue-500 to-purple-600 text-white px-8 py-5 rounded-2xl font-bold hover:from-blue-600 hover:to-purple-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-purple-600 transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95 overflow-hidden"
       >
         {/* Shimmer Effect */}
         <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
         
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 delay-200"></div>
+        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 delay-200"></div>
         
         {/* Button Content */}
         <div className="relative z-10 flex items-center justify-center space-x-3">
