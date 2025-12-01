@@ -31,7 +31,14 @@ import {
   FaTimes,
   FaUsers,
   FaUniversity,
-  FaTimesCircle
+  FaTimesCircle,
+  FaChevronDown,
+  FaChevronUp,
+  FaPaperPlane,
+  FaUserCheck,
+  FaBan,
+  FaStar,
+  FaAward
 } from "react-icons/fa";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { BsGraphUpArrow } from "react-icons/bs";
@@ -51,52 +58,54 @@ export default function AnalyticsPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<any[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [isHovered, setIsHovered] = useState<string | null>(null);
   const { t, i18n } = useTranslation();
   const language = i18n.language as "am" | "en" | "om";
 
-      const level = [
+  const level = [
     { key: "Low", label: t("level.Low") },
     { key: "Medium", label: t("level.Medium") },
     { key: "High", label: t("level.High") },
   ];
-        const status = [
+
+  const status = [
     { key: "Pending", label: t("update_status.status_options.pending.label") },
+    { key: "Appropriate", label: t("update_status.status_options.appropriate.label") },
     { key: "In Progress", label: t("update_status.status_options.in_progress.label") },
     { key: "Completed", label: t("update_status.status_options.completed.label") },
-     { key: "Canceled", label: t("update_status.status_options.canceled.label") },
+    { key: "Inappropriate", label: t("update_status.status_options.inappropriate.label") },
   ];
 
-const fetchData = async () => {
-  setLoading(true);
-  try {
-    const params = new URLSearchParams({
-      startDate,
-      endDate,
-      status: statusFilter || "All",
-      level: levelFilter || "All",
-      department: departmentFilter || "All",
-      subDepartment: subDepartmentFilter || "All",
-    });
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        startDate,
+        endDate,
+        status: statusFilter || "All",
+        level: levelFilter || "All",
+        department: departmentFilter || "All",
+        subDepartment: subDepartmentFilter || "All",
+      });
 
-    const res = await fetch(`/api/admin/analytics?${params.toString()}`);
-    const data = await res.json();
-    setData(data);
-    console.log("data",data)
-    setItems(data.complaints);
-  } catch (err) {
-    console.error(err);
-  } finally {
-    setLoading(false);
-  }
-};
+      const res = await fetch(`/api/admin/analytics?${params.toString()}`);
+      const data = await res.json();
+      setData(data);
+      console.log("data",data)
+      setItems(data.complaints);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-
-
-  // Chart data with better colors and styling
+  // Enhanced Chart data with better colors and styling
   const statusLabels = Object.keys(data?.statusCounts || {});
   const statusValues = statusLabels.map((l) => data?.statusCounts[l] || 0);
 
@@ -109,7 +118,7 @@ const fetchData = async () => {
   const dailyLabels = (data?.dailyCounts || []).map((d: any) => dayjs(d.date).format('MMM DD'));
   const dailyValues = (data?.dailyCounts || []).map((d: any) => d.count);
 
-  // Chart options and data
+  // Enhanced Chart options and data
   const statusChartData = {
     labels: statusLabels,
     datasets: [
@@ -117,16 +126,18 @@ const fetchData = async () => {
         label: t("analytics.Complaints_by_Status"),
         data: statusValues,
         backgroundColor: [
-          'rgba(255, 99, 132, 0.8)',
-          'rgba(54, 162, 235, 0.8)',
-          'rgba(75, 192, 192, 0.8)',
-          'rgba(255, 205, 86, 0.8)',
+          'rgba(255, 193, 7, 0.8)',    // Pending - Yellow
+          'rgba(40, 167, 69, 0.8)',    // Appropriate - Green
+          'rgba(0, 123, 255, 0.8)',    // In Progress - Blue
+          'rgba(23, 162, 184, 0.8)',   // Completed - Teal
+          'rgba(220, 53, 69, 0.8)',    // Inappropriate - Red
         ],
         borderColor: [
-          'rgb(255, 99, 132)',
-          'rgb(54, 162, 235)',
-          'rgb(75, 192, 192)',
-          'rgb(255, 205, 86)',
+          'rgb(255, 193, 7)',
+          'rgb(40, 167, 69)',
+          'rgb(0, 123, 255)',
+          'rgb(23, 162, 184)',
+          'rgb(220, 53, 69)',
         ],
         borderWidth: 2,
       },
@@ -140,14 +151,14 @@ const fetchData = async () => {
         label: t("analytics.Complaints_by_Level"),
         data: levelValues,
         backgroundColor: [
-          'rgba(75, 192, 192, 0.8)',
-          'rgba(255, 205, 86, 0.8)',
-          'rgba(255, 99, 132, 0.8)',
+          'rgba(40, 167, 69, 0.8)',    // Low - Green
+          'rgba(255, 193, 7, 0.8)',    // Medium - Yellow
+          'rgba(220, 53, 69, 0.8)',    // High - Red
         ],
         borderColor: [
-          'rgb(75, 192, 192)',
-          'rgb(255, 205, 86)',
-          'rgb(255, 99, 132)',
+          'rgb(40, 167, 69)',
+          'rgb(255, 193, 7)',
+          'rgb(220, 53, 69)',
         ],
         borderWidth: 2,
       },
@@ -179,45 +190,99 @@ const fetchData = async () => {
     maintainAspectRatio: false,
   };
 
-// Download CSV
+// Fixed CSV Download function
 const downloadCSV = async () => {
-  if (!items.length) return;
+  if (!items.length) {
+    return;
+  }
 
-  const headers = ["title", "description", "department", "subDepartment", "level", "status", "date"];
-
-  const csv = [
-    headers.join(","),
-    ...items.map((r) =>
-      headers
-        .map((k) => {
-          if (k === "date") {
-            return `"${dayjs(r[k]).format("MMM DD, YYYY")}"`;
-          }
-          return `"${r[k] || ""}"`;
-        })
-        .join(",")
-    ),
-  ].join("\n");
+  // Summary counts
+  const totalComplaints = items.length;
+  const pendingComplaints = items.filter(item => item.status === 'Pending').length;
+  const appropriateComplaints = items.filter(item => item.status === 'Appropriate').length;
+  const inProgressComplaints = items.filter(item => item.status === 'In Progress').length;
+  const completedComplaints = items.filter(item => item.status === 'Completed').length;
+  const inappropriateComplaints = items.filter(item => item.status === 'Inappropriate').length;
 
   try {
-    const fileName = `complaints_${startDate}_${endDate}.csv`;
+    const headers = [
+      "Tracking Number",
+      "Title",
+      "Description",
+      "Department",
+      "Sub Department",
+      "Level",
+      "Status",
+      "Responsible Person",
+      "Reason",
+      "Submission Date",
+      "Resolved Date"
+    ];
 
-    // Save in device Documents folder
-    await Filesystem.writeFile({
-      path: fileName,
-      data: csv,
-      directory: Directory.Documents,
-      encoding: Encoding.UTF8,
-    });
+    const escapeCSV = (value: any) => {
+      if (!value) return "";
+      return `"${String(value).replace(/"/g, '""')}"`; // Escape quotes
+    };
 
-    alert(`CSV saved to Documents as: ${fileName}`);
+    // Complaint rows
+    const rows = items.map((item) =>
+      [
+        escapeCSV(item.trackingNumber),
+        escapeCSV(item.title),
+        escapeCSV(item.description),
+        escapeCSV(departments[item.department as DepartmentKey]?.[language] || item.department),
+        escapeCSV(
+          departments[item.department as DepartmentKey]?.subDepartments.find(
+            (sub: any) =>
+              sub.en === item.subDepartment ||
+              sub.am === item.subDepartment ||
+              sub.om === item.subDepartment
+          )?.[language] || item.subDepartment
+        ),
+        escapeCSV(item.level),
+        escapeCSV(item.status),
+        escapeCSV(item.responsiblePerson),
+        escapeCSV(item.reason),
+        escapeCSV(dayjs(item.createdAt).format("MMM DD, YYYY")),
+        escapeCSV(item.resolvedAt ? dayjs(item.resolvedAt).format("MMM DD, YYYY") : "")
+      ].join(",")
+    );
 
-  } catch (err) {
-    console.error("Failed to save CSV", err);
-    alert("Error saving file");
+    // Summary section
+    const summarySection = [
+      "",
+      "Summary Statistics",
+      `Total Complaints,${totalComplaints}`,
+      `Completed Complaints,${completedComplaints}`,
+      `Pending Complaints,${pendingComplaints}`,
+      `In-Progress Complaints,${inProgressComplaints}`,
+      `Appropriate Complaints,${appropriateComplaints}`,
+      `Inappropriate Complaints,${inappropriateComplaints}`
+    ].join("\n");
+
+    const csvContent = [
+      headers.join(","),   // header row
+      ...rows,             // complaint rows
+      "",                  // spacing
+      summarySection       // summary section
+    ].join("\n");
+
+    // Create file
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `complaints_analytics_${dayjs().format("YYYY-MM-DD")}.csv`;
+    link.style.display = "none";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("Download failed:", error);
   }
 };
-
 
 
   const getStatusIcon = (status: string) => {
@@ -225,7 +290,8 @@ const downloadCSV = async () => {
       case 'Completed': return <FaCheckCircle className="text-green-500" />;
       case 'In Progress': return <FaSync className="text-blue-500" />;
       case 'Pending': return <FaClock className="text-yellow-500" />;
-      case 'Canceled': return <FaTimes className="text-red-500" />;
+      case 'Appropriate': return <FaUserCheck className="text-teal-500" />;
+      case 'Inappropriate': return <FaBan className="text-red-500" />;
       default: return <FaExclamationTriangle className="text-gray-500" />;
     }
   };
@@ -239,305 +305,380 @@ const downloadCSV = async () => {
     }
   };
 
+  // Calculate stats for cards
+  const totalComplaints = items.length;
+  const pendingComplaints = items.filter(item => item.status === 'Pending').length;
+  const appropriateComplaints = items.filter(item => item.status === 'Appropriate').length;
+  const inProgressComplaints = items.filter(item => item.status === 'In Progress').length;
+  const completedComplaints = items.filter(item => item.status === 'Completed').length;
+  const inappropriateComplaints = items.filter(item => item.status === 'Inappropriate').length;
+
+
+    if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-600">Loading Analytics...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <main className="min-h-screen bg-gray-50 text-slate-800">
+    <main className="relative min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-100 text-slate-800">
+     
                 {/* Header */}
-               <header className="lg:bg-white bg-slate-900 lg:text-slate-800 text-white shadow-sm border-b border-gray-200 w-full fixed top-0 z-50 pt-8 lg:pt-0 lg:static">
+           <header className="lg:bg-white bg-slate-900 lg:text-slate-800 text-white shadow-sm border-b border-gray-200 w-full fixed top-0 z-30 pt-8 lg:pt-0">
+             <div className="px-4 sm:px-6 lg:px-8">
+               <div className="flex items-center justify-start h-16">
+                   <div className="shrink-0 lg:block hidden">
+                     <div className="w-8 h-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
+                       <BsGraphUpArrow className="w-4 h-4 text-white" />
+                     </div>
+                   </div>
+                   <div className="lg:ml-3 ml-15">
+                     <h1 className="text-xl font-bold lg:text-gray-900">{t('analytics.title')}</h1>
+                   </div>
+               </div>
+             </div>
+           </header>
+     
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse-slow"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse-slow" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse-slow" style={{ animationDelay: '4s' }}></div>
+      </div>
+
+      {/* Language Switcher */}
+      <section className="fixed lg:top-3.5 top-12 right-5 z-30">
+        <LanguageSwitcher />
+      </section>
+
+      <section className="relative z-10 max-w-7xl mx-auto p-4 py-8 sm:p-6 lg:px-8 lg:py-10 mt-20 lg:mt-10">
+        {/* Enhanced Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-5 lg:mb-0">
+
+        
+       <div className="flex flex-col justify-start lg:mb-12 mb-4">
+          <h2 className="sm:text-2xl text-lg font-bold text-gray-900">
+              {t("analytics.dashboard")}
+          </h2>
+          <p className="text-gray-600 mt-1 sm:text-md text-sm">
+            {t("analytics.description")}
+          </p>
+        </div>
+
+          <button
+    onClick={() => setShowFilters(!showFilters)}
+    onMouseEnter={() => setIsHovered('filters')}
+    onMouseLeave={() => setIsHovered(null)}
+    className="group relative bg-linear-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center space-x-2"
+  >
+    <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+    <FaFilter className="relative z-10 text-sm" />
+    <span className="relative z-10 text-sm">
+      {showFilters ? t("analytics.hide_filters") : t("analytics.show_filters")}
+    </span>
+    {showFilters ? (
+      <FaChevronUp className="relative z-10 text-xs" />
+    ) : (
+      <FaChevronDown className="relative z-10 text-xs" />
+    )}
+  </button>
+
+  </div>
+
+
+
+{/* Compact Collapsible Filters Card */}
+{showFilters && (
+  <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 mb-6 border border-white/20 animate-fade-in">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+      {/* Status Filter */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {t("analytics.status")}
+        </label>
+        <select 
+          value={statusFilter} 
+          onChange={(e) => setStatusFilter(e.target.value)} 
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+        >
+          <option value="">{t("analytics.All")}</option>
+          {status.map((value) => (
+            <option key={value.key} value={value.key}>
+              {value.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Level Filter */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {t("analytics.level")}
+        </label>
+        <select 
+          value={levelFilter} 
+          onChange={(e) => setLevelFilter(e.target.value)} 
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+        >
+          <option value="">{t("analytics.All")}</option>
+          {level.map((lvl) => (
+            <option key={lvl.key} value={lvl.key}>
+              {lvl.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Department Filter */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {t("analytics.department")}
+        </label>
+        <select
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+          value={departmentFilter}
+          onChange={(e) => {
+            setDepartmentFilter(e.target.value);
+            setSubDepartmentFilter("");
+          }}
+        >
+          <option value="">{t("analytics.All")}</option>
+          {Object.entries(departments).map(([key, dept]) => (
+            <option key={key} value={key}>
+              {dept[language] || dept.en}
+            </option>
+          ))}
+        </select>
+      </div>
+
+          {/* Sub-department - Only shows when needed */}
+    {departmentFilter && departments[departmentFilter as DepartmentKey]?.subDepartments.length > 0 && (
+      <div className="mb-4">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {t("analytics.sub_department")}
+        </label>
+        <select
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+          value={subDepartmentFilter}
+          onChange={(e) => setSubDepartmentFilter(e.target.value)}
+        >
+          <option value="">{t("analytics.All")}</option>
+          {departments[departmentFilter as DepartmentKey].subDepartments.map(
+            (sub, index) => (
+              <option key={index} value={sub.en}>
+                {sub[language] || sub.en}
+              </option>
+            )
+          )}
+        </select>
+      </div>
+    )}
+    </div>
+
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+   {/* Date Range - Combined */}
+      <div className="sm:col-span-2 lg:col-span-1">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          {t("analytics.date_range")}
+        </label>
+        <div className="flex space-x-2">
+          <input 
+            type="date" 
+            value={startDate} 
+            onChange={(e) => setStartDate(e.target.value)} 
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+          />
+          <span className="flex items-center text-gray-400">→</span>
+          <input 
+            type="date" 
+            value={endDate} 
+            onChange={(e) => setEndDate(e.target.value)} 
+            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+          />
+        </div>
+      </div>
+    {/* Action Buttons - Compact */}
+    <div className="flex flex-col sm:flex-row gap-3 pt-2 items-end">
+      <button
+        onClick={fetchData}
+        disabled={loading}
+        onMouseEnter={() => setIsHovered('apply')}
+        onMouseLeave={() => setIsHovered(null)}
+        className="group relative bg-linear-to-r from-blue-500 to-purple-600 text-white px-4 py-3 h-fit rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center justify-center space-x-2 flex-1"
+      >
+        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+        {loading ? (
+          <>
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
+            <span className="relative z-10 text-sm">{t("analytics.Loading")}</span>
+          </>
+        ) : (
+          <>
+            <FaSync className="relative z-10 text-sm" />
+            <span className="relative z-10 text-sm">{t("analytics.apply_filters")}</span>
+          </>
+        )}
+      </button>
       
-                  <div className="px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-start h-16">
-                        <div className="shrink-0 lg:block hidden">
-                          <div className="w-8 h-8 bg-linear-to-r from-blue-600 to-indigo-600 rounded-lg flex items-center justify-center">
-                            <BsGraphUpArrow className="w-4 h-4 text-white" />
-                          </div>
-                        </div>
-                        <div className="lg:ml-3 ml-15">
-                          <h1 className="text-xl font-bold lg:text-gray-900">{t("analytics.title")}</h1>
-                        </div>
-                    </div>
-                  </div>
-                </header>
-          
-          
-               
-        <section className="relative p-4 py-6 sm:p-6 lg:px-8 lg:py-10 mt-20 lg:mt-0">
-           {/* Language Switcher */}
-              <section className="fixed lg:top-3.5 top-12 right-5 z-50">
-              <LanguageSwitcher />
-            </section>  
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h2 className="sm:text-2xl text-lg font-bold text-gray-900">{t("analytics.dashboard")}</h2>
-          <p className="text-gray-600 mt-1 sm:text-md text-sm">{t("analytics.description")}</p>
-        </div>
+      <button
+        onClick={() => {
+          setStatusFilter('');
+          setLevelFilter('');
+          setDepartmentFilter('');
+          setSubDepartmentFilter('');
+          setStartDate(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
+          setEndDate(dayjs().format("YYYY-MM-DD"));
+        }}
+        onMouseEnter={() => setIsHovered('clear')}
+        onMouseLeave={() => setIsHovered(null)}
+        className="group relative bg-linear-to-r from-gray-500 to-gray-600 text-white px-4 py-3 h-fit rounded-xl font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center justify-center space-x-2 flex-1"
+      >
+        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+        <FaTimes className="relative z-10 text-sm" />
+        <span className="relative z-10 text-sm">{t("analytics.clear_all")}</span>
+      </button>
+    </div>
+    </div>
+  </div>
+)}
 
-        {/* Filters Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-          <div className="flex items-center mb-4">
-            <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
-              <FaFilter className="text-white text-lg" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-gray-800">{t("analytics.filters")}</h2>
-              <p className="text-gray-500 text-sm">{t("analytics.filters_description")}</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-4">
-            <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                <FaCalendarAlt className="mr-2 text-gray-400" />
-                {t("analytics.start_date")}
-              </label>
-              <input 
-                type="date" 
-                value={startDate} 
-                onChange={(e) => setStartDate(e.target.value)} 
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-            <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                <FaCalendarAlt className="mr-2 text-gray-400" />
-                {t("analytics.end_date")}
-              </label>
-              <input 
-                type="date" 
-                value={endDate} 
-                onChange={(e) => setEndDate(e.target.value)} 
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              />
-            </div>
-            <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                <FaCheckCircle className="mr-2 text-gray-400" />
-                {t("analytics.status")}
-              </label>
-              <select 
-                value={statusFilter} 
-                onChange={(e) => setStatusFilter(e.target.value)} 
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              >
-                         <option value="All">{t("analytics.All")} {t("analytics.status")}</option>
-                        {status.map((value) => (
-                <option key={value.key} value={value.key}>
-                  {value.label}
-                </option>
-              ))}
-              </select>
-            </div>
-            <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                <FaExclamationTriangle className="mr-2 text-gray-400" />
-                {t("analytics.level")}
-              </label>
-              <select 
-                value={levelFilter} 
-                onChange={(e) => setLevelFilter(e.target.value)} 
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-              >
-                <option value="All">{t("analytics.All")} {t("analytics.level")}</option>
-                        {level.map((lvl) => (
-                <option key={lvl.key} value={lvl.key}>
-                  {lvl.label}
-                </option>
-              ))}
-            
-              </select>
-            </div>
-            <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                <FaBuilding className="mr-2 text-gray-400" />
-                {t("analytics.department")}
-              </label>
-           <select
-             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-               value={departmentFilter}
-              onChange={(e) =>
-              {setDepartmentFilter(e.target.value)
-              setSubDepartmentFilter("All");
-              }
-              }
-              required
-            >
-              <option value="" disabled>{t("messages.selectDepartment")}</option>
-              <option value={"All"}>{t("analytics.All")}</option>
-              {Object.entries(departments).map(([key, dept]) => (
-                <option key={key} value={key}>
-                  {dept[language] || dept.en}
-                </option>
-              ))}
-            </select>
-            </div>
-            <div>
-              {departmentFilter && departmentFilter!=="All" && departmentFilter!=="General" &&(
-                <div>
-              <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                <FaLayerGroup className="mr-2 text-gray-400" />
-                {t("analytics.sub_department")}
-              </label>
-               
-            {departments[departmentFilter as DepartmentKey].subDepartments.length > 0 && (
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Total Complaints */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20 hover:shadow-xl transition-all duration-500 transform hover:scale-105">
+            <div className="flex items-center justify-between">
               <div>
-                <select
-                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-               value={subDepartmentFilter}
-                  onChange={(e) =>
-                    setSubDepartmentFilter(e.target.value)
-                  }
-                >
-                   
-                  <option value="" disabled>{t("messages.selectSubDepartment")}</option>
-                  <option value={"All"}>{t("analytics.All")}</option>
-                  {departments[departmentFilter as DepartmentKey].subDepartments.map(
-                    (sub, index) => (
-                      <option key={index} value={sub.en}>
-                        {sub[language] || sub.en}
-                      </option>
-                    )
-                  )}
-                </select>
+                <p className="text-sm font-semibold text-gray-500">{t("analytics.total_complaints")}</p>
+                <h3 className="text-3xl font-bold text-gray-800 mt-2">{totalComplaints}</h3>
               </div>
-            )}
+              <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <FaChartBar className="text-white text-xl" />
+              </div>
             </div>
-             )}
           </div>
+
+          {/* Pending Complaints */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20 hover:shadow-xl transition-all duration-500 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-500">{t("analytics.pending_complaints")}</p>
+                <h3 className="text-3xl font-bold text-yellow-600 mt-2">{pendingComplaints}</h3>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-yellow-500 h-2 rounded-full" 
+                    style={{ 
+                      width: `${((pendingComplaints / totalComplaints) * 100) || 0}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-linear-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+                <FaClock className="text-white text-xl" />
+              </div>
+            </div>
           </div>
-         
 
-          <div className="flex flex-col sm:flex-row gap-3 text-sm md:text-base">
-            <button
-              onClick={fetchData}
-              disabled={loading}
-              className="bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-700 hover:to-purple-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center hover:cursor-pointer"
-            >
-              {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                 {t("analytics.Loading")}
-                </>
-              ) : (
-                <>
-                  <FaSync className="mr-2" />
-                  {t("analytics.apply_filters")}
-                </>
-              )}
-            </button>
-            
-            <button
-              onClick={() => {
-                setStatusFilter('');
-                setLevelFilter('');
-                setDepartmentFilter('');
-                setSubDepartmentFilter('');
-                setStartDate(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
-                setEndDate(dayjs().format("YYYY-MM-DD"));
-              }}
-              className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 flex items-center hover:cursor-pointer"
-            >
-              <FaTimes className="mr-2" />
-             {t("analytics.clear_all")}
-            </button>
+          {/* Appropriate Complaints */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20 hover:shadow-xl transition-all duration-500 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-500">{t("analytics.appropriate_complaints")}</p>
+                <h3 className="text-3xl font-bold text-teal-600 mt-2">{appropriateComplaints}</h3>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-teal-500 h-2 rounded-full" 
+                    style={{ 
+                      width: `${((appropriateComplaints / totalComplaints) * 100) || 0}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-linear-to-br from-teal-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+                <FaUserCheck className="text-white text-xl" />
+              </div>
+            </div>
+          </div>
+
+          {/* In Progress Complaints */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20 hover:shadow-xl transition-all duration-500 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-500">{t("analytics.in_progress_complaints")}</p>
+                <h3 className="text-3xl font-bold text-blue-600 mt-2">{inProgressComplaints}</h3>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-blue-500 h-2 rounded-full" 
+                    style={{ 
+                      width: `${((inProgressComplaints / totalComplaints) * 100) || 0}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center shadow-lg">
+                <FaSync className="text-white text-xl animate-pulse" />
+              </div>
+            </div>
+          </div>
+
+          {/* Completed Complaints */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20 hover:shadow-xl transition-all duration-500 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-500">{t("analytics.completed_complaints")}</p>
+                <h3 className="text-3xl font-bold text-green-600 mt-2">{completedComplaints}</h3>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-green-500 h-2 rounded-full" 
+                    style={{ 
+                      width: `${((completedComplaints / totalComplaints) * 100) || 0}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                <FaCheckCircle className="text-white text-xl" />
+              </div>
+            </div>
+          </div>
+
+          {/* Inappropriate Complaints */}
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20 hover:shadow-xl transition-all duration-500 transform hover:scale-105">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-500">{t("analytics.inappropriate_complaints")}</p>
+                <h3 className="text-3xl font-bold text-red-600 mt-2">{inappropriateComplaints}</h3>
+                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                  <div 
+                    className="bg-red-500 h-2 rounded-full" 
+                    style={{ 
+                      width: `${((inappropriateComplaints / totalComplaints) * 100) || 0}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <div className="w-12 h-12 bg-linear-to-br from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
+                <FaBan className="text-white text-xl" />
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-  {/* Total Complaints */}
-  <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm text-gray-500 font-medium">{t("analytics.total_complaints")}</p>
-        <h3 className="text-3xl font-bold text-gray-800 mt-2">{items.length}</h3>
-      </div>
-      <div className="w-12 h-12 bg-linear-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-        <FaChartBar className="text-white text-xl" />
-      </div>
-    </div>
-  </div>
-
-  {/* Active Cases */}
-  <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm text-gray-500 font-medium">{t("analytics.active_cases")}</p>
-        <h3 className="text-3xl font-bold text-amber-600 mt-2">
-          {items.filter(item => item.status === 'Pending' || item.status === 'In Progress').length}
-        </h3>
-        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-          <div 
-            className="bg-amber-500 h-1.5 rounded-full" 
-            style={{ 
-              width: `${((items.filter(item => item.status === 'Pending' || item.status === 'In Progress').length / items.length) * 100) || 0}%` 
-            }}
-          ></div>
-        </div>
-      </div>
-      <div className="w-12 h-12 bg-linear-to-r from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-        <FaSync className="text-white text-xl animate-pulse" />
-      </div>
-    </div>
-  </div>
-
-  {/* Completed Cases */}
-  <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm text-gray-500 font-medium">{t("analytics.completed_complaints")}</p>
-        <h3 className="text-3xl font-bold text-green-600 mt-2">
-          {items.filter(item => item.status === 'Completed').length}
-        </h3>
-        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-          <div 
-            className="bg-green-500 h-1.5 rounded-full" 
-            style={{ 
-              width: `${((items.filter(item => item.status === 'Completed').length / items.length) * 100) || 0}%` 
-            }}
-          ></div>
-        </div>
-      </div>
-      <div className="w-12 h-12 bg-linear-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-        <FaCheckCircle className="text-white text-xl" />
-      </div>
-    </div>
-  </div>
-
-  {/* Canceled Cases */}
-  <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-sm text-gray-500 font-medium">{t("analytics.canceled_complaints")}</p>
-        <h3 className="text-3xl font-bold text-red-600 mt-2">
-          {items.filter(item => item.status === 'Canceled').length}
-        </h3>
-        <div className="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-          <div 
-            className="bg-red-500 h-1.5 rounded-full" 
-            style={{ 
-              width: `${((items.filter(item => item.status === 'Canceled').length / items.length) * 100) || 0}%` 
-            }}
-          ></div>
-        </div>
-      </div>
-      <div className="w-12 h-12 bg-linear-to-r from-red-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
-        <FaTimesCircle className="text-white text-xl" />
-      </div>
-    </div>
-  </div>
-</div>
-
-        {/* Charts Grid */}
+        {/* Enhanced Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 mb-8">
           {/* Status Distribution */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 lg:col-span-1">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-linear-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3">
-                <FaChartBar className="text-white text-lg" />
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/20 transform transition-all duration-500 hover:shadow-3xl">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                <FaChartBar className="text-white text-xl" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">{t("analytics.status_distribution")}</h3>
-                <p className="text-gray-500 text-sm">{t("analytics.status_distribution_desc")}</p>
+                <h3 className="text-xl font-bold text-gray-800">{t("analytics.status_distribution")}</h3>
+                <p className="text-gray-500">{t("analytics.status_distribution_desc")}</p>
               </div>
             </div>
             <div className="h-64">
@@ -546,14 +687,14 @@ const downloadCSV = async () => {
           </div>
 
           {/* Level Breakdown */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 lg:col-span-1">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-linear-to-r from-green-500 to-teal-600 rounded-xl flex items-center justify-center mr-3">
-                <FaChartPie className="text-white text-lg" />
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/20 transform transition-all duration-500 hover:shadow-3xl">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-linear-to-br from-green-500 to-teal-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                <FaChartPie className="text-white text-xl" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">{t("analytics.level_breakdown")}</h3>
-                <p className="text-gray-500 text-sm">{t("analytics.level_breakdown_desc")}</p>
+                <h3 className="text-xl font-bold text-gray-800">{t("analytics.level_breakdown")}</h3>
+                <p className="text-gray-500">{t("analytics.level_breakdown_desc")}</p>
               </div>
             </div>
             <div className="h-64">
@@ -562,14 +703,14 @@ const downloadCSV = async () => {
           </div>
 
           {/* Daily Trends */}
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 lg:col-span-2 xl:col-span-1">
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 bg-linear-to-r from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-3">
-                <FaChartLine className="text-white text-lg" />
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/20 transform transition-all duration-500 hover:shadow-3xl lg:col-span-2 xl:col-span-1">
+            <div className="flex items-center mb-6">
+              <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                <FaChartLine className="text-white text-xl" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800">{t("analytics.daily_trends")}</h3>
-                <p className="text-gray-500 text-sm">{t("analytics.daily_trends_desc")}</p>
+                <h3 className="text-xl font-bold text-gray-800">{t("analytics.daily_trends")}</h3>
+                <p className="text-gray-500">{t("analytics.daily_trends_desc")}</p>
               </div>
             </div>
             <div className="h-64">
@@ -578,79 +719,82 @@ const downloadCSV = async () => {
           </div>
         </div>
 
-        {/* Complaints Table */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-  <div className="flex items-center">
-    <div className="w-10 h-10 bg-linear-to-r from-orange-500 to-red-600 rounded-xl flex items-center justify-center mr-3 shrink">
-      <FaTable className="text-white text-lg" />
-    </div>
-    <div className="min-w-0">
-      <h3 className="text-lg font-semibold text-gray-800 truncate">{t("analytics.complaints_data")}</h3>
-      <p className="text-gray-500 text-sm truncate">{t("analytics.complaints_data_desc")}</p>
-    </div>
-  </div>
-  <button 
-    onClick={downloadCSV}
-    disabled={!items.length}
-    className="bg-linear-to-r from-green-600 to-teal-600 text-white px-4 py-3 sm:px-6 rounded-xl font-medium hover:from-green-700 hover:to-teal-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center hover:cursor-pointer w-full sm:w-auto"
-  >
-    <FaDownload className="mr-2 shrink" />
-    <span className="truncate">{t("analytics.export_csv")}</span>
-  </button>
-</div>
+        {/* Enhanced Complaints Table */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 transform transition-all duration-500 hover:shadow-3xl">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4">
+            <div className="flex items-center">
+              <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-red-600 rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                <FaTable className="text-white text-xl" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800">{t("analytics.complaints_data")}</h3>
+                <p className="text-gray-500">{t("analytics.complaints_data_desc")}</p>
+              </div>
+            </div>
+            <button 
+              onClick={downloadCSV}
+              disabled={!items.length}
+              onMouseEnter={() => setIsHovered('export')}
+              onMouseLeave={() => setIsHovered(null)}
+              className="group relative bg-linear-to-r from-green-500 to-teal-600 text-white px-8 py-4 rounded-2xl font-bold hover:from-green-600 hover:to-teal-700 focus:ring-4 focus:ring-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden flex items-center justify-center space-x-3 w-full sm:w-auto"
+            >
+              <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+              <FaDownload className="relative z-10 text-lg transition-transform group-hover:scale-110" />
+              <span className="relative z-10 text-lg">{t("analytics.export_csv")}</span>
+            </button>
+          </div>
 
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-2xl border-2 border-gray-100">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.table_title")}</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.table_description")}</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.department")}</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.sub_department")}</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.level")}</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.status")}</th>
-                  <th className="px-4 py-3 text-sm font-semibold text-gray-700">{t("analytics.table_date")}</th>
+                <tr className="bg-linear-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                  <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.table_title")}</th>
+                  <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.table_description")}</th>
+                  <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.department")}</th>
+                  <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.sub_department")}</th>
+                  <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.level")}</th>
+                  <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.status")}</th>
+                  <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.table_date")}</th>
                 </tr>
               </thead>
               <tbody>
                 {items.length > 0 ? (
                   items.map((r) => (
-                    <tr key={r._id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-150">
-                      <td className="px-4 py-3 text-sm text-gray-800">{r.title}</td>
-                      <td className="px-4 py-3 text-sm text-gray-800">{r.description}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{departments[r.department as DepartmentKey]?.[language] || r.department}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{
-        departments[r.department as DepartmentKey]?.subDepartments.find(
-          (sub:any) =>
-            sub.en === r.subDepartment || // if you store the English label
-            sub.am === r.subDepartment || // or Amharic
-            sub.om === r.subDepartment    // or Oromo
-        )?.[language] || r.subDepartment
-      || "-"}</td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getLevelColor(r.level)}`}>
+                    <tr key={r._id} className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors duration-200">
+                      <td className="px-6 py-4 text-sm font-medium text-gray-800">{r.title}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">{r.description}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{departments[r.department as DepartmentKey]?.[language] || r.department}</td>
+                      <td className="px-6 py-4 text-sm text-gray-600">{
+                        departments[r.department as DepartmentKey]?.subDepartments.find(
+                          (sub:any) =>
+                            sub.en === r.subDepartment ||
+                            sub.am === r.subDepartment ||
+                            sub.om === r.subDepartment
+                        )?.[language] || r.subDepartment || "-"
+                      }</td>
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2 ${getLevelColor(r.level)}`}>
                           {t(`level.${r.level}`)}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           {getStatusIcon(r.status)}
-                          <span className="text-sm text-gray-700">{t(`status.${r.status}`)}</span>
+                          <span className="text-sm font-medium text-gray-700">{t(`status.${r.status}`)}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">
+                      <td className="px-6 py-4 text-sm text-gray-600 font-medium">
                         {dayjs(r.date).format('MMM DD, YYYY')}
                       </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center">
-                        <FaChartBar className="text-4xl text-gray-300 mb-2" />
-                        <p className="text-lg">{t("analytics.no_data")}</p>
-                        <p className="text-sm">{t("analytics.try_adjusting")}</p>
+                        <FaChartBar className="text-6xl text-gray-300 mb-4" />
+                        <p className="text-xl font-semibold text-gray-500 mb-2">{t("analytics.no_data")}</p>
+                        <p className="text-gray-400">{t("analytics.try_adjusting")}</p>
                       </div>
                     </td>
                   </tr>
@@ -659,8 +803,27 @@ const downloadCSV = async () => {
             </table>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      <style jsx global>{`
+        @keyframes fade-in {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.5; }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out;
+        }
+        .animate-pulse-slow {
+          animation: pulse-slow 6s ease-in-out infinite;
+        }
+        .shadow-3xl {
+          box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.3);
+        }
+      `}</style>
     </main>
   );
 }

@@ -7,6 +7,18 @@
    "title": "ቅሬታ ያቅርቡ",
    "back_to_home":"ወደ መነሻ ገጽ ተመለስ",
           "subtitle": "እባክዎ ቅሬታዎን ለመላክ ቅጹን ይሙሉ።",
+
+          "sidebar": {
+  "admin_panel": "የአስተዳደር ፓናል",
+  "management_console": "የአስተዳደር መቆጣጠሪያ",
+
+  "dashboard": "ዳሽቦርድ",
+  "analytics": "ትንታኔ",
+  "profile": "መገለጫ",
+
+  "logout": "ዘግተው ይውጡ"
+},
+
   "personal_info": {
     "personal_info": "የግል መረጃ",
     "complaint_details": "የቅሬታ ዝርዝሮች"
@@ -87,6 +99,7 @@
     "enterDescription": "እባክዎን ዝርዝር መግለጫ ያቀርቡ።",
      "copied_to_clipboard": "ወደ ክሊፕቦርድ ተገልብጧል!"
   },
+
    "login": {
     "title": "የአስተዳዳሪ መግቢያ",
     "subtitle": "ወደ የአስተዳዳሪ ዳሽቦርድ ይግቡ",
@@ -99,11 +112,14 @@
       "networkError": "ኔትወርክ ስህተት ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
       "signingIn": "በመግቢያ ላይ..."
   },
+
     "admin_dashboard":{
   "title":"ዳሽቦርድ",
   "logout": "ውጣ",
   "complaint_management": "የቅሬታ አስተዳደር",
   "manage_and_track": "የቀረቡ ቅሬታዎችን ያስተዳድሩና ይከታተሉ",
+  "filters_and_search": "ማጣሪያዎች እና ፍለጋ",
+  "find_and_manage": "ቅሬታዎችን ያግኙና ያስተዳድሩ",
   "total": "ድምር፡",
   "search_placeholder": "ቅሬታዎችን ፈልግ...",
   "all_status": "ሁሉም ሁኔታዎች",
@@ -118,8 +134,10 @@
   "date": "ቀን",
   "actions": "እርምጃዎች"
   },
+
   "delete_complaint":{
      "title": "ቅሬታን አጥፋ",
+    "subtitle": "ይህን ቅሬታ በቋሚነት ያጥፋ",
   "confirmation": "ቅሬታውን ማጥፋት እንደምትፈልጉ እርግጠኛ ነዎት?",
   "irreversible_note": "ይህ እርምጃ መመለስ አይቻልም።",
   "warning_title": "ማስጠንቀቂያ",
@@ -127,6 +145,7 @@
   "cancel": "ይቅር",
   "delete": "አጥፋ"
 },
+
 "update_status":{
   "title": "ሁኔታን አዘምን",
   "subtitle": "ፈጣን የሁኔታ አዘምን",
@@ -158,14 +177,14 @@
     "description": "ቅሬታው ተፈትሎ ተጠናቋል"
   },
  "appropriate": {
-  "name": "ተገቢ",
+  "name": "Appropriate",
   "label": "ተገቢ",
-  "description": "ይህ ቅሬታ ተቀባይነት አለው እና ተቀብሏል።"
+  "description": "ይህ ቅሬታ ተቀባይነት አለው።"
 },
 "inappropriate": {
-  "name": "ያልተገበረ",
-  "label": "ያልተገበረ",
-  "description": "ይህ ቅሬታ ምክንያቱ የማይረባ ወይም ተስማሚ ያልሆነ ስለሆነ ተወስኗል።"
+  "name": "Inappropriate",
+  "label": "ተገቢ ያልሆነ",
+  "description": "ይህ ቅሬታ ምክንያቱ የማይረባ ነው።"
 }
 
 },
@@ -174,7 +193,11 @@
   "cancellation_reason": "የመሰረዝ ምክንያት",
   "completion_placeholder": "ይህ ቅሬታ እንዴት እንደተፈታ ይግለጹ...",
   "cancellation_placeholder": "ይህ ቅሬታ ለምን እንደሚሰረዝ ይግለጹ...",
-  "reason_help": "ይህ ምክንያት ለተጠቃሚው ይታያል"
+  "reason_help": "ይህ ምክንያት ለተጠቃሚው ይታያል",
+
+    "current": "የአሁኑ",
+  "status_flow_guide": "የሁኔታ ፍሰት መመሪያ",
+  "can_be_inappropriate": "በማንኛውም ደረጃ እንደ ተገቢ ያልሆነ ሊመለከት ይችላል"
 
 
 
@@ -185,6 +208,7 @@
     "Medium": "መካከለኛ",
     "High": "ከፍተኛ"
     },
+
   "status": {
     "Pending":"በመጠባበቅ ላይ",
     "In Progress":"በሂደት ላይ",
@@ -197,6 +221,7 @@
     "page": "ገጽ",
     "next": "ቀጣይ"
   },
+
     "complaint_details": {
     "title": "የቅሬታ ዝርዝር",
     "subtitle": "ሙሉ መረጃ እና ትክክለኛ መከታተያ",
@@ -217,9 +242,10 @@
     "assigned_department":"የተመደበ ክፍል",
     "days":"ቀናት",
     "personal_info": "የግል መረጃ",
-  "complainant_details": "የተቀራረበው ዝርዝር",
+  "complainant_details": "የተቀረበው ዝርዝር",
   "reason": "ምክንያት",
   "completion_explanation": "ለመጨረሻው ምክንያት ማብራሪያ",
+  "inappropriate_explanation": "ይህ ቅሬታ ለምን ያልተገባ መሆኑን ያብራሩ",
   "cancellation_explanation": "ለመሰረዝ ምክንያት ማብራሪያ",
   "status_reason": "የሁኔታ ለውጥ ምክንያት",
   "no_reason_provided": "ምክንያት አልተሰጠም",
@@ -256,16 +282,20 @@
     "usernameUpdated": "የተጠቃሚ ስም በተሳካ ሁኔታ ተሻሽሏል",
     "passwordChanged": "የሚስጥር ቁልፍ በተሳካ ሁኔታ ተቀይሯል"
   },
+
   "analytics": {
     "title": "ትንታኔ",
     "dashboard": "የትንታኔ ዳሽቦርድ",
     "description": "የቅሬታ አስተዳደርን ለማበረታታት ዝርዝር መረጃና ትንታኔዎች",
+    "show_filters":"ማጣሪያዎችን አሳይ",
+    "hide_filters":"ማጣሪያዎችን ደብቅ",
 
     "filters": "ማጣሪያዎች እና መቆጣጠሪያዎች",
     "filters_description": "የትንታኔዎን መረጃ ያቀናብሩ",
 
     "start_date": "መነሻ ቀን",
     "end_date": "መጨረሻ ቀን",
+    "date_range": "የቀን ክልል",
     "status": "ሁኔታ",
     "level": "ደረጃ",
     "department": "መድፍ",
@@ -277,7 +307,10 @@
 
     "total_complaints": "ጠቅላላ ቅሬታዎች",
    "completed_complaints": "የተጠናቀቁ ቅሬታዎች",
-    "canceled_complaints": "የተሰረዙ ቅሬታዎች",
+   "pending_complaints": "በመጠባበቅ ላይ ያሉ ቅሬታዎች",
+   "in_progress_complaints": "በሂደት ላይ ያሉ ቅሬታዎች",
+   "appropriate_complaints": "ተገቢ ቅሬታዎች",
+   "inappropriate_complaints": "ተገቢ ያልሆኑ ቅሬታዎች",
     "active_cases": "እየተካሄደ ያሉ ቅሬታዎች",
     "status_distribution": "የሁኔታ ቅንፍ",
     "status_distribution_desc": "ቅሬታ በሁኔታ መመዝገቢያ",
@@ -320,11 +353,13 @@
     "download_receipt": "መረጃ አስቀምጥ",
     "submit_another": "ሌላ ቅሬታ ይላኩ"
   },
+
   "tracking": {
     "title": "ቅሬታዎን ይከታተሉ",
     "description": "የቅሬታዎን ሁኔታ እና ዝርዝሮች ለመፈተሽ የመከታተያ ቁጥርዎን ያስገቡ",
     "tracking_number": "የመከታተያ ቁጥር",
     "enter_tracking_number": "የመከታተያ ቁጥርዎን ያስገቡ (ለምሳሌ፦ CMP-ABC123XYZ)",
+    "responsible_person": "የተመደበ ኃላፊ ሰው: ",
     "searching": "በመፈለግ ላይ...",
     "search": "ፈልግ",
     "complaint_details": "የቅሬታ ዝርዝሮች",

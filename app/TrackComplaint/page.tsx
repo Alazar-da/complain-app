@@ -673,8 +673,8 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
       </div>
 
       <style jsx global>{`
-        @keyframes fade-in {
-          from { opacity: 0; transform: translateY(30px); }
+          @keyframes fade-in {
+          from { opacity: 0; transform: translateY(-20px); }
           to { opacity: 1; transform: translateY(0); }
         }
         @keyframes pulse-slow {

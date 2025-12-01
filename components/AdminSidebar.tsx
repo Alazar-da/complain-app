@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from "next/navigation";
 import { usePathname } from 'next/navigation';
 import { Preferences } from '@capacitor/preferences';
+import { useTranslation } from 'react-i18next';
 
 const AdminSidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ const AdminSidebar = () => {
        const pathname = usePathname();
   const [activeItem, setActiveItem] = useState(pathname);
     const router = useRouter();
+ const { t } = useTranslation();
 
       const [loggedInUser, setLoggedInUser] = useState<string | null>(null);
 
@@ -39,12 +41,12 @@ const AdminSidebar = () => {
   }, []);
 
   const menuItems = [
-    { name: 'Dashboard', icon: <FaTachometerAlt title='Dashboard' />, href: '/admin/dashboard' },
-    { name: 'Analytics', icon: <FaChartBar title='Analytics' />, href: '/admin/analytics' },
-    { name: 'Profile', icon: <FaUser title='Profile' />, href: '/admin/profile' },
+    { name: t('sidebar.dashboard'), icon: <FaTachometerAlt title={t('sidebar.dashboard')} />, href: '/admin/dashboard' },
+    { name: t('sidebar.analytics'), icon: <FaChartBar title={t('sidebar.analytics')} />, href: '/admin/analytics' },
+    { name: t('sidebar.profile'), icon: <FaUser title={t('sidebar.profile')} />, href: '/admin/profile' },
   ];
 
-  const logoutItem = { name: 'Logout', icon: <FaSignOutAlt title='Logout' />, href: '/logout' };
+  const logoutItem = { name: t('sidebar.logout'), icon: <FaSignOutAlt title={t('sidebar.logout')} />, href: '/logout' };
   const handleItemClick = (href: string) => {
     setActiveItem(href);
     if (isMobile) {
@@ -100,7 +102,7 @@ const AdminSidebar = () => {
         {!isMobile && (
           <button
             className={`
-              absolute cursor-pointer -right-3 top-9 w-7 h-7 border border-gray-600 
+              absolute cursor-pointer -right-3 top-9 w-7 h-7 border border-gray-600 z-90
               rounded-full bg-gray-800 text-white flex items-center justify-center
               shadow-lg hover:shadow-xl hover:bg-gray-700 hover:scale-110 transition-all duration-200
               ${!isOpen && 'rotate-180'}
@@ -131,9 +133,9 @@ const AdminSidebar = () => {
           {isOpen && (
             <div className="text-white">
               <h1 className="text-xl font-bold bg-linear-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Admin Panel
+                {t('sidebar.admin_panel')}
               </h1>
-              <p className="text-xs text-gray-400">Management Console</p>
+              <p className="text-xs text-gray-400">{t('sidebar.management_console')}</p>
             </div>
           )}
         </div>

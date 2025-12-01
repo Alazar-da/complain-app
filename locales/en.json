@@ -7,6 +7,17 @@
   "title": "Submit a Complaint",
   "back_to_home":"Back to Home",
           "subtitle": "Fill out the form below to submit your complaint.",
+
+          "sidebar": {
+  "admin_panel": "Admin Panel",
+  "management_console": "Management Console",
+
+  "dashboard": "Dashboard",
+  "analytics": "Analytics",
+  "profile": "Profile",
+
+  "logout": "Logout"
+},
   "personal_info": {
     "personal_info": "Personal Info",
     "complaint_details": "Complaint Details"
@@ -96,11 +107,14 @@
     "networkError": "Network error. Please try again.",
     "signingIn": "Signing In..."
   },
+
   "admin_dashboard":{
      "title": "Dashboard",
   "logout": "Logout",
   "complaint_management": "Complaint Management",
   "manage_and_track": "Manage and track all submitted complaints",
+  "filters_and_search": "Filters & Search",
+  "find_and_manage": "Find and manage complaints",
   "total": "Total:",
   "search_placeholder": "Search complaints...",
   "all_status": "All Status",
@@ -115,8 +129,10 @@
   "date": "Date",
   "actions": "Actions"
   },
+
 "delete_complaint":{
     "title": "Delete Complaint",
+    "subtitle": "Permanently remove this complaint",
   "confirmation": "Are you sure you want to delete the complaint?",
   "irreversible_note": "This action cannot be undone.",
   "warning_title": "Warning",
@@ -124,6 +140,7 @@
   "cancel": "Cancel",
   "delete": "Delete"
 },
+
 "update_status":{
   "title": "Update Status",
   "subtitle": "Quick status update",
@@ -171,13 +188,19 @@
   "cancellation_reason": "Cancellation Reason", 
   "completion_placeholder": "Describe how this complaint was resolved...",
   "cancellation_placeholder": "Explain why this complaint is being canceled...",
-  "reason_help": "This reason will be visible to the user"
+  "reason_help": "This reason will be visible to the user",
+
+   "current": "Current",
+  "status_flow_guide": "Status Flow Guide",
+  "can_be_inappropriate": "Can be marked as Inappropriate at any stage"
 },
+
   "level": {
     "Low": "Low",
     "Medium": "Medium",
     "High": "High"
     },
+
   "status": {
     "Pending":"Pending",
     "In Progress":"In Progress",
@@ -185,11 +208,13 @@
     "Appropriate": "Appropriate",
     "Inappropriate": "Inappropriate"
   },
+
    "pagination": {
     "prev": "Prev",
     "page": "Page",
     "next": "Next"
   },
+
    "complaint_details": {
     "title": "Complaint Details",
     "subtitle": "Complete information and tracking",
@@ -213,6 +238,7 @@
   "complainant_details": "Complainant Details",
   "reason": "Reason",
   "completion_explanation": "Explanation for completion",
+     "inappropriate_explanation": "Explanation for inappropriate",
   "cancellation_explanation": "Explanation for cancellation", 
   "status_reason": "Reason for status change",
   "no_reason_provided": "No reason provided",
@@ -254,12 +280,15 @@
     "title": "Analytics",
     "dashboard": "Analytics Dashboard",
     "description": "Comprehensive insights and analytics for complaints management",
+    "show_filters":"Show Filters",
+    "hide_filters":"Hide Filters",
 
     "filters": "Filters & Controls",
     "filters_description": "Refine your analytics data",
 
     "start_date": "Start Date",
     "end_date": "End Date",
+    "date_range": "Date Range",
     "status": "Status",
     "level": "Level",
     "department": "Department",
@@ -270,8 +299,11 @@
     "All":"All",
 
     "total_complaints": "Total Complaints",
-     "completed_complaints": "Completed Complaints",
-    "canceled_complaints": "Canceled Complaints",
+    "completed_complaints": "Completed Complaints",
+    "pending_complaints": "Pending Complaints",
+    "in_progress_complaints": "In-Progress Complaints",
+    "appropriate_complaints": "Appropriate Complaints",
+    "inappropriate_complaints": "Inappropriate Complaints",
     "active_cases": "Active Cases",
     "status_distribution": "Status Distribution",
     "status_distribution_desc": "Breakdown by complaint status",
@@ -320,6 +352,7 @@
     "description": "Enter your tracking number to check the status and details of your complaint",
     "tracking_number": "Tracking Number",
     "enter_tracking_number": "Enter your tracking number (e.g., CMP-ABC123XYZ)",
+    "responsible_person": "Responsible Person: ",
     "searching": "Searching...",
     "search": "Search",
     "complaint_details": "Complaint Details",

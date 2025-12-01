@@ -1,11 +1,11 @@
 'use client';
 
-import { FiX, FiFileText, FiClock, FiTag, FiAlertCircle, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiTrendingUp, FiTrendingDown, FiMinus, FiInfo, FiUser, FiPhone, FiMapPin, FiBook, FiHome } from 'react-icons/fi';
+import { FiX, FiFileText, FiClock, FiTag, FiAlertCircle, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiTrendingUp, FiTrendingDown, FiMinus, FiInfo, FiUser, FiPhone, FiMapPin, FiBook, FiHome, FiShield, FiMessageSquare, FiCalendar, FiUserCheck, FiDownload, FiTrash2 } from 'react-icons/fi';
 import { TbBuilding, TbBuildingSkyscraper } from 'react-icons/tb';
 import { useTranslation } from "react-i18next";
 import { departments, DepartmentKey } from "@/data/departments";
 import { useState, useEffect } from 'react';
-import { FaSpinner, FaTrash, FaImage, FaVideo, FaCloudUploadAlt, FaDownload, FaVenusMars, FaGraduationCap } from 'react-icons/fa';
+import { FaSpinner, FaImage, FaVideo, FaVenusMars, FaGraduationCap, FaStar, FaPaperPlane, FaAward } from 'react-icons/fa';
 
 interface ViewModalProps {
   complaint: any;
@@ -18,6 +18,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
   const [countdown, setCountdown] = useState(0);
   const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [isHovered, setIsHovered] = useState<string | null>(null);
 
   // Countdown effect
   useEffect(() => {
@@ -25,7 +26,6 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
       const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
       return () => clearTimeout(timer);
     } else if (countdown === 0 && message.type === "success") {
-      // Auto-close when countdown reaches 0
       const closeTimer = setTimeout(() => {
         onClose();
       }, 500);
@@ -35,7 +35,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
 
   const showMessage = (text: string, type = "info") => {
     setMessage({ text, type });
-    if (type === "success") setCountdown(3); // Start 3-second countdown
+    if (type === "success") setCountdown(3);
   };
 
   // Extract public_id from Cloudinary URL
@@ -44,10 +44,9 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
       const urlParts = url.split('/');
       const uploadIndex = urlParts.indexOf('upload');
       if (uploadIndex !== -1 && urlParts[uploadIndex + 1]) {
-        // Get everything after 'upload/' and remove file extension
         const pathWithVersion = urlParts.slice(uploadIndex + 1).join('/');
         const withoutVersion = pathWithVersion.replace(/^v\d+\//, '');
-        return withoutVersion.split('.')[0]; // Remove file extension
+        return withoutVersion.split('.')[0];
       }
       return '';
     } catch (error) {
@@ -83,7 +82,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
       const data = await res.json();
 
       if (!res.ok) throw new Error(data.error || "Failed to check duplicates");
-      return data.isDuplicate; // boolean
+      return data.isDuplicate;
     } catch (error: any) {
       console.error("❌ Duplicate check failed:", error.message);
       return false;
@@ -99,8 +98,6 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
 
     try {
       setDeleting(true);
-
-      // 🔍 Step 1: Check for duplicates
       const isDuplicate = await checkDuplicateMedia(complaint.mediaUrl, complaint._id);
 
       if (isDuplicate) {
@@ -110,14 +107,12 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
         return;
       }
 
-      // 🧩 Step 2: Extract Cloudinary public ID
       const publicId = extractPublicId(complaint.mediaUrl);
       if (!publicId) throw new Error("Could not extract file information");
 
       const isVideo = /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
       const resourceType = isVideo ? "video" : "image";
 
-      // 🗑️ Step 3: Delete from Cloudinary
       const res = await fetch("/api/delete-cloudinary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -131,8 +126,6 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
       if (!res.ok) throw new Error(data.error || "Failed to delete file");
 
       console.log("✅ File deleted:", publicId);
-
-      // 🧹 Step 4: Clear the URL in DB
       await clearMediaUrl(complaint._id);
     } catch (error: any) {
       console.error("❌ Delete failed:", error.message);
@@ -148,30 +141,23 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
 
   const handleDownload = async () => {
     try {
-      // Fetch the media file
       const response = await fetch(complaint.mediaUrl);
       const blob = await response.blob();
-      
-      // Create a download link
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
       
-      // Set the filename
       const fileExtension = isImage ? 'jpg' : 'mp4';
       const fileName = `complaint-media-${complaint._id || 'attachment'}.${fileExtension}`;
       a.download = fileName;
       
-      // Trigger download
       document.body.appendChild(a);
       a.click();
       
-      // Clean up
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
       
-      // Optional: Show success message
       setMessage({
         type: 'success',
         text: 'Media downloaded successfully!'
@@ -189,28 +175,33 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
   const getStatusConfig = (status: string) => {
     const configs: any = {
       "Pending": {
-        color: "text-yellow-600 bg-yellow-50 border-yellow-200",
+        color: "border-yellow-300 bg-yellow-50 text-yellow-800",
         icon: <FiClock className="w-4 h-4" />,
         label: t("status.Pending") || "Pending"
       },
+      "Appropriate": {
+        color: "border-teal-300 bg-teal-50 text-teal-800",
+        icon: <FiUserCheck className="w-4 h-4" />,
+        label: t("status.Appropriate") || "Appropriate"
+      },
       "Completed": {
-        color: "text-green-600 bg-green-50 border-green-200",
+        color: "border-green-300 bg-green-50 text-green-800",
         icon: <FiCheckCircle className="w-4 h-4" />,
         label: t("status.Completed") || "Completed"
       },
       "In Progress": {
-        color: "text-blue-600 bg-blue-50 border-blue-200",
+        color: "border-blue-300 bg-blue-50 text-blue-800",
         icon: <FiPlayCircle className="w-4 h-4" />,
         label: t("status.In Progress") || "In Progress"
       },
-      "Canceled": {
-        color: "text-red-600 bg-red-50 border-red-200",
-        icon: <FiPauseCircle className="w-4 h-4" />,
-        label: t("status.Canceled") || "Canceled"
+      "Inappropriate": {
+        color: "border-red-300 bg-red-50 text-red-800",
+        icon: <FiAlertCircle className="w-4 h-4" />,
+        label: t("status.Inappropriate") || "Inappropriate"
       }
     };
     return configs[status] || {
-      color: "text-gray-600 bg-gray-50 border-gray-200",
+      color: "border-gray-300 bg-gray-50 text-gray-800",
       icon: <FiInfo className="w-4 h-4" />,
       label: status
     };
@@ -219,23 +210,23 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
   const getLevelConfig = (level: string) => {
     const configs: any = {
       "High": {
-        color: "text-red-600 bg-red-50 border-red-200",
+        color: "border-red-300 bg-red-50 text-red-800",
         icon: <FiTrendingUp className="w-4 h-4" />,
         label: t("level.High") || "High"
       },
       "Medium": {
-        color: "text-orange-600 bg-orange-50 border-orange-200",
+        color: "border-orange-300 bg-orange-50 text-orange-800",
         icon: <FiMinus className="w-4 h-4" />,
         label: t("level.Medium") || "Medium"
       },
       "Low": {
-        color: "text-green-600 bg-green-50 border-green-200",
+        color: "border-green-300 bg-green-50 text-green-800",
         icon: <FiTrendingDown className="w-4 h-4" />,
         label: t("level.Low") || "Low"
       }
     };
     return configs[level] || {
-      color: "text-gray-600 bg-gray-50 border-gray-200",
+      color: "border-gray-300 bg-gray-50 text-gray-800",
       icon: <FiInfo className="w-4 h-4" />,
       label: level
     };
@@ -268,11 +259,11 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
   );
 
   const getMessageStyles = () => {
-    const base = "my-4 p-4 rounded-lg border text-center font-medium animate-fade-in";
+    const base = "my-4 p-4 rounded-xl border-2 text-center font-medium animate-fade-in";
     switch (message.type) {
-      case "success": return `${base} bg-green-50 text-green-800 border-green-200`;
-      case "error": return `${base} bg-red-50 text-red-800 border-red-200`;
-      default: return `${base} bg-blue-50 text-blue-800 border-blue-200`;
+      case "success": return `${base} bg-green-50 text-green-800 border-green-300`;
+      case "error": return `${base} bg-red-50 text-red-800 border-red-300`;
+      default: return `${base} bg-blue-50 text-blue-800 border-blue-300`;
     }
   };
 
@@ -280,195 +271,172 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
   const isVideo = complaint.mediaUrl?.includes("video") || /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
 
   return (
-    <section className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-60 animate-fade-in">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden transform transition-all duration-300 animate-scale-in">
-        {/* Header */}
-        <div className="bg-linear-to-r from-purple-600 to-indigo-700 p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-                <FiFileText className="w-6 h-6 text-white" />
+    <section className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-100 animate-fade-in">
+      <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden transform transition-all duration-500 animate-scale-in border border-white/20">
+        {/* Enhanced Header */}
+        <div className="bg-linear-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 relative overflow-hidden">
+          <div className="absolute inset-0 bg-black/10"></div>
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg">
+                  <FiFileText className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold text-white">{t("complaint_details.title")}</h2>
+                  <p className="text-purple-100 text-lg flex items-center space-x-2">
+                    <FiShield className="w-4 h-4" />
+                    <span>{t("complaint_details.subtitle")}</span>
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white">{t("complaint_details.title")}</h2>
-                <p className="text-purple-100 text-sm flex items-center space-x-1">
-                  <FiInfo className="w-3 h-3" />
-                  <span>{t("complaint_details.subtitle")}</span>
-                </p>
-              </div>
+              <button
+                onClick={onClose}
+                onMouseEnter={() => setIsHovered('close')}
+                onMouseLeave={() => setIsHovered(null)}
+                className="text-white/80 hover:text-white transition-all duration-300 p-3 rounded-xl hover:bg-white/10 hover:scale-110 cursor-pointer"
+              >
+                <FiX className="w-6 h-6" />
+              </button>
             </div>
-            <button
-              onClick={onClose}
-              className="text-white/80 hover:text-white transition-colors duration-200 p-2 rounded-lg hover:bg-white/10 cursor-pointer"
-            >
-              <FiX className="w-6 h-6" />
-            </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(95vh-180px)]">
-          <div className="grid grid-cols-1 xl:grid-cols-7 gap-6">
+        <div className="p-8 overflow-y-auto max-h-[calc(95vh-180px)]">
+          <div className="grid grid-cols-1 xl:grid-cols-7 gap-8">
             {/* Left Column - Personal Info & Basic Info */}
-            <div className="xl:col-span-4 space-y-6">
-              {/* Personal Information Card */}
-              <div className="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl p-5 border border-blue-200">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                    <FiUser className="w-5 h-5 text-blue-600" />
+            <div className="xl:col-span-4 space-y-8">
+              {/* Enhanced Personal Information Card */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-8 border border-white/20">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <FiUser className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 text-lg">{t("complaint_details.personal_info")}</h3>
-                    <p className="text-gray-600 text-sm">{t("complaint_details.complainant_details")}</p>
+                    <h3 className="text-xl font-bold text-gray-900">{t("complaint_details.personal_info")}</h3>
+                    <p className="text-gray-500">{t("complaint_details.complainant_details")}</p>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <FiUser className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-500">{t("form.full_name")}</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[
+                    { icon: <FiUser className="w-4 h-4" />, label: t("form.full_name"), value: complaint.fullName },
+                    { icon: <FiPhone className="w-4 h-4" />, label: t("form.phone_number"), value: complaint.phoneNumber },
+                    { icon: <FaVenusMars className="w-4 h-4" />, label: t("form.gender"), value: getGenderLabel(complaint.gender) },
+                    { icon: <FaGraduationCap className="w-4 h-4" />, label: t("form.education_community"), value: getEducationLabel(complaint.educationCommunity) },
+                    { icon: <FiHome className="w-4 h-4" />, label: t("form.school_name"), value: complaint.schoolName },
+                    { icon: <FiMapPin className="w-4 h-4" />, label: t("form.wereda"), value: complaint.wereda }
+                  ].map((item, index) => (
+                    <div key={index} className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-5 border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 group">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors duration-300">
+                          {item.icon}
+                        </div>
+                        <span className="text-sm font-semibold text-gray-500">{item.label}</span>
+                      </div>
+                      <p className="text-gray-800 font-bold text-lg">{item.value}</p>
                     </div>
-                    <p className="text-gray-800 font-semibold">{complaint.fullName}</p>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <FiPhone className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-500">{t("form.phone_number")}</span>
-                    </div>
-                    <p className="text-gray-800 font-semibold">{complaint.phoneNumber}</p>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <FaVenusMars className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-500">{t("form.gender")}</span>
-                    </div>
-                    <p className="text-gray-800 font-semibold capitalize">{getGenderLabel(complaint.gender)}</p>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <FaGraduationCap className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-500">{t("form.education_community")}</span>
-                    </div>
-                    <p className="text-gray-800 font-semibold">{getEducationLabel(complaint.educationCommunity)}</p>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <FiHome className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-500">{t("form.school_name")}</span>
-                    </div>
-                    <p className="text-gray-800 font-semibold">{complaint.schoolName}</p>
-                  </div>
-                  
-                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <FiMapPin className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm font-medium text-gray-500">{t("form.wereda")}</span>
-                    </div>
-                    <p className="text-gray-800 font-semibold">{complaint.wereda}</p>
-                  </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Title Card */}
-              <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <FiFileText className="w-5 h-5 text-orange-600" />
+              {/* Enhanced Title Card */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-8 border border-white/20">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <FiFileText className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 text-lg">{t("complaint_details.complaint_title")}</h3>
-                    <p className="text-gray-600 text-sm">{t("complaint_details.main_description")}</p>
+                    <h3 className="text-xl font-bold text-gray-900">{t("complaint_details.complaint_title")}</h3>
+                    <p className="text-gray-500">{t("complaint_details.main_description")}</p>
                   </div>
                 </div>
-                <p className="text-gray-800 text-base leading-relaxed bg-white rounded-lg p-4 border border-gray-200">
+                <p className="text-gray-800 text-lg leading-relaxed bg-linear-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-100">
                   {complaint.title}
                 </p>
               </div>
 
-              {/* Description Card */}
-              <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <FiAlertCircle className="w-5 h-5 text-green-600" />
+              {/* Enhanced Description Card */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-8 border border-white/20">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-linear-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <FiAlertCircle className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 text-lg">{t("complaint_details.detailed_description")}</h3>
-                    <p className="text-gray-600 text-sm">{t("complaint_details.full_details")}</p>
+                    <h3 className="text-xl font-bold text-gray-900">{t("complaint_details.detailed_description")}</h3>
+                    <p className="text-gray-500">{t("complaint_details.full_details")}</p>
                   </div>
                 </div>
-                <div className="bg-white rounded-lg p-4 border border-gray-200">
-                  <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
+                <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-100">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                     {complaint.description}
                   </p>
                 </div>
               </div>
 
-              {/* Media Section */}
+              {/* Enhanced Media Section */}
               {complaint.mediaUrl && (
-                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="sm:flex items-center space-x-3 hidden">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-8 border border-white/20">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
                         {isImage ? (
-                          <FaImage className="w-5 h-5 text-purple-600" />
+                          <FaImage className="w-6 h-6 text-white" />
                         ) : (
-                          <FaVideo className="w-5 h-5 text-purple-600" />
+                          <FaVideo className="w-6 h-6 text-white" />
                         )}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 text-lg">
+                        <h3 className="text-xl font-bold text-gray-900">
                           {t("complaint_details.attached_media")}
                         </h3>
-                        <p className="text-gray-600 text-sm">
+                        <p className="text-gray-500">
                           {isImage ? t("form.image") : t("form.video")}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {/* Download Button */}
+                    <div className="flex items-center space-x-3">
                       <button
                         onClick={handleDownload}
-                        className="flex items-center space-x-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all duration-200 shadow-lg hover:cursor-pointer"
+                        onMouseEnter={() => setIsHovered('download')}
+                        onMouseLeave={() => setIsHovered(null)}
+                        className="group relative bg-linear-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-500 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center space-x-3"
                       >
-                        <FaDownload className="text-sm" />
-                        <span className="text-sm">{t("form.download")}</span>
+                        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                        <FiDownload className="relative z-10 text-lg" />
+                        <span className="relative z-10">{t("form.download")}</span>
                       </button>
                       
-                      {/* Delete Button */}
                       <button
                         onClick={handleDelete}
                         disabled={deleting}
-                        className="flex items-center space-x-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:cursor-pointer"
+                        onMouseEnter={() => setIsHovered('delete')}
+                        onMouseLeave={() => setIsHovered(null)}
+                        className="group relative bg-linear-to-r from-red-500 to-rose-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-red-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center space-x-3"
                       >
+                        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                         {deleting ? (
-                          <>
-                            <FaSpinner className="animate-spin text-sm" />
-                            <span className="text-sm">{t("form.removing")}</span>
-                          </>
+                          <FaSpinner className="animate-spin relative z-10 text-lg" />
                         ) : (
-                          <>
-                            <FaTrash className="text-sm" />
-                            <span className="text-sm">{t("form.remove")}</span>
-                          </>
+                          <FiTrash2 className="relative z-10 text-lg" />
                         )}
+                        <span className="relative z-10">
+                          {deleting ? t("form.removing") : t("form.remove")}
+                        </span>
                       </button>
                     </div>
                   </div>
 
                   {message.text && (
                     <div className={getMessageStyles()}>
-                      <div className="flex items-center justify-center space-x-2">
+                      <div className="flex items-center justify-center space-x-3">
                         {message.type === "success" && (
                           <FiCheckCircle className="w-5 h-5 text-green-600" />
                         )}
                         {message.type === "error" && (
                           <FiAlertCircle className="w-5 h-5 text-red-600" />
                         )}
-                        <span>{message.text}</span>
+                        <span className="font-semibold">{message.text}</span>
                       </div>
                       {message.type === "success" && countdown > 0 && (
                         <div className="mt-2 text-sm text-gray-600">
@@ -478,29 +446,32 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                     </div>
                   )}
 
-                  <div className="bg-white rounded-xl p-4 border-2 border-dashed border-gray-200">
+                  <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-4 border-2 border-gray-100">
                     {isImage ? (
-                      <div className="relative group">
+                      <div className="relative group overflow-hidden rounded-xl">
                         <img
                           src={complaint.mediaUrl}
                           alt="Complaint attachment"
-                          className="w-full rounded-lg shadow-sm max-h-96 object-contain bg-gray-50"
+                          className="w-full rounded-xl shadow-lg max-h-96 object-contain bg-gray-50 transform group-hover:scale-105 transition-transform duration-500"
                         />
-                        <div className="absolute inset-0 bg-black/50 group-hover:bg-opacity-10 transition-all duration-200 rounded-lg flex items-center justify-center">
-                          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                            <FaImage className="w-8 h-8 text-white" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end">
+                          <div className="p-6 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                            <div className="flex items-center space-x-2">
+                              <FaImage className="w-5 h-5" />
+                              <span className="font-semibold">Image Preview</span>
+                            </div>
                           </div>
                         </div>
                       </div>
                     ) : (
-                      <div className="relative">
+                      <div className="relative group overflow-hidden rounded-xl">
                         <video
                           src={complaint.mediaUrl}
                           controls
-                          className="w-full rounded-lg shadow-sm max-h-96 bg-black"
+                          className="w-full rounded-xl shadow-lg max-h-96 bg-black"
                         />
-                        <div className="absolute top-4 right-4 bg-black/50 rounded-full p-2">
-                          <FaVideo className="w-4 h-4 text-white" />
+                        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full p-3 shadow-lg">
+                          <FaVideo className="w-5 h-5 text-white" />
                         </div>
                       </div>
                     )}
@@ -510,90 +481,101 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
             </div>
 
             {/* Right Column - Metadata */}
-            <div className="space-y-6 xl:col-span-3">
-              {/* Status & Priority */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <FiTag className="w-4 h-4 text-gray-500" />
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("complaint_details.status")}</span>
+            <div className="space-y-8 xl:col-span-3">
+              {/* Enhanced Status & Priority */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-linear-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <FiTag className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">{t("complaint_details.status")}</span>
                   </div>
-                  <div className={`inline-flex items-center space-x-2 px-3 py-2 rounded-full text-sm font-medium border ${statusConfig.color}`}>
+                  <div className={`inline-flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-bold border-2 ${statusConfig.color} transform hover:scale-105 transition-transform duration-300`}>
                     {statusConfig.icon}
-                    <span className="font-semibold">{statusConfig.label}</span>
+                    <span>{statusConfig.label}</span>
                   </div>
                 </div>
 
-                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-4 border border-gray-200">
-                  <div className="flex items-center space-x-2 mb-3">
-                    <FiTrendingUp className="w-4 h-4 text-gray-500" />
-                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{t("complaint_details.priority")}</span>
+                <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-linear-to-br from-red-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                      <FiTrendingUp className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="text-sm font-bold text-gray-500 uppercase tracking-wide">{t("complaint_details.priority")}</span>
                   </div>
-                  <div className={`inline-flex items-center space-x-2 px-3 py-2 rounded-full text-sm font-medium border ${levelConfig.color}`}>
+                  <div className={`inline-flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-bold border-2 ${levelConfig.color} transform hover:scale-105 transition-transform duration-300`}>
                     {levelConfig.icon}
-                    <span className="font-semibold">{levelConfig.label}</span>
+                    <span>{levelConfig.label}</span>
                   </div>
                 </div>
               </div>
 
-              {/* Reason Section (if exists) */}
-              {(complaint.reason || complaint.status === 'Completed' || complaint.status === 'Canceled') && (
-                <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                      <FiBook className="w-5 h-5 text-indigo-600" />
+              {/* Enhanced Reason Section */}
+              {(complaint.reason || complaint.status === 'Completed' || complaint.status === 'Inappropriate') && (
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-6 border border-white/20">
+                  <div className="flex items-center space-x-4 mb-6">
+                    <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                      <FiBook className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">
+                      <h3 className="text-lg font-bold text-gray-900">
                         {complaint.status === 'Completed' 
                           ? t("update_status.completion_reason") 
-                          : complaint.status === 'Canceled'
-                          ? t("update_status.cancellation_reason")
+                          : complaint.status === 'Inappropriate'
+                          ? t("update_status.inappropriate_reason")
                           : t("complaint_details.reason")}
                       </h3>
-                      <p className="text-gray-600 text-sm">
+                      <p className="text-gray-500 text-sm">
                         {complaint.status === 'Completed' 
                           ? t("complaint_details.completion_explanation")
-                          : complaint.status === 'Canceled'
-                          ? t("complaint_details.cancellation_explanation")
+                          : complaint.status === 'Inappropriate'
+                          ? t("complaint_details.inappropriate_explanation")
                           : t("complaint_details.status_reason")}
                       </p>
                     </div>
                   </div>
-                  <div className="bg-white rounded-lg p-4 border border-gray-200">
-                    <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
+                  <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-5 border-2 border-gray-100">
+                    <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                       {complaint.reason || t("complaint_details.no_reason_provided")}
                     </p>
                   </div>
                   {complaint.resolvedAt && (
-                    <div className="mt-3 text-xs text-gray-500">
-                      {t("complaint_details.resolved_on")}: {new Date(complaint.resolvedAt).toLocaleDateString()}
+                    <div className="mt-4 flex items-center space-x-2 text-sm text-gray-500">
+                      <FiCalendar className="w-4 h-4" />
+                      <span>{t("complaint_details.resolved_on")}: {new Date(complaint.resolvedAt).toLocaleDateString()}</span>
+                    </div>
+                  )}
+                  {complaint.responsiblePerson && (
+                    <div className="mt-2 flex items-center space-x-2 text-sm text-gray-500">
+                      <FiUserCheck className="w-4 h-4" />
+                      <span>{t("tracking.responsible_person")} {complaint.responsiblePerson}</span>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Department Information */}
-              <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <TbBuilding className="w-5 h-5 text-green-600" />
+              {/* Enhanced Department Information */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-6 border border-white/20">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-linear-to-br from-teal-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <TbBuilding className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{t("complaint_details.department")}</h3>
-                    <p className="text-gray-600 text-sm">{t("complaint_details.assigned_department")}</p>
+                    <h3 className="text-lg font-bold text-gray-900">{t("complaint_details.department")}</h3>
+                    <p className="text-gray-500 text-sm">{t("complaint_details.assigned_department")}</p>
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div className="bg-white rounded-lg p-3 border border-gray-200">
-                    <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.main_department")}</p>
-                    <p className="text-gray-800 font-semibold">{departments[complaint.department as DepartmentKey]?.[lang] || complaint.department}</p>
+                <div className="space-y-4">
+                  <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-4 border-2 border-gray-100 hover:border-blue-200 transition-all duration-300">
+                    <p className="text-sm font-semibold text-gray-500 mb-2">{t("complaint_details.main_department")}</p>
+                    <p className="text-gray-800 font-bold text-lg">{departments[complaint.department as DepartmentKey]?.[lang] || complaint.department}</p>
                   </div>
                   {complaint.subDepartment && (
-                    <div className="bg-white rounded-lg p-3 border border-gray-200">
-                      <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.sub_department")}</p>
-                      <p className="text-gray-800 font-semibold flex items-center space-x-1">
-                        <TbBuildingSkyscraper className="w-3 h-3" />
+                    <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-4 border-2 border-gray-100 hover:border-green-200 transition-all duration-300">
+                      <p className="text-sm font-semibold text-gray-500 mb-2">{t("complaint_details.sub_department")}</p>
+                      <p className="text-gray-800 font-bold text-lg flex items-center space-x-2">
+                        <TbBuildingSkyscraper className="w-4 h-4 text-gray-400" />
                         <span>{
                           departments[complaint.department as DepartmentKey]?.subDepartments.find(
                             (sub: any) =>
@@ -608,47 +590,49 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                 </div>
               </div>
 
-              {/* Additional Information */}
-              <div className="bg-linear-to-br from-gray-50 to-gray-100 rounded-xl p-5 border border-gray-200">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-                    <FiInfo className="w-5 h-5 text-gray-600" />
+              {/* Enhanced Additional Information */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-6 border border-white/20">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-linear-to-br from-gray-500 to-gray-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <FiInfo className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{t("complaint_details.additional_info")}</h3>
-                    <p className="text-gray-600 text-sm">{t("complaint_details.tracking_info")}</p>
+                    <h3 className="text-lg font-bold text-gray-900">{t("complaint_details.additional_info")}</h3>
+                    <p className="text-gray-500 text-sm">{t("complaint_details.tracking_info")}</p>
                   </div>
                 </div>
-                <div className="space-y-3">
-                  <div className="bg-white rounded-lg p-3 border border-gray-200">
-                    <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.tracking_number")}</p>
-                    <p className="text-gray-800 font-mono text-sm bg-gray-50 px-2 py-1 rounded">
-                      {complaint.trackingNumber}
-                    </p>
-                  </div>
-                  <div className="bg-white rounded-lg p-3 border border-gray-200">
-                    <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.complaint_id")}</p>
-                    <p className="text-gray-800 font-mono text-sm bg-gray-50 px-2 py-1 rounded">
-                      {complaint._id?.slice(-8) || 'N/A'}
-                    </p>
-                  </div>
-                  <div className="bg-white rounded-lg p-3 border border-gray-200">
-                    <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.days_active")}</p>
-                    <div className="flex items-center space-x-2">
-                      <div className={`w-3 h-3 rounded-full ${
+                <div className="space-y-4">
+                  {[
+                    { label: t("complaint_details.tracking_number"), value: complaint.trackingNumber },
+                    { label: t("complaint_details.complaint_id"), value: complaint._id?.slice(-8) || 'N/A' },
+                    { label: t("complaint_details.submission_date"), value: new Date(complaint.createdAt).toLocaleDateString() }
+                  ].map((item, index) => (
+                    <div key={index} className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-4 border-2 border-gray-100 hover:border-purple-200 transition-all duration-300">
+                      <p className="text-sm font-semibold text-gray-500 mb-2">{item.label}</p>
+                      <p className="text-gray-800 font-bold font-mono bg-gray-50 px-3 py-2 rounded-lg">
+                        {item.value}
+                      </p>
+                    </div>
+                  ))}
+                  
+                  <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-4 border-2 border-gray-100 hover:border-yellow-200 transition-all duration-300">
+                    <p className="text-sm font-semibold text-gray-500 mb-2">{t("complaint_details.days_active")}</p>
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-4 h-4 rounded-full ${
                         daysSinceSubmission < 3 ? 'bg-green-500' :
                         daysSinceSubmission < 7 ? 'bg-yellow-500' : 'bg-red-500'
                       }`} />
-                      <p className="text-gray-800 font-semibold">
-                        {daysSinceSubmission} {t("complaint_details.days")}
-                      </p>
+                      <div>
+                        <p className="text-gray-800 font-bold text-lg">
+                          {daysSinceSubmission} {t("complaint_details.days")}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {daysSinceSubmission < 3 ? 'Recently submitted' :
+                           daysSinceSubmission < 7 ? 'Active for less than a week' :
+                           'Active for over a week'}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-3 border border-gray-200">
-                    <p className="text-sm font-medium text-gray-500 mb-1">{t("complaint_details.submission_date")}</p>
-                    <p className="text-gray-800 font-semibold">
-                      {new Date(complaint.createdAt).toLocaleDateString()}
-                    </p>
                   </div>
                 </div>
               </div>
@@ -663,14 +647,14 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
           to { opacity: 1; }
         }
         @keyframes scale-in {
-          from { transform: scale(0.9); opacity: 0; }
+          from { transform: scale(0.95); opacity: 0; }
           to { transform: scale(1); opacity: 1; }
         }
         .animate-fade-in {
-          animation: fade-in 0.2s ease-out;
+          animation: fade-in 0.3s ease-out;
         }
         .animate-scale-in {
-          animation: scale-in 0.2s ease-out;
+          animation: scale-in 0.3s ease-out;
         }
       `}</style>
     </section>

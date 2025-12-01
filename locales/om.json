@@ -5,7 +5,17 @@
   },
    "title": "Dhiyeessi Komii",
     "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
-    "back_to_home":"",
+    "back_to_home": "Gara Fuula Duraa Deebi'i",
+"sidebar": {
+  "admin_panel": "Paaneelii Bulchiinsaa",
+  "management_console": "Kutaa Tajaajila Bulchiinsaa",
+
+  "dashboard": "Daashboordii",
+  "analytics": "Alaalcha",
+  "profile": "Piroofaayilii",
+
+  "logout": "Ba'ii"
+},
 
   "personal_info": {
     "personal_info": "Odeeffannoo Dhunfaa",
@@ -103,6 +113,8 @@
   "logout": "Ba'i",
   "complaint_management": "Hoggansa Dhiheessii Komii",
   "manage_and_track": "Komii dhihaate hunda too'annoo fi hordoffii godhi",
+  "filters_and_search": "Faayiloota fi Barbaadi",
+  "find_and_manage": "Komiiwwan barbaadii fi to'achi",
   "total": "Waliigala:",
   "search_placeholder": "Komii barbaadi...",
   "all_status": "Haala Hunda",
@@ -119,6 +131,7 @@
   },
   "delete_complaint":{
 "title": "Komii Haqi",
+"subtitle": "Komii kana siʼachiin haquu",
   "confirmation": "Komii kana haquu akka barbaaddu mirkaneeffadhu?",
   "irreversible_note": "Tartiibni kun deebi'ee hin danda'amu.",
   "warning_title": "Akeekkachiisa",
@@ -156,12 +169,12 @@
       "description": "Dhiheessi ni xumurame"
     },
 "appropriate": {
-  "name": "Sirrii",
+  "name": "Appropriate",
   "label": "Sirrii",
   "description": "Komii kun sirrii waan ta’eef ni fudhatama."
 },
 "inappropriate": {
-  "name": "Dogoggoraa",
+  "name": "Inappropriate",
   "label": "Dogoggoraa",
   "description": "Komiin kun sababaa sirrii hin taaneef ykn barbaachisaa hin taaneef ni haquu/didama."
 }
@@ -172,7 +185,11 @@
   "cancellation_reason": "Sababaa Haquu",
   "completion_placeholder": "Komii kana akkamitti furame ibsa...",
   "cancellation_placeholder": "Komiin kun maaliif akka haqamu ibsa...",
-  "reason_help": "Sababni kun itti gaafatamtootaaf ni mul'ata"
+  "reason_help": "Sababni kun itti gaafatamtootaaf ni mul'ata",
+
+    "current": "Ammaa",
+  "status_flow_guide": "Giddugala Jijjiirama Haala",
+  "can_be_inappropriate": "Sadarkaa kamittuu akka Inappropriate ta’ee ni taaneessuu danda’a"
 },
 
 "level": {
@@ -215,6 +232,7 @@
   "complainant_details": "Faayila Dhiyeessaa Komii",
   "reason": "Sababii",
   "completion_explanation": "Ibsa xumuramaa",
+      "inappropriate_explanation": "Ibsa dogoggoraa ta'uu isaa",
   "cancellation_explanation": "Ibsa haquu",
   "status_reason": "Sababii jijjiirraa haala",
   "no_reason_provided": "Sababni hin kennamne",
@@ -253,12 +271,15 @@
     "title": "Xiinxala",
     "dashboard": "Daashboordii Xiinxalaa",
     "description": "Gabaasa bal’aa fi xiinxala to’annoo komii irratti",
+  "show_filters":"Filters Agarsiisi",
+    "hide_filters":"Filters Dhabsiisi",
 
     "filters": "Faayilaa fi To’annoo",
     "filters_description": "Daataa xiinxalaa kee fooyyessi",
 
     "start_date": "Guyyaa Jalqabaa",
     "end_date": "Guyyaa Xumuraa",
+    "date_range": "Kilaastara Guyyaa",
     "status": "Haala",
     "level": "Sadarkaa",
     "department": "Kutaa",
@@ -270,7 +291,10 @@
 
     "total_complaints": "Komiiwwan Guutuu",
   "completed_complaints": "Komiiwwan Xumuraman",
-    "canceled_complaints": "Komiiwwan Haqaman",
+    "pending_complaints": "Komiiwwan Eeggatan",
+    "in_progress_complaints": "Komiiwwan Jiraatan",
+    "appropriate_complaints": "Komiiwwan Sirrii",
+    "inappropriate_complaints": "Komiiwwan Dogoggoraa",
     "active_cases": "Komiiwwan Hojiirra jiran",
     "status_distribution": "Haalota Qoodinsa",
     "status_distribution_desc": "Qoodinsa komii haalota irratti",
@@ -318,6 +342,7 @@
     "description": "Haala daawoomii keessanii fi gahee isaa ilaaluuf lakkoofsa hordofaa keessan galchaa",
     "tracking_number": "Lakkoofsa Hordofaa",
     "enter_tracking_number": "Lakkoofsa hordofaa keessan galchaa (fakkeenyaaf: CMP-ABC123XYZ)",
+    "responsible_person": "Namni itti gaafatamu፡ ",
     "searching": "Barbaaduu keessaa...",
     "search": "Barbaadi",
     "complaint_details": "Gahee Daawoomii",
