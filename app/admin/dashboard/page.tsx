@@ -233,9 +233,9 @@ export default function AdminDashboard() {
 
         {/* Enhanced Filters and Search */}
         <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-6 mb-8 border border-white/20">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+          <div className="flex justify-between gap-4 mb-6">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-xl sm:flex items-center justify-center shadow-lg hidden">
                 <FiFilter className="text-white text-sm" />
               </div>
               <div>

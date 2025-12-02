@@ -45,6 +45,7 @@ import { BsGraphUpArrow } from "react-icons/bs";
 import { useTranslation } from 'react-i18next';
 import {departments,DepartmentKey} from '@/data/departments';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import * as XLSX from 'xlsx-color';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -191,8 +192,11 @@ export default function AnalyticsPage() {
   };
 
 // Fixed CSV Download function
-const downloadCSV = async () => {
+
+
+const downloadExcel = async () => {
   if (!items.length) {
+    alert("No data to export");
     return;
   }
 
@@ -205,84 +209,258 @@ const downloadCSV = async () => {
   const inappropriateComplaints = items.filter(item => item.status === 'Inappropriate').length;
 
   try {
-    const headers = [
-      "Tracking Number",
-      "Title",
-      "Description",
-      "Department",
-      "Sub Department",
-      "Level",
-      "Status",
-      "Responsible Person",
-      "Reason",
-      "Submission Date",
-      "Resolved Date"
-    ];
-
-    const escapeCSV = (value: any) => {
-      if (!value) return "";
-      return `"${String(value).replace(/"/g, '""')}"`; // Escape quotes
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    wb.Props = {
+      Title: "Complaints Analytics Report",
+      Subject: "Complaints Data",
+      Author: "Complaint Management System",
+      CreatedDate: new Date()
     };
 
-    // Complaint rows
-    const rows = items.map((item) =>
-      [
-        escapeCSV(item.trackingNumber),
-        escapeCSV(item.title),
-        escapeCSV(item.description),
-        escapeCSV(departments[item.department as DepartmentKey]?.[language] || item.department),
-        escapeCSV(
-          departments[item.department as DepartmentKey]?.subDepartments.find(
-            (sub: any) =>
-              sub.en === item.subDepartment ||
-              sub.am === item.subDepartment ||
-              sub.om === item.subDepartment
-          )?.[language] || item.subDepartment
-        ),
-        escapeCSV(item.level),
-        escapeCSV(item.status),
-        escapeCSV(item.responsiblePerson),
-        escapeCSV(item.reason),
-        escapeCSV(dayjs(item.createdAt).format("MMM DD, YYYY")),
-        escapeCSV(item.resolvedAt ? dayjs(item.resolvedAt).format("MMM DD, YYYY") : "")
-      ].join(",")
-    );
+    // Define styles
+    const headerStyle = {
+      font: { bold: true, color: { rgb: "FFFFFF" }, sz: 12 },
+      fill: { fgColor: { rgb: "4F46E5" } }, // Indigo color
+      alignment: { horizontal: "center", vertical: "center" },
+      border: {
+        top: { style: "thin", color: { rgb: "000000" } },
+        bottom: { style: "thin", color: { rgb: "000000" } },
+        left: { style: "thin", color: { rgb: "000000" } },
+        right: { style: "thin", color: { rgb: "000000" } }
+      }
+    };
 
-    // Summary section
-    const summarySection = [
-      "",
-      "Summary Statistics",
-      `Total Complaints,${totalComplaints}`,
-      `Completed Complaints,${completedComplaints}`,
-      `Pending Complaints,${pendingComplaints}`,
-      `In-Progress Complaints,${inProgressComplaints}`,
-      `Appropriate Complaints,${appropriateComplaints}`,
-      `Inappropriate Complaints,${inappropriateComplaints}`
-    ].join("\n");
+    const summaryHeaderStyle = {
+      font: { bold: true, color: { rgb: "FFFFFF" }, sz: 12 },
+      fill: { fgColor: { rgb: "059669" } }, // Emerald color
+      alignment: { horizontal: "center", vertical: "center" },
+      border: {
+        top: { style: "thin", color: { rgb: "000000" } },
+        bottom: { style: "thin", color: { rgb: "000000" } },
+        left: { style: "thin", color: { rgb: "000000" } },
+        right: { style: "thin", color: { rgb: "000000" } }
+      }
+    };
 
-    const csvContent = [
-      headers.join(","),   // header row
-      ...rows,             // complaint rows
-      "",                  // spacing
-      summarySection       // summary section
-    ].join("\n");
+    // Color mappings using English keys as base
+    const statusColors: Record<string, string> = {
+      "Pending": "FEF3C7", // Yellow-100
+      "Appropriate": "D1FAE5", // Green-100
+      "In Progress": "DBEAFE", // Blue-100
+      "Completed": "10B981", // Green-500
+      "Inappropriate": "FEE2E2" // Red-100
+    };
 
-    // Create file
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
+    const levelColors: Record<string, string> = {
+      "High": "FEE2E2", // Red-100
+      "Medium": "FEF3C7", // Yellow-100
+      "Low": "D1FAE5" // Green-100
+    };
 
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `complaints_analytics_${dayjs().format("YYYY-MM-DD")}.csv`;
-    link.style.display = "none";
+    // Create reverse mapping for translations to original keys
+    const statusTranslationMap: Record<string, string> = {};
+    const levelTranslationMap: Record<string, string> = {};
+    
+    // Populate translation maps
+    status.forEach(s => {
+      statusTranslationMap[t(`status.${s.key}`)] = s.key;
+    });
+    
+    level.forEach(l => {
+      levelTranslationMap[t(`level.${l.key}`)] = l.key;
+    });
 
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Prepare data for main sheet with translated labels
+    const data = items.map((item) => {
+      return {
+        [t("file_headers.tracking_number")]: item.trackingNumber || "",
+        [t("file_headers.title")]: item.title || "",
+        [t("file_headers.description")]: item.description || "",
+        [t("file_headers.department")]: departments[item.department as DepartmentKey]?.[language] || item.department || "",
+        [t("file_headers.sub_department")]: departments[item.department as DepartmentKey]?.subDepartments.find(
+          (sub: any) =>
+            sub.en === item.subDepartment ||
+            sub.am === item.subDepartment ||
+            sub.om === item.subDepartment
+        )?.[language] || item.subDepartment || "",
+        [t("file_headers.level")]: t(`level.${item.level}`),
+        [t("file_headers.status")]: t(`status.${item.status}`),
+        [t("file_headers.responsible_person")]: item.responsiblePerson || "",
+        [t("file_headers.reason")]: item.reason || "",
+        [t("file_headers.submission_date")]: dayjs(item.createdAt).format("MMM DD, YYYY"),
+        [t("file_headers.resolved_date")]: item.resolvedAt ? dayjs(item.resolvedAt).format("MMM DD, YYYY") : "",
+        // Keep original keys for styling reference
+        _originalLevel: item.level,
+        _originalStatus: item.status
+      };
+    });
+
+    // Create main worksheet
+    const headers = [
+      t("file_headers.tracking_number"),
+      t("file_headers.title"),
+      t("file_headers.description"),
+      t("file_headers.department"),
+      t("file_headers.sub_department"),
+      t("file_headers.level"),
+      t("file_headers.status"),
+      t("file_headers.responsible_person"),
+      t("file_headers.reason"),
+      t("file_headers.submission_date"),
+      t("file_headers.resolved_date")
+    ];
+
+    const ws = XLSX.utils.json_to_sheet(data, { header: headers });
+
+    // Apply header styles
+    const headerRange = XLSX.utils.decode_range(ws['!ref'] || "A1");
+    for (let C = headerRange.s.c; C <= headerRange.e.c; ++C) {
+      const cellAddress = XLSX.utils.encode_cell({ r: 0, c: C });
+      if (!ws[cellAddress]) continue;
+      ws[cellAddress].s = headerStyle;
+    }
+
+    // Apply conditional formatting for status and level columns
+    for (let R = 1; R <= items.length; ++R) {
+      // Status column (column G, index 6)
+      const statusCell = XLSX.utils.encode_cell({ r: R, c: 6 });
+      if (ws[statusCell]) {
+        const originalStatus = data[R-1]._originalStatus;
+        ws[statusCell].s = {
+          fill: { fgColor: { rgb: statusColors[originalStatus] || "FFFFFF" } },
+          font: { 
+            bold: ["Completed", "Inappropriate"].includes(originalStatus),
+            color: { rgb: ["Completed", "Inappropriate"].includes(originalStatus) ? "FFFFFF" : "000000" }
+          },
+          alignment: { horizontal: "center" }
+        };
+      }
+
+      // Level column (column F, index 5)
+      const levelCell = XLSX.utils.encode_cell({ r: R, c: 5 });
+      if (ws[levelCell]) {
+        const originalLevel = data[R-1]._originalLevel;
+        ws[levelCell].s = {
+          fill: { fgColor: { rgb: levelColors[originalLevel] || "FFFFFF" } },
+          font: { bold: originalLevel === "High" },
+          alignment: { horizontal: "center" }
+        };
+      }
+
+      // Date columns alignment
+      const submissionDateCell = XLSX.utils.encode_cell({ r: R, c: 9 });
+      const resolvedDateCell = XLSX.utils.encode_cell({ r: R, c: 10 });
+      if (ws[submissionDateCell]) {
+        ws[submissionDateCell].s = { 
+          alignment: { horizontal: "center" },
+          numFmt: 'mmm dd, yyyy'
+        };
+      }
+      if (ws[resolvedDateCell]) {
+        ws[resolvedDateCell].s = { 
+          alignment: { horizontal: "center" },
+          numFmt: 'mmm dd, yyyy'
+        };
+      }
+    }
+
+    // Set column widths
+    ws['!cols'] = [
+      { wch: 15 }, // Tracking Number
+      { wch: 30 }, // Title
+      { wch: 40 }, // Description
+      { wch: 20 }, // Department
+      { wch: 20 }, // Sub Department
+      { wch: 12 }, // Level
+      { wch: 15 }, // Status
+      { wch: 20 }, // Responsible Person
+      { wch: 40 }, // Reason
+      { wch: 15 }, // Submission Date
+      { wch: 15 }  // Resolved Date
+    ];
+
+    // Add worksheet to workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Complaints Data");
+
+    // Create summary sheet
+    const summaryData = [
+      [t("file_headers.summary_statistics"), ""],
+      [t("file_headers.total_complaints"), totalComplaints],
+      [t("file_headers.pending_complaints"), pendingComplaints],
+      [t("file_headers.appropriate_complaints"), appropriateComplaints],
+      [t("file_headers.in_progress_complaints"), inProgressComplaints],
+      [t("file_headers.completed_complaints"), completedComplaints],
+      [t("file_headers.inappropriate_complaints"), inappropriateComplaints],
+      ["", ""],
+      [t("file_headers.report_generated"), dayjs().format("MMM DD, YYYY HH:mm")],
+      [t("file_headers.date_range"), `${dayjs(startDate).format("MMM DD, YYYY")} ${t("file_headers.to")} ${dayjs(endDate).format("MMM DD, YYYY")}`],
+      [t("file_headers.status_filter"), statusFilter ? t(`status.${statusFilter}`) : t("file_headers.all")],
+      [t("file_headers.level_filter"), levelFilter ? t(`level.${levelFilter}`) : t("file_headers.all")],
+      [t("file_headers.department_filter"), departmentFilter ? (departments[departmentFilter as DepartmentKey]?.[language] || departmentFilter) : t("file_headers.all")],
+      [t("file_headers.sub_department_filter"), subDepartmentFilter || t("file_headers.all")]
+    ];
+
+    const ws2 = XLSX.utils.aoa_to_sheet(summaryData);
+
+    // Apply styles to summary sheet
+    ws2["A1"].s = summaryHeaderStyle;
+    ws2["B1"].s = summaryHeaderStyle;
+    
+    // Merge header cells
+    ws2["!merges"] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 1 } }];
+
+    // Style summary values
+    for (let R = 1; R <= 6; ++R) {
+      const labelCell = XLSX.utils.encode_cell({ r: R, c: 0 });
+      const valueCell = XLSX.utils.encode_cell({ r: R, c: 1 });
+      
+      ws2[labelCell].s = { font: { bold: true } };
+      ws2[valueCell].s = { 
+        font: { bold: true },
+        fill: { fgColor: { rgb: R === 1 ? "3B82F6" : "6B7280" } }, // Different color for total
+        alignment: { horizontal: "center" }
+      };
+    }
+
+    // Style metadata rows
+    for (let R = 8; R < summaryData.length; ++R) {
+      const labelCell = XLSX.utils.encode_cell({ r: R, c: 0 });
+      const valueCell = XLSX.utils.encode_cell({ r: R, c: 1 });
+      
+      ws2[labelCell].s = { font: { italic: true, color: { rgb: "6B7280" } } };
+      ws2[valueCell].s = { font: { color: { rgb: "374151" } } };
+    }
+
+    ws2['!cols'] = [
+      { wch: 25 },
+      { wch: 30 }
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws2, "Summary");
+
+    // Generate and download file
+    const fileName = `complaints_analytics_${dayjs().format("YYYY-MM-DD_HH-mm")}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+
   } catch (error) {
-    console.error("Download failed:", error);
+    console.error("Excel export failed:", error);
+    alert("Failed to export Excel file. Please try again.");
   }
 };
+
+/* // Update your export button to use this function:
+<button 
+  onClick={downloadExcel}
+  disabled={!items.length}
+  onMouseEnter={() => setIsHovered('export')}
+  onMouseLeave={() => setIsHovered(null)}
+  className="group relative bg-gradient-to-r from-green-500 to-teal-600 text-white px-8 py-4 rounded-2xl font-bold hover:from-green-600 hover:to-teal-700 focus:ring-4 focus:ring-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden flex items-center justify-center space-x-3 w-full sm:w-auto"
+>
+  <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+  <FiDownload className="relative z-10 text-lg transition-transform group-hover:scale-110" />
+  <span className="relative z-10 text-lg">Export Excel</span>
+</button> */
 
 
   const getStatusIcon = (status: string) => {
@@ -358,7 +536,7 @@ const downloadCSV = async () => {
 
       <section className="relative z-10 max-w-7xl mx-auto p-4 py-8 sm:p-6 lg:px-8 lg:py-10 mt-20 lg:mt-10">
         {/* Enhanced Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-5 lg:mb-0">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-5 lg:mb-0">
 
         
        <div className="flex flex-col justify-start lg:mb-12 mb-4">
@@ -374,7 +552,7 @@ const downloadCSV = async () => {
     onClick={() => setShowFilters(!showFilters)}
     onMouseEnter={() => setIsHovered('filters')}
     onMouseLeave={() => setIsHovered(null)}
-    className="group relative bg-linear-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center space-x-2"
+    className="group relative bg-linear-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center space-x-2 w-fit"
   >
     <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
     <FaFilter className="relative z-10 text-sm" />
@@ -503,7 +681,7 @@ const downloadCSV = async () => {
         </div>
       </div>
     {/* Action Buttons - Compact */}
-    <div className="flex flex-col sm:flex-row gap-3 pt-2 items-end">
+    <div className="flex gap-3 pt-2 justify-between w-full sm:items-end sm:col-span-2 lg:col-span-1">
       <button
         onClick={fetchData}
         disabled={loading}
@@ -732,10 +910,10 @@ const downloadCSV = async () => {
               </div>
             </div>
             <button 
-              onClick={downloadCSV}
-              disabled={!items.length}
-              onMouseEnter={() => setIsHovered('export')}
-              onMouseLeave={() => setIsHovered(null)}
+              onClick={downloadExcel}
+  disabled={!items.length}
+  onMouseEnter={() => setIsHovered('export')}
+  onMouseLeave={() => setIsHovered(null)}
               className="group relative bg-linear-to-r from-green-500 to-teal-600 text-white px-8 py-4 rounded-2xl font-bold hover:from-green-600 hover:to-teal-700 focus:ring-4 focus:ring-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden flex items-center justify-center space-x-3 w-full sm:w-auto"
             >
               <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>

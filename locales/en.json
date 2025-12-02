@@ -419,7 +419,37 @@
 
   "important_note": "IMPORTANT: Keep this tracking number safe. You will need it to check the status of your complaint.",
   "thank_you": "Thank you for submitting your complaint. We will review it and get back to you soon."
-}
+},
+
+  "file_headers": {
+    "tracking_number": "Tracking Number",
+    "title": "Title",
+    "description": "Description",
+    "department": "Department",
+    "sub_department": "Sub Department",
+    "level": "Level",
+    "status": "Status",
+    "responsible_person": "Responsible Person",
+    "reason": "Reason",
+    "submission_date": "Submission Date",
+    "resolved_date": "Resolved Date",
+    "summary_statistics": "Summary Statistics",
+    "total_complaints": "Total Complaints",
+    "pending_complaints": "Pending Complaints",
+    "appropriate_complaints": "Appropriate Complaints",
+    "in_progress_complaints": "In Progress Complaints",
+    "completed_complaints": "Completed Complaints",
+    "inappropriate_complaints": "Inappropriate Complaints",
+    "report_generated": "Report Generated",
+    "date_range": "Date Range",
+    "status_filter": "Status Filter",
+    "level_filter": "Level Filter",
+    "department_filter": "Department Filter",
+    "to": "to",
+    "all": "All"
+  }
+
+
 
 
 

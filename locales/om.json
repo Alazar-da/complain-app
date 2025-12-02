@@ -408,7 +408,38 @@
 
   "important_note": "MUCHA: Lakkoofsa hordoffii kana eeggadhaa. Haala komii keessanii hordoffuuf isin barbaachisa.",
   "thank_you": "Komiin keessan nu ga’ee jira. Nuti ni ilaalla, osoo hin turin deebii ni kennina."
-}
+},
+
+
+  "file_headers": {
+    "tracking_number": "Lakkoofsa Suuta'aa",
+    "title": "Maqaa",
+    "description": "Ibsa",
+    "department": "Garee Hojii",
+    "sub_department": "Garee Hojii Xixiqqoo",
+    "level": "Sadarkaa",
+    "status": "Haala",
+    "responsible_person": "Namni Itti-gale",
+    "reason": "Sababa",
+    "submission_date": "Guyyaa Dhiyeessuu",
+    "resolved_date": "Guyyaa Furmaata",
+    "summary_statistics": "Xumura Raawwii",
+    "total_complaints": "Iddoo Walitti Hidhamii",
+    "pending_complaints": "Eegamaa Jiran",
+    "appropriate_complaints": "Kan Mirkaneessan",
+    "in_progress_complaints": "Garaagarummaa Jiran",
+    "completed_complaints": "Kan Xumuraman",
+    "inappropriate_complaints": "Kan Hin Mirkaneessne",
+    "report_generated": "Ripoortii Uumurame",
+    "date_range": "Tartiiba Guyyaa",
+    "status_filter": "Salaasa Haala",
+    "level_filter": "Salaasa Sadarkaa",
+    "department_filter": "Salaasa Garee Hojii",
+    "to": "Gara",
+    "all": "Hunda"
+  }
+
+
 
  
 

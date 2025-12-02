@@ -425,7 +425,37 @@
 
   "important_note": "አስፈላጊ: ይህን የመከታተያ ቁጥር በደህና ይያዙት። የቅሬታዎን ሁኔታ ለመከታተል ይረዳዎታል።",
   "thank_you": "ቅሬታዎን ስላቀረቡ እናመሰግናለን። ቅሬታውን አይተን በቅርቡ እንመልስልዎታለን።"
-}
+},
+
+  "file_headers": {
+    "tracking_number": "የማስተከተል ቁጥር",
+    "title": "ርዕስ",
+    "description": "መግለጫ",
+    "department": "የስራ ክፍል",
+    "sub_department": "ንዑስ የስራ ክፍል",
+    "level": "ደረጃ",
+    "status": "ሁኔታ",
+    "responsible_person": "መወከሊያ",
+    "reason": "ምክንያት",
+    "submission_date": "የመረጃ ቀን",
+    "resolved_date": "የፈታበት ቀን",
+    "summary_statistics": "የማጠቃለያ ስታቲስቲክስ",
+    "total_complaints": "ጠቅላላ ማስተዳደሮች",
+    "pending_complaints": "በመጠባበቅ ላይ ያሉ",
+    "appropriate_complaints": "የሚመለከታቸው",
+    "in_progress_complaints": "በሂደት ላይ ያሉ",
+    "completed_complaints": "የተጠናቀቁ",
+    "inappropriate_complaints": "የማይመለከታቸው",
+    "report_generated": "ሪፖርት የተፈጠረው",
+    "date_range": "የቀን ክልል",
+    "status_filter": "የሁኔታ ማጣሪያ",
+    "level_filter": "የደረጃ ማጣሪያ",
+    "department_filter": "የስራ ክፍል ማጣሪያ",
+    "to": "ወደ",
+    "all": "ሁሉም"
+  }
+
+
 
   
 
