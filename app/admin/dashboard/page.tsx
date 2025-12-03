@@ -290,11 +290,11 @@ export default function AdminDashboard() {
                 onChange={(e) => setStatusFilter(e.target.value)}
               >
                 <option value="All">{t('admin_dashboard.all_status')}</option>
-                <option value="Pending">{t('admin_dashboard.pending')}</option>
-                <option value="Appropriate">{t('admin_dashboard.appropriate')}</option>
-                <option value="In Progress">{t('admin_dashboard.in_progress')}</option>
-                <option value="Completed">{t('admin_dashboard.completed')}</option>
-                <option value="Inappropriate">{t('admin_dashboard.inappropriate')}</option>
+                <option value="Pending">{t('status.Pending')}</option>
+                <option value="Appropriate">{t('status.Appropriate')}</option>
+                <option value="In Progress">{t('status.In Progress')}</option>
+                <option value="Completed">{t('status.Completed')}</option>
+                <option value="Inappropriate">{t('status.Inappropriate')}</option>
               </select>
               <FiFilter className="w-5 h-5 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
               <div className="absolute inset-0 rounded-xl bg-linear-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
@@ -306,8 +306,8 @@ export default function AdminDashboard() {
         {viewMode === 'table' ? (
           /* Enhanced Table View */
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden animate-fade-in">
-            <div className="overflow-x-auto">
-              <table className="w-full">
+       <div className="overflow-x-auto">
+           <table className="min-w-max w-full">
                 <thead className="bg-linear-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                   <tr>
                     <th className="px-8 py-4 text-left text-sm font-bold text-gray-700 uppercase tracking-wider">
@@ -360,7 +360,7 @@ export default function AdminDashboard() {
                             {complaint.description.substring(0, 80)}...
                           </div>
                           {complaint.trackingNumber && (
-                            <div className="text-xs font-mono text-gray-400 bg-gray-50 px-2 py-1 rounded inline-block">
+                            <div className="text-xs font-mono text-slate-500 bg-amber-100 px-2 py-1 rounded inline-block">
                               {complaint.trackingNumber}
                             </div>
                           )}
@@ -387,7 +387,7 @@ export default function AdminDashboard() {
                       </td>
                       <td className="px-8 py-5">
                         <span className={`inline-flex items-center space-x-1 ${getLevelBadge(complaint.level)} transform hover:scale-105 transition-transform duration-200`}>
-                          <span>{t(`level.${complaint.level}`)}</span>
+                          <span>{t(`levels.${complaint.level}`)}</span>
                         </span>
                       </td>
                       <td className="px-8 py-5">
@@ -472,7 +472,7 @@ export default function AdminDashboard() {
                     </h3>
                     <div className="flex flex-wrap gap-2 mb-3">
                       <span className={`inline-flex items-center space-x-1 ${getLevelBadge(complaint.level)}`}>
-                        <span>{t(`level.${complaint.level}`)}</span>
+                        <span>{t(`levels.${complaint.level}`)}</span>
                       </span>
                       <span className={`inline-flex items-center space-x-2 ${getStatusBadge(complaint.status)}`}>
                         {getStatusIcon(complaint.status)}

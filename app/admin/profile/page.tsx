@@ -345,16 +345,6 @@ export default function ProfilePage() {
             </form>
           </div>
         </div>
-
-        {/* Enhanced Footer */}
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center space-x-3 bg-linear-to-r from-purple-50 to-pink-50 px-8 py-4 rounded-2xl border-2 border-purple-100 shadow-lg">
-            <FaAward className="text-purple-600 text-xl" />
-            <span className="text-purple-700 font-semibold text-lg">
-              {t('profile.needHelp')}
-            </span>
-          </div>
-        </div>
       </section>
 
       <style jsx global>{`

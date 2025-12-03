@@ -212,17 +212,17 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
       "High": {
         color: "border-red-300 bg-red-50 text-red-800",
         icon: <FiTrendingUp className="w-4 h-4" />,
-        label: t("level.High") || "High"
+        label: t("levels.High") || "High"
       },
       "Medium": {
         color: "border-orange-300 bg-orange-50 text-orange-800",
         icon: <FiMinus className="w-4 h-4" />,
-        label: t("level.Medium") || "Medium"
+        label: t("levels.Medium") || "Medium"
       },
       "Low": {
         color: "border-green-300 bg-green-50 text-green-800",
         icon: <FiTrendingDown className="w-4 h-4" />,
-        label: t("level.Low") || "Low"
+        label: t("levels.Low") || "Low"
       }
     };
     return configs[level] || {
@@ -625,11 +625,6 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                       <div>
                         <p className="text-gray-800 font-bold text-lg">
                           {daysSinceSubmission} {t("complaint_details.days")}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {daysSinceSubmission < 3 ? 'Recently submitted' :
-                           daysSinceSubmission < 7 ? 'Active for less than a week' :
-                           'Active for over a week'}
                         </p>
                       </div>
                     </div>

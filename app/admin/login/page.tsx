@@ -64,7 +64,7 @@ if (value && token) {
         setTimeout(() => router.push('/admin/dashboard'), 2000);
       } else {
         setMessage({ 
-          text: data.message || "Login failed", 
+          text: t(`login.${data.message}`) || "Login failed", 
           type: "error" 
         });
       }
