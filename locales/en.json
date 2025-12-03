@@ -1,81 +1,60 @@
 {
-     "meta": {
-    "title": "City Education Complaint Office",
-    "description": "Complaint app"
-  },
-   "view_complaints": "View Complaints",
+  "view_complaints": "View Complaints",
   "title": "Submit a Complaint",
   "back_to_home":"Back to Home",
-          "subtitle": "Fill out the form below to submit your complaint.",
-
-          "sidebar": {
-  "admin_panel": "Admin Panel",
-  "management_console": "Management Console",
-
-  "dashboard": "Dashboard",
-  "analytics": "Analytics",
-  "profile": "Profile",
-
-  "logout": "Logout"
-},
-  "personal_info": {
-    "personal_info": "Personal Info",
-    "complaint_details": "Complaint Details"
-  },
-  "education": {
-      "student": "Student",
-      "student_family": "Student Family",
-      "teacher": "Teacher",
-      "supervisor": "Supervisor",
-      "expert": "Expert"
-    },
-    "gender": {
-      "male": "Male",
-      "female": "Female"
-    },
-          "form": {
-                "full_name": "Full Name",
+  "subtitle": "Fill out the form below to submit your complaint.",
+  "form": {
+    "full_name": "Full Name",
     "enter_full_name": "Enter full name",
     "phone_number": "Phone Number",
     "enter_phone_number": "Enter phone number",
     "gender": "Gender",
     "select_gender": "Select gender",
-    "education_community": "Education Community",
-    "select_education_community": "Select education community",
+    "education_community": "Job position",
+    "select_education_community": "Select your job position",
     "school_name": "School Name",
     "enter_school": "Enter school",
     "wereda": "Wereda",
     "enter_wereda": "Enter wereda",
-
-
-            "title": "Complaint Title",
-            "department": "Department",
-            "subDepartment": "Sub Department",
-            "priority": "Priority Level",
-            "description": "Description",
-            "submit": "Submit Complaint",
-            "submitting": "Submitting...",
-            "success": "Complaint submitted successfully! Redirecting...",
-            "error": "Something went wrong. Please try again.",
-            "note": "Your complaint will be reviewed and addressed promptly.",
-            "file_optional": "File (optional)",
-            "click_to_upload": "Click to upload image or video",
-            "max_size":"Max: 10MB",
-            "uploading": "Uploading your file...",
-            "image": "Image",
-            "video": "Video",
-            "uploaded": "uploaded",
-            "removing": "Removing...",
-            "remove": "Remove",
-            "download": "Download",
-             "next": "Next",
+    "title": "Complaint Title",
+    "department": "Department",
+    "subDepartment": "Sub Department",
+    "priority": "Priority Level",
+    "description": "Description",
+    "submit": "Submit Complaint",
+    "submitting": "Submitting...",
+    "success": "Complaint submitted successfully! Redirecting...",
+    "error": "Something went wrong. Please try again.",
+    "note": "Your complaint will be reviewed and addressed promptly.",
+    "file_optional": "File (optional)",
+    "click_to_upload": "Click to upload image or video",
+    "max_size":"Max: 10MB",
+    "uploading": "Uploading your file...",
+    "image": "Image",
+    "video": "Video",
+    "uploaded": "uploaded",
+    "removing": "Removing...",
+    "remove": "Remove",
+    "download": "Download",
+    "next": "Next",
     "back": "Back"
 },
-          "departments": {
-  "general": "General",
-  "educationTech": "Education Information & Technology Administration",
-  "teacherTraining": "Teacher Education & Special Programs Administration"
-},
+
+"education": {
+  "student": "Student",
+  "student_family": "Student Family",
+  "teacher": "Teacher",
+  "supervisor": "Supervisor",
+  "expert": "Expert"
+  },
+
+"gender": {
+  "male": "Male",
+  "female": "Female"
+  },
+
+"levels": { "Low": "Low", "Medium": "Medium", "High": "High" },
+
 "messages": {
   "file":{
     "remove":{
@@ -86,120 +65,30 @@
     "error": "File upload failed.",
      "too_large": "File size must be less than 10MB."
   },
-    "success": "Complaint submitted successfully! Redirecting...",
-    "error": "Something went wrong. Please try again.",
-    "enterTitle": "Enter complaint title",
-    "selectDepartment": "Select Department",
-    "selectSubDepartment": "Select Sub Department",
-    "selectLevel": "Select Priority Level",
-    "enterDescription": "Please provide detailed description of your complaint...",
-    "copied_to_clipboard": "Copied to clipboard!"
-  },
-   "login": {
-    "title": "Admin Login",
-    "subtitle": "Access the administration dashboard",
-    "username": "Username",
-    "usernamePlaceholder": "Enter your username",
-    "password": "Password",
-    "passwordPlaceholder": "Enter your password",
-    "button": "Sign In to Dashboard",
-    "success": "Login successful! Redirecting to dashboard...",
-    "networkError": "Network error. Please try again.",
-    "signingIn": "Signing In..."
+  "success": "Complaint submitted successfully! Redirecting...",
+  "error": "Something went wrong. Please try again.",
+  "enterTitle": "Enter complaint title",
+  "selectDepartment": "Select Department",
+  "selectSubDepartment": "Select Sub Department",
+  "selectLevel": "Select Priority Level",
+  "enterDescription": "Please provide detailed description of your complaint...",
+  "copied_to_clipboard": "Copied to clipboard!"
   },
 
-  "admin_dashboard":{
-     "title": "Dashboard",
-  "logout": "Logout",
-  "complaint_management": "Complaint Management",
-  "manage_and_track": "Manage and track all submitted complaints",
-  "filters_and_search": "Filters & Search",
-  "find_and_manage": "Find and manage complaints",
-  "total": "Total:",
-  "search_placeholder": "Search complaints...",
-  "all_status": "All Status",
-    "pending": "Pending",
-  "in_progress": "In Progress",
-  "completed": "Completed",
-  "canceled": "Canceled",
-  "complaint": "Complaint",
-  "department": "Department",
-  "priority": "Priority",
-  "status": "Status",
-  "date": "Date",
-  "actions": "Actions"
+  "success": {
+    "title": "Submission Successful",
+    "submission_details": "Submission Details",
+    "tracking_number": "Tracking Number",
+    "complaint_title":"Complaint Title",
+    "complaint_id": "Complaint ID",
+    "title_field": "Title",
+    "status": "Status",
+    "submission_date": "Submission Date",
+    "important_notice": "Important Notice",
+    "save_tracking": "Save Tracking Number. Keep it safe to track your complaint later.",
+    "download_receipt": "Download Receipt",
+    "submit_another": "Submit Another Complaint"
   },
-
-"delete_complaint":{
-    "title": "Delete Complaint",
-    "subtitle": "Permanently remove this complaint",
-  "confirmation": "Are you sure you want to delete the complaint?",
-  "irreversible_note": "This action cannot be undone.",
-  "warning_title": "Warning",
-  "warning_message": "This will permanently remove the complaint and all associated data.",
-  "cancel": "Cancel",
-  "delete": "Delete"
-},
-
-"update_status":{
-  "title": "Update Status",
-  "subtitle": "Quick status update",
-  "select_status": "Select Status",
-  "cancel": "Cancel",
-  "saving": "Saving...",
-  "update": "Update",
-  "responsible_person": "Responsible Person",
-  "responsible_person_placeholder": "Enter the name of the person responsible...",
-  "responsible_person_help": "This person will be assigned to handle the complaint.",
-
-  "inappropriate_reason": "Reason for marking as inappropriate",
-  "inappropriate_placeholder": "Explain why this complaint is considered inappropriate...",
-
-  "status_options": {
-    "pending": {
-      "name": "Pending",
-      "label": "Pending",
-      "description": "Awaiting review"
-    },
-    "in_progress": {
-      "name": "In Progress",
-      "label": "In Progress",
-      "description": "Being addressed"
-    },
-    "completed": {
-      "name": "Completed",
-      "label": "Completed",
-      "description": "Resolved"
-    },
-"appropriate": {
-  "name": "Appropriate",
-  "label": "Appropriate",
-  "description": "This complaint is valid and accepted."
-},
-"inappropriate": {
-  "name": "Inappropriate",
-  "label": "Inappropriate",
-  "description": "This complaint is rejected due to invalid or unacceptable content."
-}
-
-  },
-    "reason_required": "Please provide a reason for this status change",
-  "completion_reason": "Completion Reason",
-  "cancellation_reason": "Cancellation Reason", 
-  "completion_placeholder": "Describe how this complaint was resolved...",
-  "cancellation_placeholder": "Explain why this complaint is being canceled...",
-  "reason_help": "This reason will be visible to the user",
-
-   "current": "Current",
-  "status_flow_guide": "Status Flow Guide",
-  "can_be_inappropriate": "Can be marked as Inappropriate at any stage"
-},
-
-  "level": {
-    "Low": "Low",
-    "Medium": "Medium",
-    "High": "High"
-    },
 
   "status": {
     "Pending":"Pending",
@@ -209,42 +98,101 @@
     "Inappropriate": "Inappropriate"
   },
 
-   "pagination": {
-    "prev": "Prev",
-    "page": "Page",
-    "next": "Next"
+  "receipt": {
+    "title": "COMPLAINT SUBMISSION RECEIPT",
+    "tracking_number": "Tracking Number:",
+    "complaint_id": "Complaint ID:",
+    "complaint_title": "Title:",
+    "status": "Status:",
+    "submission_date": "Submission Date:",
+    "submission_time": "Submission Time:",
+    "important_note": "IMPORTANT: Keep this tracking number safe. You will need it to check the status of your complaint.",
+    "thank_you": "Thank you for submitting your complaint. We will review it and get back to you soon."
   },
 
-   "complaint_details": {
-    "title": "Complaint Details",
-    "subtitle": "Complete information and tracking",
-    "complaint_title": "Complaint Title",
-    "main_description": "Main issue description",
-    "detailed_description": "Detailed Description",
-    "attached_media":"Attached Media",
-    "full_details": "Full complaint details",
-    "department": "Department",
-     "status":"Status", 
- "priority":"Priority",   
-"assigned_department":"Assigned Department",
-    "main_department": "Main Department",
-    "sub_department": "Sub Department",
-    "additional_info": "Additional Info",
-    "tracking_info": "Tracking information",
-    "complaint_id": "Complaint ID",
-    "days_active": "Days Active",
-"days":"days",
- "personal_info": "Personal Information",
-  "complainant_details": "Complainant Details",
-  "reason": "Reason",
-  "completion_explanation": "Explanation for completion",
-     "inappropriate_explanation": "Explanation for inappropriate",
-  "cancellation_explanation": "Explanation for cancellation", 
-  "status_reason": "Reason for status change",
-  "no_reason_provided": "No reason provided",
-  "resolved_on": "Resolved on",
-  "tracking_number": "Tracking Number",
-  "submission_date": "Submission Date"
+  "tracking": {
+    "title": "Track Your Complaint",
+    "description": "Enter your tracking number to check the status and details of your complaint",
+    "tracking_number": "Tracking Number",
+    "enter_tracking_number": "Enter your tracking number (e.g., CMP-ABC123XYZ)",
+    "responsible_person": "Responsible Person: ",
+    "searching": "Searching...",
+    "search": "Search",
+    "complaint_details": "Complaint Details",
+    "copy_tracking": "Copy tracking number",
+    "downloads": "Download",
+    "print": "Print",
+    "status": "Status",
+    "priority": "Priority Level",
+    "personal_information": "Personal Information",
+    "complaint_information": "Complaint Information",
+    "media_attachment": "Media Attachment",
+    "timeline": "Timeline",
+    "submission_date": "Submission Date",
+    "resolved_at": "Resolved Date",
+    "resolution_reason": "Resolution Details",
+    "cancellation_reason": "Cancellation Reason",
+
+    "errors": {
+      "not_found": "Complaint not found",
+      "fetch_failed": "Failed to fetch complaint details"
+    },
+
+    "form": {
+      "full_name": "Full Name",
+      "phone_number": "Phone Number",
+      "gender": "Gender",
+      "education_community": "Job position",
+      "school_name": "School Name",
+      "wereda": "Wereda",
+      "title": "Title",
+      "department": "Department",
+      "subDepartment": "Sub-Department",
+      "description": "Description"
+    },
+
+    "download": {
+      "title": "COMPLAINT DETAILS",
+      "tracking_number": "TRACKING NUMBER",
+      "separator": "==============================================================",
+      "personal_info_section": "PERSONAL INFORMATION:",
+      "complaint_section": "COMPLAINT DETAILS:",
+      "description_section": "DESCRIPTION:",
+      "reason_section": "RESOLUTION REASON:",
+      "tracking_section": "TRACKING INFORMATION:",
+      "important_note": "IMPORTANT:",
+      "section_separator": "---------------------",
+      "submission_date": "Submission Date",
+      "complaint_id": "Complaint ID",
+      "resolved_at": "Resolved At",
+      "keep_tracking": "Keep this tracking number safe for future reference.",
+      "tracking_usage": "You can use it to check the status of your complaint anytime."
+    }
+  },
+  
+  "login": {
+    "title": "Admin Login",
+    "subtitle": "Access the administration dashboard",
+    "username": "Username",
+    "usernamePlaceholder": "Enter your username",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "button": "Sign In to Dashboard",
+    "success": "Login successful! Redirecting to dashboard...",
+    "networkError": "Network error. Please try again.",
+    "signingIn": "Signing In...",
+    "invalid_credentials": "Invalid credentials!",
+    "login_successful": "Login successful!"
+
+  },
+
+  "sidebar": {
+    "admin_panel": "Admin Panel",
+    "management_console": "Management Console",
+    "dashboard": "Dashboard",
+    "analytics": "Analytics",
+    "profile": "Profile",
+    "logout": "Logout"
   },
 
   "profile":{
@@ -266,7 +214,6 @@
     "passwordMinLength": "⚠ Password must be at least 6 characters",
     "passwordsDoNotMatch": "⚠ Passwords do not match",
     "passwordsMatch": "✓ Passwords match",
-    "needHelp": "Need help? Contact support if you're having trouble with your account.",
     "saving": "Saving...",
     "updating": "Updating...",
     "failedToLoadProfile": "Failed to load profile",
@@ -275,17 +222,132 @@
     "passwordChanged": "Password changed successfully"
   },
 
-  
-  "analytics": {
+  "admin_dashboard":{
+    "title": "Dashboard",
+    "complaint_management": "Complaint Management",
+    "manage_and_track": "Manage and track all submitted complaints",
+    "filters_and_search": "Filters & Search",
+    "find_and_manage": "Find and manage complaints",
+    "total": "Total:",
+    "search_placeholder": "Search complaints...",
+    "all_status": "All Status",
+    "complaint": "Complaint",
+    "department": "Department",
+    "priority": "Priority",
+    "status": "Status",
+    "date": "Date",
+    "actions": "Actions"
+  },
+
+  "pagination": {
+    "prev": "Prev",
+    "page": "Page",
+    "next": "Next"
+  },
+
+  "delete_complaint":{
+    "title": "Delete Complaint",
+    "subtitle": "Permanently remove this complaint",
+    "confirmation": "Are you sure you want to delete the complaint?",
+    "irreversible_note": "This action cannot be undone.",
+    "warning_title": "Warning",
+    "warning_message": "This will permanently remove the complaint and all associated data.",
+    "cancel": "Cancel",
+    "delete": "Delete"
+  },
+
+  "update_status":{
+    "title": "Update Status",
+    "subtitle": "Quick status update",
+    "select_status": "Select Status",
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "update": "Update",
+    "responsible_person": "Responsible Person",
+    "responsible_person_placeholder": "Enter the name of the person responsible...",
+    "responsible_person_help": "This person will be assigned to handle the complaint.",
+    "inappropriate_reason": "Reason for marking as inappropriate",
+    "inappropriate_placeholder": "Explain why this complaint is considered inappropriate...",
+
+    "status_options": {
+      "pending": {
+        "name": "Pending",
+        "label": "Pending",
+        "description": "Awaiting review"
+      },
+      "in_progress": {
+        "name": "In Progress",
+        "label": "In Progress",
+        "description": "Being addressed"
+      },
+      "completed": {
+        "name": "Completed",
+        "label": "Completed",
+        "description": "Resolved"
+      },
+      "appropriate": {
+        "name": "Appropriate",
+        "label": "Appropriate",
+        "description": "This complaint is valid and accepted."
+      },
+      "inappropriate": {
+        "name": "Inappropriate",
+        "label": "Inappropriate",
+        "description": "This complaint is rejected due to invalid or unacceptable content."
+      }
+    },
+
+    "reason_required": "Please provide a reason for this status change",
+    "completion_reason": "Completion Reason",
+    "cancellation_reason": "Cancellation Reason", 
+    "completion_placeholder": "Describe how this complaint was resolved...",
+    "cancellation_placeholder": "Explain why this complaint is being canceled...",
+    "reason_help": "This reason will be visible to the user",
+    "current": "Current",
+    "status_flow_guide": "Status Flow Guide",
+    "can_be_inappropriate": "Can be marked as Inappropriate at any stage"
+  },
+
+  "complaint_details": {
+    "title": "Complaint Details",
+    "subtitle": "Complete information and tracking",
+    "complaint_title": "Complaint Title",
+    "main_description": "Main issue description",
+    "detailed_description": "Detailed Description",
+    "attached_media":"Attached Media",
+    "full_details": "Full complaint details",
+    "department": "Department",
+    "status":"Status", 
+    "priority":"Priority",   
+    "assigned_department":"Assigned Department",
+    "main_department": "Main Department",
+    "sub_department": "Sub Department",
+    "additional_info": "Additional Info",
+    "tracking_info": "Tracking information",
+    "complaint_id": "Complaint ID",
+    "days_active": "Days Active",
+    "days":"days",
+    "personal_info": "Personal Information",
+    "complainant_details": "Complainant Details",
+    "reason": "Reason",
+    "completion_explanation": "Explanation for completion",
+    "inappropriate_explanation": "Explanation for inappropriate",
+    "cancellation_explanation": "Explanation for cancellation", 
+    "status_reason": "Reason for status change",
+    "no_reason_provided": "No reason provided",
+    "resolved_on": "Resolved on",
+    "tracking_number": "Tracking Number",
+    "submission_date": "Submission Date"
+  },
+
+   "analytics": {
     "title": "Analytics",
     "dashboard": "Analytics Dashboard",
     "description": "Comprehensive insights and analytics for complaints management",
     "show_filters":"Show Filters",
     "hide_filters":"Hide Filters",
-
     "filters": "Filters & Controls",
     "filters_description": "Refine your analytics data",
-
     "start_date": "Start Date",
     "end_date": "End Date",
     "date_range": "Date Range",
@@ -297,7 +359,6 @@
     "Loading":"Loading...",
     "clear_all": "Clear All",
     "All":"All",
-
     "total_complaints": "Total Complaints",
     "completed_complaints": "Completed Complaints",
     "pending_complaints": "Pending Complaints",
@@ -313,113 +374,16 @@
     "daily_trends_desc": "Complaints over time",
     "complaints_data": "Complaints Data",
     "complaints_data_desc": "Detailed view of all complaints",
-
     "export_csv": "Export CSV",
     "table_title": "Title",
     "table_description": "Description",
     "table_date": "Date",
-
     "no_data": "No complaints data found",
     "try_adjusting": "Try adjusting your filters or date range.",
-
     "Daily_Complaints":	"Daily Complaints",
-"Complaints_by_Level":	"Complaints by Level",
-"Complaints_by_Status":	"Complaints by Status"
+    "Complaints_by_Level":	"Complaints by Level",
+    "Complaints_by_Status":	"Complaints by Status"
   },
-
-  "success": {
-    "title": "Submission Successful",
-    "description": "Your complaint has been submitted successfully.",
-
-    "submission_details": "Submission Details",
-    "tracking_number": "Tracking Number",
-
-     "complaint_title":"Complaint Title",
-    "complaint_id": "Complaint ID",
-    "title_field": "Title",
-    "status": "Status",
-    "submission_date": "Submission Date",
-
-    "important_notice": "Important Notice",
-
-    "save_tracking": "Save Tracking Number. Keep it safe to track your complaint later.",
-    "download_receipt": "Download Receipt",
-    "submit_another": "Submit Another Complaint"
-  },
-  
-  "tracking": {
-    "title": "Track Your Complaint",
-    "description": "Enter your tracking number to check the status and details of your complaint",
-    "tracking_number": "Tracking Number",
-    "enter_tracking_number": "Enter your tracking number (e.g., CMP-ABC123XYZ)",
-    "responsible_person": "Responsible Person: ",
-    "searching": "Searching...",
-    "search": "Search",
-    "complaint_details": "Complaint Details",
-    "copy_tracking": "Copy tracking number",
-    "downloads": "Download",
-    "print": "Print",
-    "status": "Status",
-    "priority": "Priority Level",
-    "personal_information": "Personal Information",
-    "complaint_information": "Complaint Information",
-    "media_attachment": "Media Attachment",
-    "timeline": "Timeline",
-    "submission_date": "Submission Date",
-    "last_updated": "Last Updated",
-    "resolved_at": "Resolved Date",
-    "resolution_reason": "Resolution Details",
-    "cancellation_reason": "Cancellation Reason",
-    "errors": {
-      "not_found": "Complaint not found",
-      "fetch_failed": "Failed to fetch complaint details"
-    },
-    "download": {
-      "title": "COMPLAINT DETAILS",
-      "tracking_number": "TRACKING NUMBER",
-      "separator": "==============================================================",
-      "personal_info_section": "PERSONAL INFORMATION:",
-      "complaint_section": "COMPLAINT DETAILS:",
-      "description_section": "DESCRIPTION:",
-      "reason_section": "RESOLUTION REASON:",
-      "tracking_section": "TRACKING INFORMATION:",
-      "important_note": "IMPORTANT:",
-      "section_separator": "---------------------",
-      "submission_date": "Submission Date",
-      "complaint_id": "Complaint ID",
-      "created_at": "Created At",
-      "updated_at": "Last Updated",
-      "resolved_at": "Resolved At",
-      "keep_tracking": "Keep this tracking number safe for future reference.",
-      "tracking_usage": "You can use it to check the status of your complaint anytime."
-    },
-      "form": {
-    "full_name": "Full Name",
-    "phone_number": "Phone Number",
-    "gender": "Gender",
-    "education_community": "Education Community",
-    "school_name": "School Name",
-    "wereda": "Wereda",
-    "title": "Title",
-    "department": "Department",
-    "subDepartment": "Sub-Department",
-    "description": "Description"
-  }
-  },
-
-
-  "receipt": {
-  "title": "COMPLAINT SUBMISSION RECEIPT",
-  "tracking_number": "Tracking Number:",
-  "complaint_id": "Complaint ID:",
-  "complaint_title": "Title:",
-  "status": "Status:",
-  "submission_date": "Submission Date:",
-  "submission_time": "Submission Time:",
-
-  "important_note": "IMPORTANT: Keep this tracking number safe. You will need it to check the status of your complaint.",
-  "thank_you": "Thank you for submitting your complaint. We will review it and get back to you soon."
-},
 
   "file_headers": {
     "tracking_number": "Tracking Number",
@@ -448,10 +412,5 @@
     "to": "to",
     "all": "All"
   }
-
-
-
-
-
 
 }

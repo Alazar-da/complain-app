@@ -96,9 +96,9 @@ export default function Home() {
   const language = i18n.language as "am" | "en" | "om";
 
   const level = [
-    { key: "Low", label: t("level.Low") },
-    { key: "Medium", label: t("level.Medium") },
-    { key: "High", label: t("level.High") },
+    { key: "Low", label: t("levels.Low") },
+    { key: "Medium", label: t("levels.Medium") },
+    { key: "High", label: t("levels.High") },
   ];
 
   const educationOptions = [
@@ -793,9 +793,6 @@ ${t('receipt.thank_you')}
               <h2 className="text-3xl font-bold bg-linear-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-3">
                 {t("success.title")}
               </h2>
-              <p className="text-gray-600 text-lg">
-                {t("success.description")}
-              </p>
             </div>
 
             {/* Enhanced Submission Details Card */}

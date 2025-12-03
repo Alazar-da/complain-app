@@ -65,9 +65,9 @@ export default function AnalyticsPage() {
   const language = i18n.language as "am" | "en" | "om";
 
   const level = [
-    { key: "Low", label: t("level.Low") },
-    { key: "Medium", label: t("level.Medium") },
-    { key: "High", label: t("level.High") },
+    { key: "Low", label: t("levels.Low") },
+    { key: "Medium", label: t("levels.Medium") },
+    { key: "High", label: t("levels.High") },
   ];
 
   const status = [
@@ -268,7 +268,7 @@ const downloadExcel = async () => {
     });
     
     level.forEach(l => {
-      levelTranslationMap[t(`level.${l.key}`)] = l.key;
+      levelTranslationMap[t(`levels.${l.key}`)] = l.key;
     });
 
     // Prepare data for main sheet with translated labels
@@ -284,7 +284,7 @@ const downloadExcel = async () => {
             sub.am === item.subDepartment ||
             sub.om === item.subDepartment
         )?.[language] || item.subDepartment || "",
-        [t("file_headers.level")]: t(`level.${item.level}`),
+        [t("file_headers.level")]: t(`levels.${item.level}`),
         [t("file_headers.status")]: t(`status.${item.status}`),
         [t("file_headers.responsible_person")]: item.responsiblePerson || "",
         [t("file_headers.reason")]: item.reason || "",
@@ -396,9 +396,9 @@ const downloadExcel = async () => {
       [t("file_headers.report_generated"), dayjs().format("MMM DD, YYYY HH:mm")],
       [t("file_headers.date_range"), `${dayjs(startDate).format("MMM DD, YYYY")} ${t("file_headers.to")} ${dayjs(endDate).format("MMM DD, YYYY")}`],
       [t("file_headers.status_filter"), statusFilter ? t(`status.${statusFilter}`) : t("file_headers.all")],
-      [t("file_headers.level_filter"), levelFilter ? t(`level.${levelFilter}`) : t("file_headers.all")],
-      [t("file_headers.department_filter"), departmentFilter ? (departments[departmentFilter as DepartmentKey]?.[language] || departmentFilter) : t("file_headers.all")],
-      [t("file_headers.sub_department_filter"), subDepartmentFilter || t("file_headers.all")]
+      [t("file_headers.level_filter"), levelFilter ? t(`levels.${levelFilter}`) : t("file_headers.all")],
+      [t("file_headers.department"), departmentFilter ? (departments[departmentFilter as DepartmentKey]?.[language] || departmentFilter) : t("file_headers.all")],
+      [t("file_headers.sub_department"), subDepartmentFilter || t("file_headers.all")]
     ];
 
     const ws2 = XLSX.utils.aoa_to_sheet(summaryData);
@@ -923,7 +923,7 @@ const downloadExcel = async () => {
           </div>
 
           <div className="overflow-x-auto rounded-2xl border-2 border-gray-100">
-            <table className="w-full text-left">
+           <table className="min-w-max w-full">
               <thead>
                 <tr className="bg-linear-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
                   <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.table_title")}</th>
@@ -952,7 +952,7 @@ const downloadExcel = async () => {
                       }</td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2 ${getLevelColor(r.level)}`}>
-                          {t(`level.${r.level}`)}
+                          {t(`levels.${r.level}`)}
                         </span>
                       </td>
                       <td className="px-6 py-4">

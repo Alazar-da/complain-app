@@ -189,7 +189,7 @@ export default function EditModal({ complaint, onClose, onUpdated }: EditModalPr
                     {t('update_status.current')}: {t(`status.${complaint.status}`)}
                   </div>
                   {complaint.trackingNumber && (
-                    <div className="text-xs font-mono text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
+                    <div className="text-xs font-mono text-slate-500 bg-amber-100 px-2 py-1 rounded-lg">
                       {complaint.trackingNumber}
                     </div>
                   )}

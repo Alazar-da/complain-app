@@ -125,18 +125,23 @@ ${t("tracking.download.personal_info_section", "PERSONAL INFORMATION:")}
 ${t("tracking.download.section_separator", "---------------------")}
 ${t("form.full_name", "Full Name")}: ${complaint.fullName}
 ${t("form.phone_number", "Phone Number")}: ${complaint.phoneNumber}
-${t("form.gender", "Gender")}: ${complaint.gender}
-${t("form.education_community", "Education Community")}: ${complaint.educationCommunity}
+${t("form.gender", "Gender")}: ${t(`gender.${complaint.gender}`)}
+${t("form.education_community", "Education Community")}: ${t(`education.${complaint.educationCommunity}`)}
 ${t("form.school_name", "School Name")}: ${complaint.schoolName}
 ${t("form.wereda", "Wereda")}: ${complaint.wereda}
 
 ${t("tracking.download.complaint_section", "COMPLAINT DETAILS:")}
 ${t("tracking.download.section_separator", "---------------------")}
 ${t("form.title", "Title")}: ${complaint.title}
-${t("form.department", "Department")}: ${complaint.department}
-${complaint.subDepartment ? `${t("form.subDepartment", "Sub-Department")}: ${complaint.subDepartment}` : ''}
-${t("tracking.priority", "Priority Level")}: ${complaint.level}
-${t("tracking.status", "Status")}: ${complaint.status}
+${t("form.department", "Department")}: ${departments[complaint.department as DepartmentKey]?.[lang] || complaint.department}
+${complaint.subDepartment ? `${t("form.subDepartment", "Sub-Department")}: ${departments[complaint.department as DepartmentKey]?.subDepartments.find(
+                            (sub: any) =>
+                              sub.en === complaint.subDepartment ||
+                              sub.am === complaint.subDepartment ||
+                              sub.om === complaint.subDepartment
+                          )?.[lang] || complaint.subDepartment}` : ''}
+${t("tracking.priority", "Priority Level")}: ${t(`levels.${complaint.level}`)}
+${t("tracking.status", "Status")}: ${t(`status.${complaint.status}`)}
 ${complaint.responsiblePerson ? `${t("tracking.responsible_person", "Responsible Person")}: ${complaint.responsiblePerson}` : ''}
 ${t("tracking.download.submission_date", "Submission Date")}: ${new Date(complaint.createdAt).toLocaleDateString()}
 
@@ -154,8 +159,6 @@ ${t("tracking.download.tracking_section", "TRACKING INFORMATION:")}
 ${t("tracking.download.section_separator", "---------------------")}
 ${t("tracking.download.complaint_id", "Complaint ID")}: ${complaint._id}
 ${t("tracking.download.tracking_number", "Tracking Number")}: ${complaint.trackingNumber}
-${t("tracking.download.created_at", "Created At")}: ${new Date(complaint.createdAt).toLocaleString()}
-${t("tracking.download.updated_at", "Last Updated")}: ${new Date(complaint.updatedAt).toLocaleString()}
 ${complaint.resolvedAt ? `${t("tracking.download.resolved_at", "Resolved At")}: ${new Date(complaint.resolvedAt).toLocaleString()}` : ''}
 
 ${t("tracking.download.important_note", "IMPORTANT:")}
@@ -219,17 +222,17 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
       "High": {
         color: "text-red-600 bg-red-50 border-red-200",
         icon: <FiTrendingUp className="w-4 h-4" />,
-        label: t("level.High") || "High"
+        label: t("levels.High") || "High"
       },
       "Medium": {
         color: "text-orange-600 bg-orange-50 border-orange-200",
         icon: <FiMinus className="w-4 h-4" />,
-        label: t("level.Medium") || "Medium"
+        label: t("levels.Medium") || "Medium"
       },
       "Low": {
         color: "text-green-600 bg-green-50 border-green-200",
         icon: <FiTrendingDown className="w-4 h-4" />,
-        label: t("level.Low") || "Low"
+        label: t("levels.Low") || "Low"
       }
     };
     return configs[level] || {
@@ -644,14 +647,6 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                     </span>
                     <span className="text-gray-800 font-bold">
                       {formatDate(complaint.createdAt)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-green-200 transition-all duration-300">
-                    <span className="text-sm font-semibold text-gray-600">
-                      {t("tracking.last_updated", "Last Updated")}
-                    </span>
-                    <span className="text-gray-800 font-bold">
-                      {formatDate(complaint.updatedAt)}
                     </span>
                   </div>
                   {complaint.resolvedAt && (

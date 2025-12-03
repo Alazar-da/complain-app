@@ -1,101 +1,163 @@
 {
-     "meta": {
-    "title": "Waajjira Komii Barnootaa Magaalaa",
-    "description": "Appii komii"
-  },
-   "title": "Dhiyeessi Komii",
-    "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
-    "back_to_home": "Gara Fuula Duraa Deebi'i",
-"sidebar": {
-  "admin_panel": "Paaneelii Bulchiinsaa",
-  "management_console": "Kutaa Tajaajila Bulchiinsaa",
+  "title": "Dhiyeessi Komii",
+  "subtitle": "Maaloo komii kee galchuu fi erguu dura foormii kana guuti.",
+  "back_to_home": "Gara Fuula Duraa Deebi'i",
 
-  "dashboard": "Daashboordii",
-  "analytics": "Alaalcha",
-  "profile": "Piroofaayilii",
-
-  "logout": "Ba'ii"
-},
-
-  "personal_info": {
-    "personal_info": "Odeeffannoo Dhunfaa",
-    "complaint_details": "Faayila Komii"    
-  },
-  "education": {
-      "student": "Barataa",
-      "student_family": "Maatii Barataa",
-      "teacher": "Barsiisaa",
-      "supervisor": "To’annaa",
-      "expert": "Ogeessa"
-    },
-    "gender": {
-      "male": "Dhiira",
-      "female": "Dubartii"
-    },
-
-
-          "form": {
-               "full_name": "Maqaa Guutuu",
+  "form": {
+    "full_name": "Maqaa Guutuu",
     "enter_full_name": "Maqaa guutuu galchi",
     "phone_number": "Lakkoofsa Bilbila",
     "enter_phone_number": "Lakkoofsa bilbila galchi",
     "gender": "Saala",
     "select_gender": "Saala filadhu",
-    "education_community": "Hawaasa Barnootaa",
-    "select_education_community": "Hawaasa barnootaa filadhu",
+    "education_community": "Iddoo Hojii",
+    "select_education_community": "Iddoo hojii kee fili",
     "school_name": "Maqaa Mana Barumsaa",
     "enter_school": "Maqaa mana barumsaa galchi",
     "wereda": "Woreeda",
     "enter_wereda": "Woreeda galchi",
-
-            "title": "Maqaa Komii",
-            "department": "Kutaa hojii",
-            "subDepartment": "Kutaa xiqqaa",
-            "priority": "Sadarkaa Dursa",
-            "description": "Ibsa",
-            "submit": "Komii Galchi",
-            "submitting": "Ergaa jira...",
-            "success": "Komiin kee milkaa'inaan ergame! Dhihoo irratti deebi'a...",
-            "error": "Dogoggorri uumame. Maaloo irra deebi'ii yaali.",
-            "note": "Komiin kee ni ilaalama, deebiin ni kennama.",
-            "file_optional":"Faayilii (filannoo)",
-            "click_to_upload": "Suuraa yookaan viidiyoo Erguuf cuqaasaa",
-            "max_size": "Hangii ol’aanaa: 10MB",
-            "uploading": "Faayilii ergaa jira...",
-            "uploaded": "Ergame",
-            "image": "Suuraa",
-            "video": "Viidiyoo",
-            "removing":"Haqaa jira...",
-            "remove": "Haqi",
-            "download": "Buusi",
-                "next": "Kan itti aanu",
+    "title": "Maqaa Komii",
+    "department": "Kutaa hojii",
+    "subDepartment": "Kutaa xiqqaa",
+    "priority": "Sadarkaa Dursa",
+    "description": "Ibsa",
+    "submit": "Komii Galchi",
+    "submitting": "Ergaa jira...",
+    "success": "Komiin kee milkaa'inaan ergame! Dhihoo irratti deebi'a...",
+    "error": "Dogoggorri uumame. Maaloo irra deebi'ii yaali.",
+    "note": "Komiin kee ni ilaalama, deebiin ni kennama.",
+    "file_optional":"Faayilii (filannoo)",
+    "click_to_upload": "Suuraa yookaan viidiyoo Erguuf cuqaasaa",
+    "max_size": "Hangii ol’aanaa: 10MB",
+    "uploading": "Faayilii ergaa jira...",
+    "uploaded": "Ergame",
+    "image": "Suuraa",
+    "video": "Viidiyoo",
+    "removing":"Haqaa jira...",
+    "remove": "Haqi",
+    "download": "Buusi",
+    "next": "Kan itti aanu",
     "back": "Deebi’i"
-          },
-          "levels": { "low": "Gadii", "medium": "Giddugaleessa", "high": "Olaanaa" },
-          "departments": {
-  "general": "Waliigalaa",
-  "educationTech": "Hojii Odeeffannoo fi Teeknooloojii Barnootaa",
-  "teacherTraining": "Leenjii Barattootaa fi Sagantaa Adda Addaa"
-},
-"messages": {
-  "file": {
-    "remove":{
-      "success": "Faayiliin haqame milkaa'inaan!",
-      "error": "Faayiliin haquun hin milkaa'inne."
     },
-  "success": "Faayiliin Ergame olkaa’ame!",
-  "error": "Faayilii olkaa’uun hin milkaa’inne.",
-  "too_large": "Faayiliin 10MB ol ka'uu hin danda'u."
-  },
+
+  "levels": { "Low": "Gadii", "Medium": "Giddugaleessa", "High": "Olaanaa" },
+
+  "messages": {
+    "file": {
+      "remove":{
+        "success": "Faayiliin haqame milkaa'inaan!",
+        "error": "Faayiliin haquun hin milkaa'inne."
+      },
+    "success": "Faayiliin Ergame olkaa’ame!",
+    "error": "Faayilii olkaa’uun hin milkaa’inne.",
+    "too_large": "Faayiliin 10MB ol ka'uu hin danda'u."
+    },
     "success": "Madda komii kee milkaaʼinaan ergame! Gara fuula biraatti geeffamaa jira...",
     "error": "Dogoggorri uumame. Mee irra deebi'ii yaali.",
     "enterTitle": "Mata duree komii galchi",
-    "selectDepartment": "Kutaa filadhu",
-    "selectSubDepartment": "Kutaa xiqqaa filadhu",
+    "selectDepartment": "Kutaa Hojii Fili",
+    "selectSubDepartment": "Kutaa Xixiqqaa Fili",
     "selectLevel": "Sadarkaa Dursa filadhu",
     "enterDescription": "Mee ibsa bal’aa komii kee kenni...",
-     "copied_to_clipboard": "Gara clipboard tti dursame!"
+    "copied_to_clipboard": "Gara clipboard tti dursame!"
   },
+
+  "success": {
+    "title": "Komii Keessan Milkaa’inaan Ergame",
+    "submission_details": "Faayila Ergame",
+    "tracking_number": "Lakkoofsa To’ataa",
+    "complaint_title":"Mata Duree Komii",
+    "complaint_id": "ID Komii",
+    "title_field": "Mata-Duree",
+    "status": "Haala",
+    "submission_date": "Guyyaa Ergame",
+    "important_notice": "Beeksisa Murteessaa",
+    "save_tracking": "Lakkoofsa To’ataa Kuusi. Yeroo kamiyyuu komii keessan hordofuuf itti fayyadami.",
+    "download_receipt": "Gabaasa Buusi",
+    "submit_another": "Komii Haaraa Ergi"
+  },
+
+  "status": {
+    "Pending":"Eeggataa",
+    "In Progress":"Jiraatti",
+    "Completed": "Xumurame",
+    "Appropriate": "Maqaa Qabuu",
+    "Inappropriate": "Maqaa Hin Qabne"
+  },
+
+  "receipt": {
+    "title": "RAGAA ERGII KOMII",
+    "tracking_number": "Lakkoofsa hordoffii:",
+    "complaint_id": "ID Komii:",
+    "complaint_title": "Mata Duree Komii:",
+    "status": "Haala:",
+    "submission_date": "Guyyaa Ergaa:",
+    "submission_time": "Yeroo Ergaa:",
+    "important_note": "MUCHA: Lakkoofsa hordoffii kana eeggadhaa. Haala komii keessanii hordoffuuf isin barbaachisa.",
+    "thank_you": "Komiin keessan nu ga’ee jira. Nuti ni ilaalla, osoo hin turin deebii ni kennina."
+  },
+
+  "tracking": {
+    "title": "Daawoomii Keessan Hordofi",
+    "description": "Haala daawoomii keessanii fi gahee isaa ilaaluuf lakkoofsa hordofaa keessan galchaa",
+    "tracking_number": "Lakkoofsa Hordofaa",
+    "enter_tracking_number": "Lakkoofsa hordofaa keessan galchaa (fakkeenyaaf: CMP-ABC123XYZ)",
+    "responsible_person": "Namni itti gaafatamu፡ ",
+    "searching": "Barbaaduu keessaa...",
+    "search": "Barbaadi",
+    "complaint_details": "Gahee Daawoomii",
+    "copy_tracking": "Lakkoofsa hordofaa dursi",
+    "downloads": "Buusi",
+    "print": "Maxxansi",
+    "status": "Haala",
+    "priority": "Sadarkaa Duraa",
+    "personal_information": "Odeeffannoo Dhuumaa",
+    "complaint_information": "Odeeffannoo Daawoomii",
+    "media_attachment": "Faayila Miidiyaa",
+    "timeline": "Yeroo",
+    "submission_date": "Guyyaa Dhiyaatame",
+    "resolved_at": "Guyyaa Furmaata",
+    "resolution_reason": "Gahee Furmaata",
+    "cancellation_reason": "Sababa Dhiisu",
+
+    "errors": {
+      "not_found": "Daawoomii hin argamne",
+      "fetch_failed": "Gahee daawoomii fiduu hin dandeenye"
+    },
+
+    "form": {
+      "full_name": "Maqaa Guutuu",
+      "phone_number": "Lakkoofsa Bilbila",
+      "gender": "Saala",
+      "education_community": "Iddoo Hojii",
+      "school_name": "Maqaa Manni Barumsaa",
+      "wereda": "Aanaa",
+      "title": "Mata-duree",
+      "department": "Aangoo",
+      "subDepartment": "Aangoo Xiqqaa",
+      "description": "Ibsu"
+    },
+
+    "download": {
+      "title": "GAHEE DAAWOOMII",
+      "tracking_number": "LAKKOOFSAA HORDOFAA",
+      "separator": "==============================================================",
+      "personal_info_section": "ODE EFFANNOO DHUUMAA:",
+      "complaint_section": "GAHEE DAAWOOMII:",
+      "description_section": "IBSU:",
+      "reason_section": "SABABA FURMAATA:",
+      "tracking_section": "ODE EFFANNOO HORDOFAA:",
+      "important_note": "BARBAA CHISAA:",
+      "section_separator": "---------------------",
+      "submission_date": "Guyyaa Dhiyaatame",
+      "complaint_id": "ID Daawoomii",
+      "resolved_at": "Guyyaa Furmaata",
+      "keep_tracking": "Lakkoofsa hordofaa kana yeroo booda ittiin deebi'an ilaaluuf qabadhaa.",
+      "tracking_usage": "Haala daawoomii keessan yeroo kamillee ilaaluuf itti fayyadamtu."
+    }
+  },
+  
+  
   "login": {
     "title": "Seensa Bulchaa",
     "subtitle": "Fuula bulchiinsa seeni",
@@ -104,142 +166,23 @@
     "password": "Jecha iccitii",
     "passwordPlaceholder": "Jecha iccitii kee galchi",
     "button": "Fuula Bulchaa seeni",
-        "success": "Seensi milkaaʼe! Gara fuula bulchaa geeffamaa jira...",
-      "networkError": "Dogoggora network uumame. Mee irra deebi'ii yaali.",
-      "signingIn": "Seensa jalqabaa..."
-  },
-    "admin_dashboard":{
-  "title": "Daashboord",
-  "logout": "Ba'i",
-  "complaint_management": "Hoggansa Dhiheessii Komii",
-  "manage_and_track": "Komii dhihaate hunda too'annoo fi hordoffii godhi",
-  "filters_and_search": "Faayiloota fi Barbaadi",
-  "find_and_manage": "Komiiwwan barbaadii fi to'achi",
-  "total": "Waliigala:",
-  "search_placeholder": "Komii barbaadi...",
-  "all_status": "Haala Hunda",
-    "pending": "Eeggataa",
-  "in_progress": "Jiraatti",
-  "completed": "Xumurame",
-  "canceled": "Haquu",
-  "complaint": "Komii",
-  "department": "Kutaa Hojii",
-  "priority": "Mudaa Dursa",
-  "status": "Haala",
-  "date": "Guyyaa",
-  "actions": "Gochoota"
-  },
-  "delete_complaint":{
-"title": "Komii Haqi",
-"subtitle": "Komii kana siʼachiin haquu",
-  "confirmation": "Komii kana haquu akka barbaaddu mirkaneeffadhu?",
-  "irreversible_note": "Tartiibni kun deebi'ee hin danda'amu.",
-  "warning_title": "Akeekkachiisa",
-  "warning_message": "Kun komii fi odeeffannoo hunda isa waliin walqabatu guutummaatti ni balleessa.",
-  "cancel": "Dhiisi",
-  "delete": "Haqi"
-},
-"update_status":{
-  "title": "Haala Haaraa Galchi",
-  "subtitle": "Haalota saffisaan haaromsi",
-  "select_status": "Haala filadhu",
-  "cancel": "Dhiisi",
-  "saving": "Ol kaa'aa jira...",
-  "update": "Haaromsi",
-    "responsible_person": "Namni Itti Gaafatamaa",
-  "responsible_person_placeholder": "Maqaa nama itti gaafatamaa galchi...",
-  "responsible_person_help": "Namni kun komii kana hojjechuuf ni ramadama.",
-
-  "inappropriate_reason": "Sababa dogoggora komii kanaa",
-  "inappropriate_placeholder": "Komiin kun maaliif dogoggoraa ta’e ibsi...",
-   "status_options": {
-    "pending": {
-      "name": "Pending",
-      "label": "Eeggataa",
-      "description": "Eegamaa jira"
-    },
-    "in_progress": {
-      "name": "In Progress",
-      "label": "Jiraatti",
-      "description": "Hojjetamaa jira"
-    },
-    "completed": {
-      "name": "Completed",
-      "label": "Xumurame",
-      "description": "Dhiheessi ni xumurame"
-    },
-"appropriate": {
-  "name": "Appropriate",
-  "label": "Sirrii",
-  "description": "Komii kun sirrii waan ta’eef ni fudhatama."
-},
-"inappropriate": {
-  "name": "Inappropriate",
-  "label": "Dogoggoraa",
-  "description": "Komiin kun sababaa sirrii hin taaneef ykn barbaachisaa hin taaneef ni haquu/didama."
-}
+    "success": "Seensi milkaaʼe! Gara fuula bulchaa geeffamaa jira...",
+    "networkError": "Dogoggora network uumame. Mee irra deebi'ii yaali.",
+    "signingIn": "Seensa jalqabaa...",
+    "invalid_credentials": "Odeeffannoo sirrii miti",
+    "login_successful": "Seensi milkaa'e"
 
   },
-      "reason_required": "Mee sababaa jijjiirama haala kanaa kaa'aa",
-  "completion_reason": "Sababaa Xumuramaa",
-  "cancellation_reason": "Sababaa Haquu",
-  "completion_placeholder": "Komii kana akkamitti furame ibsa...",
-  "cancellation_placeholder": "Komiin kun maaliif akka haqamu ibsa...",
-  "reason_help": "Sababni kun itti gaafatamtootaaf ni mul'ata",
 
-    "current": "Ammaa",
-  "status_flow_guide": "Giddugala Jijjiirama Haala",
-  "can_be_inappropriate": "Sadarkaa kamittuu akka Inappropriate ta’ee ni taaneessuu danda’a"
-},
+  "sidebar": {
+    "admin_panel": "Paaneelii Bulchiinsaa",
+    "management_console": "Kutaa Tajaajila Bulchiinsaa",
+    "dashboard": "Daashboordii",
+    "analytics": "Alaalcha",
+    "profile": "Piroofaayilii",
+    "logout": "Ba'ii"
+  },
 
-"level": {
-    "Low": "Gadi-aanaa",
-    "Medium": "Giddu-galeessa",
-    "High": "Ol'aanaa"
-    },
-  "status": {
-    "Pending":"Eeggataa",
-    "In Progress":"Jiraatti",
-    "Completed": "Xumurame",
-    "Appropriate": "Sirrii",
-    "Inappropriate": "Dogoggoraa"
-  },
-    "pagination": {
-    "prev": "Dura",
-    "page": "Fuula",
-    "next": "Kan itti aanu"
-  },
-    "complaint_details": {
-    "title": "Faayila Komii",
-    "subtitle": "Odeeffannoo guutuu fi hordoffii",
-    "complaint_title": "Mata Duree Komii",
-    "main_description": "Ibsa Rakkoo Ijoo",
-    "detailed_description": "Ibsa Bal'aa",
-    "attached_media":"Miidiyaa Waliin Hidhame",
-    "full_details": "Odeeffannoo guutuu komii",
-    "department": "Kutaa",
-    "main_department": "Kutaa Ijoo",
-    "sub_department": "Kutaa Xiqqaa",
-    "additional_info": "Odeeffannoo Dabalataa",
-    "tracking_info": "Odeeffannoo Hordoffii",
-    "complaint_id": "ID Komii",
-    "days_active": "Guyyaa Hojjetamaa",
-      "status":"Haala",
-    "priority": "Dursa",
-    "assigned_department":"Kutaa ramadame",
-    "days":"Guyyaa",
-     "personal_info": "Odeeffannoo Dhuunfaa",
-  "complainant_details": "Faayila Dhiyeessaa Komii",
-  "reason": "Sababii",
-  "completion_explanation": "Ibsa xumuramaa",
-      "inappropriate_explanation": "Ibsa dogoggoraa ta'uu isaa",
-  "cancellation_explanation": "Ibsa haquu",
-  "status_reason": "Sababii jijjiirraa haala",
-  "no_reason_provided": "Sababni hin kennamne",
-  "resolved_on": "Guyyaa furame",
-  "tracking_number": "Lakkoofsa To’ataa",
-  "submission_date": "Guyyaa ergichaa"
-  },
   "profile":{
     "title":"Profaayilii",
     "profileSettings": "Qajeelfama Profaayilii",
@@ -259,7 +202,6 @@
     "passwordMinLength": "⚠ Jecha darbii xiqqaa ta’e: 6 qabachuu qaba",
     "passwordsDoNotMatch": "⚠ Jechoonni darbii wal hin siman",
     "passwordsMatch": "✓ Jechoonni darbii walsiman",
-    "needHelp": "Deeggarsa barbaaddaa? Rakkoo herrega keessan yoo qabaattan deeggarsa qunnamu.",
     "saving": "Ollaa jira...",
     "updating": "Gulaalaa jira...",
     "failedToLoadProfile": "Odeeffannoo profaayilii fiduu hin dandeenye",
@@ -267,30 +209,147 @@
     "usernameUpdated": "Maqaan fayyadamaa milkaa’inaan haaromfame",
     "passwordChanged": "Jechi darbii milkaa’inaan jijjiirame"
   },
+
+  "admin_dashboard":{
+    "title": "Daashboord",
+    "complaint_management": "Hoggansa Dhiheessii Komii",
+    "manage_and_track": "Komii dhihaate hunda too'annoo fi hordoffii godhi",
+    "filters_and_search": "Faayiloota fi Barbaadi",
+    "find_and_manage": "Komiiwwan barbaadii fi to'achi",
+    "total": "Waliigala:",
+    "search_placeholder": "Komii barbaadi...",
+    "all_status": "Haala Hunda",
+    "complaint": "Komii",
+    "department": "Kutaa Hojii",
+    "priority": "Mudaa Dursa",
+    "status": "Haala",
+    "date": "Guyyaa",
+    "actions": "Gochoota"
+  },
+
+  
+  "pagination": {
+    "prev": "Dura",
+    "page": "Fuula",
+    "next": "Kan itti aanu"
+  },
+
+  "delete_complaint":{
+    "title": "Komii Haqi",
+    "subtitle": "Komii kana siʼachiin haquu",
+    "confirmation": "Komii kana haquu akka barbaaddu mirkaneeffadhu?",
+    "irreversible_note": "Tartiibni kun deebi'ee hin danda'amu.",
+    "warning_title": "Akeekkachiisa",
+    "warning_message": "Kun komii fi odeeffannoo hunda isa waliin walqabatu guutummaatti ni balleessa.",
+    "cancel": "Dhiisi",
+    "delete": "Haqi"
+  },
+
+  "update_status":{
+    "title": "Haala Haaraa Galchi",
+    "subtitle": "Haalota saffisaan haaromsi",
+    "select_status": "Haala filadhu",
+    "cancel": "Dhiisi",
+    "saving": "Ol kaa'aa jira...",
+    "update": "Haaromsi",
+    "responsible_person": "Namni Itti Gaafatamaa",
+    "responsible_person_placeholder": "Maqaa nama itti gaafatamaa galchi...",
+    "responsible_person_help": "Namni kun komii kana hojjechuuf ni ramadama.",
+    "inappropriate_reason": "Sababa dogoggora komii kanaa",
+    "inappropriate_placeholder": "Komiin kun maaliif dogoggoraa ta’e ibsi...",
+
+    "status_options": {
+      "pending": {
+        "name": "Pending",
+        "label": "Eeggataa",
+        "description": "Eegamaa jira"
+      },
+      "in_progress": {
+        "name": "In Progress",
+        "label": "Jiraatti",
+        "description": "Hojjetamaa jira"
+      },
+      "completed": {
+        "name": "Completed",
+        "label": "Xumurame",
+        "description": "Dhiheessi ni xumurame"
+      },
+      "appropriate": {
+        "name": "Appropriate",
+        "label": "Maqaa Qabuu",
+        "description": "Komii kun sirrii waan ta’eef ni fudhatama."
+      },
+      "inappropriate": {
+      "name": "Inappropriate",
+      "label": "Maqaa Hin Qabne",
+      "description": "Komiin kun sababaa sirrii hin taaneef ykn barbaachisaa hin taaneef ni haquu/didama."
+      }
+    },
+
+    "reason_required": "Mee sababaa jijjiirama haala kanaa kaa'aa",
+    "completion_reason": "Sababaa Xumuramaa",
+    "cancellation_reason": "Sababaa Haquu",
+    "completion_placeholder": "Komii kana akkamitti furame ibsa...",
+    "cancellation_placeholder": "Komiin kun maaliif akka haqamu ibsa...",
+    "reason_help": "Sababni kun itti gaafatamtootaaf ni mul'ata",
+    "current": "Ammaa",
+    "status_flow_guide": "Giddugala Jijjiirama Haala",
+    "can_be_inappropriate": "Sadarkaa kamittuu akka Inappropriate ta’ee ni taaneessuu danda’a"
+},
+
+"complaint_details": {
+    "title": "Faayila Komii",
+    "subtitle": "Odeeffannoo guutuu fi hordoffii",
+    "complaint_title": "Mata Duree Komii",
+    "main_description": "Ibsa Rakkoo Ijoo",
+    "detailed_description": "Ibsa Bal'aa",
+    "attached_media":"Miidiyaa Waliin Hidhame",
+    "full_details": "Odeeffannoo guutuu komii",
+    "department": "Kutaa",
+    "main_department": "Kutaa Ijoo",
+    "sub_department": "Kutaa Xiqqaa",
+    "additional_info": "Odeeffannoo Dabalataa",
+    "tracking_info": "Odeeffannoo Hordoffii",
+    "complaint_id": "ID Komii",
+    "days_active": "Guyyaa Hojjetamaa",
+    "status":"Haala",
+    "priority": "Dursa",
+    "assigned_department":"Kutaa ramadame",
+    "days":"Guyyaa",
+    "personal_info": "Odeeffannoo Dhuunfaa",
+    "complainant_details": "Faayila Dhiyeessaa Komii",
+    "reason": "Sababii",
+    "completion_explanation": "Ibsa xumuramaa",
+    "inappropriate_explanation": "Ibsa dogoggoraa ta'uu isaa",
+    "cancellation_explanation": "Ibsa haquu",
+    "status_reason": "Sababii jijjiirraa haala",
+    "no_reason_provided": "Sababni hin kennamne",
+    "resolved_on": "Guyyaa furame",
+    "tracking_number": "Lakkoofsa To’ataa",
+    "submission_date": "Guyyaa ergichaa"
+  },
+
   "analytics": {
     "title": "Xiinxala",
     "dashboard": "Daashboordii Xiinxalaa",
     "description": "Gabaasa bal’aa fi xiinxala to’annoo komii irratti",
-  "show_filters":"Filters Agarsiisi",
+    "show_filters":"Filters Agarsiisi",
     "hide_filters":"Filters Dhabsiisi",
-
     "filters": "Faayilaa fi To’annoo",
     "filters_description": "Daataa xiinxalaa kee fooyyessi",
-
     "start_date": "Guyyaa Jalqabaa",
     "end_date": "Guyyaa Xumuraa",
     "date_range": "Kilaastara Guyyaa",
     "status": "Haala",
     "level": "Sadarkaa",
-    "department": "Kutaa",
+    "department": "Kutaa Hojii",
     "sub_department": "Kutaa Xiqqaa",
     "apply_filters": "Faayila Hujiirra Oolchi",
     "Loading":"Feʼamaa jira...",
     "clear_all": "Hunda Haqi",
-     "All":"Hunda",
-
+    "All":"Hunda",
     "total_complaints": "Komiiwwan Guutuu",
-  "completed_complaints": "Komiiwwan Xumuraman",
+    "completed_complaints": "Komiiwwan Xumuraman",
     "pending_complaints": "Komiiwwan Eeggatan",
     "in_progress_complaints": "Komiiwwan Jiraatan",
     "appropriate_complaints": "Komiiwwan Sirrii",
@@ -304,115 +363,19 @@
     "daily_trends_desc": "Komii yeroo darbe irratti",
     "complaints_data": "Daataa Komii",
     "complaints_data_desc": "Bal’ina ilaalcha komiiwwan hundaaf",
-
     "export_csv": "Gara CSV baasi",
-    "table_title": "Mata-Duree",
+    "table_title": "Maqaa",
     "table_description": "Ibsa",
     "table_date": "Guyyaa",
-
     "no_data": "Daataan komii hin argamne",
     "try_adjusting": "Faayilota ykn daataa guyyaa jijjiiri.",
-
     "Daily_Complaints":	"Komiiwwan Guyyaa-guyyaa",
-"Complaints_by_Level":	"Komiiwwan Sadarkaa Irratti",
-"Complaints_by_Status":	"Komiiwwan Haala Irratti"
+    "Complaints_by_Level":	"Komiiwwan Sadarkaa Irratti",
+    "Complaints_by_Status":	"Komiiwwan Haala Irratti"
   },
-  "view_complaints": "Komiiwwan Ilaali",
-  "success": {
-    "title": "Komii Keessan Milkaa’inaan Ergame",
-    "description": "Komii keessan milkaa’inaan ergamee jira.",
-
-    "submission_details": "Faayila Ergame",
+ 
+ "file_headers": {
     "tracking_number": "Lakkoofsa To’ataa",
-
-    "complaint_title":"Mata Duree Komii",
-    "complaint_id": "ID Komii",
-    "title_field": "Mata-Duree",
-    "status": "Haala",
-    "submission_date": "Guyyaa Ergame",
-
-    "important_notice": "Beeksisa Murteessaa",
-
-    "save_tracking": "Lakkoofsa To’ataa Kuusi. Yeroo kamiyyuu komii keessan hordofuuf itti fayyadami.",
-    "download_receipt": "Gabaasa Buusi",
-    "submit_another": "Komii Haaraa Ergi"
-  },
-  "tracking": {
-    "title": "Daawoomii Keessan Hordofi",
-    "description": "Haala daawoomii keessanii fi gahee isaa ilaaluuf lakkoofsa hordofaa keessan galchaa",
-    "tracking_number": "Lakkoofsa Hordofaa",
-    "enter_tracking_number": "Lakkoofsa hordofaa keessan galchaa (fakkeenyaaf: CMP-ABC123XYZ)",
-    "responsible_person": "Namni itti gaafatamu፡ ",
-    "searching": "Barbaaduu keessaa...",
-    "search": "Barbaadi",
-    "complaint_details": "Gahee Daawoomii",
-    "copy_tracking": "Lakkoofsa hordofaa dursi",
-    "downloads": "Buusi",
-    "print": "Maxxansi",
-    "status": "Haala",
-    "priority": "Sadarkaa Duraa",
-    "personal_information": "Odeeffannoo Dhuumaa",
-    "complaint_information": "Odeeffannoo Daawoomii",
-    "media_attachment": "Media Dabalataa",
-    "timeline": "Saffisa Yeroo",
-    "submission_date": "Guyyaa Dhiyaatame",
-    "last_updated": "Guyyaa Dura Dhuunfaa",
-    "resolved_at": "Guyyaa Furmaata",
-    "resolution_reason": "Gahee Furmaata",
-    "cancellation_reason": "Sababa Dhiisu",
-    "errors": {
-      "not_found": "Daawoomii hin argamne",
-      "fetch_failed": "Gahee daawoomii fiduu hin dandeenye"
-    },
-    "download": {
-      "title": "GAHEE DAAWOOMII",
-      "tracking_number": "LAKKOOFSAA HORDOFAA",
-      "separator": "==============================================================",
-      "personal_info_section": "ODE EFFANNOO DHUUMAA:",
-      "complaint_section": "GAHEE DAAWOOMII:",
-      "description_section": "IBSU:",
-      "reason_section": "SABABA FURMAATA:",
-      "tracking_section": "ODE EFFANNOO HORDOFAA:",
-      "important_note": "BARBAA CHISAA:",
-      "section_separator": "---------------------",
-      "submission_date": "Guyyaa Dhiyaatame",
-      "complaint_id": "ID Daawoomii",
-      "created_at": "Guyyaa Uumame",
-      "updated_at": "Guyyaa Dura Dhuunfaa",
-      "resolved_at": "Guyyaa Furmaata",
-      "keep_tracking": "Lakkoofsa hordofaa kana yeroo booda ittiin deebi'an ilaaluuf qabadhaa.",
-      "tracking_usage": "Haala daawoomii keessan yeroo kamillee ilaaluuf itti fayyadamtu."
-    },
-     "form": {
-    "full_name": "Maqaa Guutuu",
-    "phone_number": "Lakkoofsa Bilbila",
-    "gender": "Saala",
-    "education_community": "Hawaasa Barumsaa",
-    "school_name": "Maqaa Manni Barumsaa",
-    "wereda": "Aanaa",
-    "title": "Mata-duree",
-    "department": "Aangoo",
-    "subDepartment": "Aangoo Xiqqaa",
-    "description": "Ibsu"
-  }
-  },
-
-  "receipt": {
-  "title": "RAGAA ERGII KOMII",
-  "tracking_number": "Lakkoofsa hordoffii:",
-  "complaint_id": "ID Komii:",
-  "complaint_title": "Mata Duree Komii:",
-  "status": "Haala:",
-  "submission_date": "Guyyaa Ergaa:",
-  "submission_time": "Yeroo Ergaa:",
-
-  "important_note": "MUCHA: Lakkoofsa hordoffii kana eeggadhaa. Haala komii keessanii hordoffuuf isin barbaachisa.",
-  "thank_you": "Komiin keessan nu ga’ee jira. Nuti ni ilaalla, osoo hin turin deebii ni kennina."
-},
-
-
-  "file_headers": {
-    "tracking_number": "Lakkoofsa Suuta'aa",
     "title": "Maqaa",
     "description": "Ibsa",
     "department": "Garee Hojii",
@@ -424,25 +387,19 @@
     "submission_date": "Guyyaa Dhiyeessuu",
     "resolved_date": "Guyyaa Furmaata",
     "summary_statistics": "Xumura Raawwii",
-    "total_complaints": "Iddoo Walitti Hidhamii",
-    "pending_complaints": "Eegamaa Jiran",
-    "appropriate_complaints": "Kan Mirkaneessan",
-    "in_progress_complaints": "Garaagarummaa Jiran",
-    "completed_complaints": "Kan Xumuraman",
-    "inappropriate_complaints": "Kan Hin Mirkaneessne",
+    "total_complaints": "Komii Guutuu",
+    "pending_complaints": "Komii Eegamaa Jiran",
+    "appropriate_complaints": "Komii Kan Mirkaneeffatan",
+    "in_progress_complaints": "Komii Jiraatan",
+    "completed_complaints": "Komii Kan Xumuraman",
+    "inappropriate_complaints": "Komii Kan Mirkaneeffataman",
     "report_generated": "Ripoortii Uumurame",
     "date_range": "Tartiiba Guyyaa",
     "status_filter": "Salaasa Haala",
     "level_filter": "Salaasa Sadarkaa",
     "department_filter": "Salaasa Garee Hojii",
-    "to": "Gara",
+    "to": "Itti",
     "all": "Hunda"
-  }
-
-
-
- 
-
-
+  }  
 
 }
