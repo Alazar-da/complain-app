@@ -114,7 +114,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <main className="flex-1 bg-gray-100 max-h-screen overflow-y-auto w-full">
         {children}
       </main>
-       <div className='bg-slate-900/60 md:hidden fixed bottom-0 right-0 left-0 w-full h-10 z-100'></div>
-    </div>
+  </div>
   );
 }

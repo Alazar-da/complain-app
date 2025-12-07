@@ -274,7 +274,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
     <section className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-100 animate-fade-in">
       <div className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-2xl max-w-6xl w-full max-h-[95vh] overflow-hidden transform transition-all duration-500 animate-scale-in border border-white/20">
         {/* Enhanced Header */}
-        <div className="bg-linear-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 relative overflow-hidden">
+        <div className="bg-linear-to-r from-blue-600 via-purple-600 to-indigo-600 md:p-8 p-6 relative overflow-hidden">
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="relative z-10">
             <div className="flex items-center justify-between">
@@ -283,8 +283,8 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                   <FiFileText className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold text-white">{t("complaint_details.title")}</h2>
-                  <p className="text-purple-100 text-lg flex items-center space-x-2">
+                  <h2 className="sm:text-3xl text-2xl font-bold text-white">{t("complaint_details.title")}</h2>
+                  <p className="text-purple-100 text-lg hidden sm:flex items-center space-x-2">
                     <FiShield className="w-4 h-4" />
                     <span>{t("complaint_details.subtitle")}</span>
                   </p>
@@ -303,12 +303,12 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
         </div>
 
         {/* Content */}
-        <div className="p-8 overflow-y-auto max-h-[calc(95vh-180px)]">
+        <div className="md:p-8 p-6 overflow-y-auto max-h-[calc(95vh-180px)]">
           <div className="grid grid-cols-1 xl:grid-cols-7 gap-8">
             {/* Left Column - Personal Info & Basic Info */}
             <div className="xl:col-span-4 space-y-8">
               {/* Enhanced Personal Information Card */}
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-8 border border-white/20">
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg md:p-8 p-6 border border-white/20">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 bg-linear-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
                     <FiUser className="w-6 h-6 text-white" />
@@ -341,7 +341,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
               </div>
 
               {/* Enhanced Title Card */}
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-8 border border-white/20">
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg md:p-8 p-6 border border-white/20">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 bg-linear-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
                     <FiFileText className="w-6 h-6 text-white" />
@@ -357,7 +357,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
               </div>
 
               {/* Enhanced Description Card */}
-              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-8 border border-white/20">
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg md:p-8 p-6 border border-white/20">
                 <div className="flex items-center space-x-4 mb-6">
                   <div className="w-12 h-12 bg-linear-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg">
                     <FiAlertCircle className="w-6 h-6 text-white" />
@@ -376,7 +376,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
 
               {/* Enhanced Media Section */}
               {complaint.mediaUrl && (
-                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-8 border border-white/20">
+                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg md:p-8 p-6 border border-white/20">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
@@ -483,7 +483,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
             {/* Right Column - Metadata */}
             <div className="space-y-8 xl:col-span-3">
               {/* Enhanced Status & Priority */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
                 <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 border border-white/20">
                   <div className="flex items-center space-x-3 mb-4">
                     <div className="w-10 h-10 bg-linear-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
