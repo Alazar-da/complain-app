@@ -66,6 +66,7 @@ export default function AnalyticsPage() {
   const [isHovered, setIsHovered] = useState<string | null>(null);
   const { t, i18n } = useTranslation();
   const language = i18n.language as "am" | "en" | "om";
+  const [isExporting, setIsExporting] = useState(false);
 
   const level = [
     { key: "Low", label: t("levels.Low") },
@@ -201,6 +202,14 @@ const downloadExcel = async () => {
   if (!items.length) {
     alert("No data to export");
     return;
+  }
+
+    // Show loading toast for mobile
+  if ((window as any).Capacitor?.isNative && typeof Toast !== 'undefined') {
+    await Toast.show({
+      text: 'Preparing Excel report...',
+      duration: 'short'
+    });
   }
 
   // Summary counts
@@ -442,7 +451,7 @@ const downloadExcel = async () => {
 
     XLSX.utils.book_append_sheet(wb, ws2, "Summary");
 
-    // Generate Excel file
+    // Generate Excel file as ArrayBuffer
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const fileName = `complaints_analytics_${dayjs().format("YYYY-MM-DD_HH-mm")}.xlsx`;
     
@@ -469,6 +478,7 @@ const downloadExcel = async () => {
     } else {
       alert("Failed to export Excel file. Please try again.");
     }
+    throw error;
   }
 };
 
@@ -483,57 +493,64 @@ const downloadExcelWeb = (excelBuffer: ArrayBuffer, fileName: string) => {
   link.click();
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
+  
+  // Show success message for web
+  setTimeout(() => {
+    alert(`Excel file "${fileName}" downloaded successfully!`);
+  }, 100);
 };
 
 // Helper function for mobile download
 const downloadExcelMobile = async (excelBuffer: ArrayBuffer, fileName: string) => {
   try {
-    // Show loading toast
-    if (typeof Toast !== 'undefined') {
-      await Toast.show({
-        text: 'Preparing Excel file...',
-        duration: 'short'
-      });
-    }
-
     // Convert ArrayBuffer to base64
     const base64Data = arrayBufferToBase64(excelBuffer);
     
-    // Save to device
-    const savedFile = await Filesystem.writeFile({
-      path: `Download/${fileName}`,
-      data: base64Data,
-      directory: Directory.ExternalStorage,
-      recursive: true
-    });
-    
-    // Show success message
-    if (typeof Toast !== 'undefined') {
+    // Try to save to Downloads folder
+    try {
+      const savedFile = await Filesystem.writeFile({
+        path: `Download/${fileName}`,
+        data: base64Data,
+        directory: Directory.ExternalStorage,
+        recursive: true
+      });
+      
+      // Show success message
       await Toast.show({
-        text: `Excel file saved to Downloads/${fileName}`,
+        text: `Excel saved to Downloads/${fileName}`,
         duration: 'long'
       });
+      
+      return savedFile;
+    } catch (saveError) {
+      console.log('Save to Downloads failed, trying Documents:', saveError);
+      
+      // Fallback to Documents directory
+      const savedFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Data,
+        directory: Directory.Documents,
+        recursive: true
+      });
+      
+      await Toast.show({
+        text: `Excel saved to Documents/${fileName}`,
+        duration: 'long'
+      });
+      
+      // Try to share the file
+      await shareExcelFile(base64Data, fileName);
+      
+      return savedFile;
     }
     
-    return savedFile;
   } catch (error) {
     console.error('Error saving Excel file:', error);
     
-    // Try alternative method (share)
+    // Final fallback: direct share
     try {
-      // Convert to base64 data URL
       const base64Data = arrayBufferToBase64(excelBuffer);
-      const dataUrl = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${base64Data}`;
-      
-      // Share the file
-      if (typeof Share !== 'undefined') {
-        await Share.share({
-          title: 'Complaints Report',
-          text: 'Complaints Analytics Report',
-          url: dataUrl,
-          dialogTitle: 'Save or Share Excel File'
-        });
-      }
+      await shareExcelFile(base64Data, fileName);
     } catch (shareError) {
       console.error('Share also failed:', shareError);
       throw error;
@@ -552,81 +569,10 @@ const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
   return window.btoa(binary);
 };
 
-// Enhanced mobile download function
-const downloadExcelMobileEnhanced = async (excelBuffer: ArrayBuffer, fileName: string) => {
-  try {
-    // Show loading
-    await Toast.show({
-      text: 'Exporting Excel file...',
-      duration: 'short'
-    });
-
-    // Convert to base64
-    const base64Data = arrayBufferToBase64(excelBuffer);
-    
-    if (Capacitor.getPlatform() === 'ios') {
-      // For iOS, save to documents and optionally share
-      return await saveExcelToDocuments(base64Data, fileName);
-    } else {
-      // For Android, save to Downloads
-      return await saveExcelToDownloads(base64Data, fileName);
-    }
-  } catch (error) {
-    console.error('Mobile Excel export error:', error);
-    throw error;
-  }
-};
-
-// Save Excel to Downloads (Android)
-const saveExcelToDownloads = async (base64Data: string, fileName: string) => {
-  try {
-    const result = await Filesystem.writeFile({
-      path: `Download/${fileName}`,
-      data: base64Data,
-      directory: Directory.ExternalStorage,
-      recursive: true
-    });
-    
-    await Toast.show({
-      text: `Excel saved to Downloads/${fileName}`,
-      duration: 'long'
-    });
-    
-    return result;
-  } catch (error) {
-    // If saving fails, try sharing
-    console.log('Saving failed, trying share:', error);
-    return await shareExcelFile(base64Data, fileName);
-  }
-};
-
-// Save Excel to Documents (iOS)
-const saveExcelToDocuments = async (base64Data: string, fileName: string) => {
-  try {
-    const result = await Filesystem.writeFile({
-      path: fileName,
-      data: base64Data,
-      directory: Directory.Documents,
-      recursive: true
-    });
-    
-    await Toast.show({
-      text: `Excel saved to Documents/${fileName}`,
-      duration: 'long'
-    });
-    
-    // Optionally share the file
-    await shareExcelFile(base64Data, fileName);
-    
-    return result;
-  } catch (error) {
-    console.error('Save to documents failed:', error);
-    throw error;
-  }
-};
-
 // Share Excel file
 const shareExcelFile = async (base64Data: string, fileName: string) => {
+  if (typeof Share === 'undefined') return;
+  
   try {
     // Save to cache first
     const savedFile = await Filesystem.writeFile({
@@ -650,14 +596,9 @@ const shareExcelFile = async (base64Data: string, fileName: string) => {
     return savedFile;
   } catch (error) {
     console.error('Share failed:', error);
-    await Toast.show({
-      text: 'Failed to save or share Excel file',
-      duration: 'long'
-    });
     throw error;
   }
 };
-
 /* // Update your export button to use this function:
 <button 
   onClick={downloadExcel}
@@ -1118,17 +1059,52 @@ const shareExcelFile = async (base64Data: string, fileName: string) => {
                 <p className="text-gray-500">{t("analytics.complaints_data_desc")}</p>
               </div>
             </div>
-            <button 
-              onClick={downloadExcel}
-  disabled={!items.length}
+   <button 
+  onClick={async () => {
+    if (!items.length) {
+      if ((window as any).Capacitor?.isNative && typeof Toast !== 'undefined') {
+        await Toast.show({
+          text: 'No data to export',
+          duration: 'short'
+        });
+      } else {
+        alert("No data to export");
+      }
+      return;
+    }
+    
+    // Show loading state
+    setIsExporting(true);
+    
+    try {
+      await downloadExcel();
+    } catch (error) {
+      console.error("Export failed:", error);
+    } finally {
+      setIsExporting(false);
+    }
+  }}
+  disabled={!items.length || isExporting}
   onMouseEnter={() => setIsHovered('export')}
   onMouseLeave={() => setIsHovered(null)}
-              className="group relative bg-linear-to-r from-green-500 to-teal-600 text-white px-8 py-4 rounded-2xl font-bold hover:from-green-600 hover:to-teal-700 focus:ring-4 focus:ring-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden flex items-center justify-center space-x-3 w-full sm:w-auto"
-            >
-              <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-              <FaDownload className="relative z-10 text-lg transition-transform group-hover:scale-110" />
-              <span className="relative z-10 text-lg">{t("analytics.export_csv")}</span>
-            </button>
+  className={`group relative bg-linear-to-r from-green-500 to-teal-600 text-white px-8 py-4 rounded-2xl font-bold hover:from-green-600 hover:to-teal-700 focus:ring-4 focus:ring-green-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 hover:scale-105 hover:shadow-2xl overflow-hidden flex items-center justify-center space-x-3 w-full sm:w-auto ${isExporting ? 'opacity-70' : ''}`}
+>
+  <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+  
+  {isExporting ? (
+    <>
+      <div className="relative z-10 w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+      <span className="relative z-10 text-lg">
+        {(window as any).Capacitor?.isNative ? 'Preparing...' : 'Exporting...'}
+      </span>
+    </>
+  ) : (
+    <>
+      <FaDownload className="relative z-10 text-lg transition-transform group-hover:scale-110" />
+      <span className="relative z-10 text-lg">{t("analytics.export_csv")}</span>
+    </>
+  )}
+</button>
           </div>
 
           <div className="overflow-x-auto rounded-2xl border-2 border-gray-100">
