@@ -19,6 +19,7 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
   const [deleting, setDeleting] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   const [isHovered, setIsHovered] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   // Countdown effect
   useEffect(() => {
@@ -139,38 +140,258 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
     await deleteFromCloudinary();
   };
 
-  const handleDownload = async () => {
+const handleDownload = async () => {
+  try {
+    // Show loading state
+    setDownloading(true);
+    
+    // Check if we're in a mobile app
+    const isMobileApp = (window as any).Capacitor?.isNative || false;
+    
+    if (isMobileApp) {
+      // Use Capacitor for mobile download
+      await downloadMediaMobile(complaint.mediaUrl, isImage);
+    } else {
+      // Use standard web download for desktop
+      await downloadMediaWeb(complaint.mediaUrl, isImage, complaint._id);
+    }
+    
+  } catch (error) {
+    console.error('Download failed:', error);
+    setMessage({
+      type: 'error',
+      text: 'Failed to download media. Please try again.'
+    });
+  } finally {
+    setDownloading(false);
+  }
+};
+
+// Helper function for web download
+const downloadMediaWeb = async (mediaUrl: string, isImage: boolean, complaintId?: string) => {
+  try {
+    const response = await fetch(mediaUrl);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    
+    const fileExtension = isImage ? 'jpg' : 'mp4';
+    const fileName = `complaint-media-${complaintId || 'attachment'}-${Date.now()}.${fileExtension}`;
+    a.download = fileName;
+    
+    document.body.appendChild(a);
+    a.click();
+    
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+    
+    setMessage({
+      type: 'success',
+      text: 'Media downloaded successfully!'
+    });
+    
+  } catch (error) {
+    console.error('Web download failed:', error);
+    throw error;
+  }
+};
+
+// Helper function for mobile download
+const downloadMediaMobile = async (mediaUrl: string, isImage: boolean) => {
+  try {
+    // Import Capacitor plugins conditionally
+    const { Filesystem, Directory } = await import('@capacitor/filesystem');
+    const { Toast } = await import('@capacitor/toast');
+    
+    // Show loading message
+    await Toast.show({
+      text: 'Downloading media...',
+      duration: 'short'
+    });
+
+    // Fetch the media file
+    const response = await fetch(mediaUrl);
+    const blob = await response.blob();
+    
+    // Convert blob to base64
+    const base64Data = await blobToBase64(blob);
+    
+    // Generate filename
+    const timestamp = new Date().getTime();
+    const fileExtension = isImage ? 'jpg' : 'mp4';
+    const folderName = isImage ? 'Pictures' : 'Movies';
+    const fileName = `complaint-media-${timestamp}.${fileExtension}`;
+    
+    // Save to device
+    const savedFile = await Filesystem.writeFile({
+      path: `${folderName}/${fileName}`,
+      data: base64Data,
+      directory: Directory.Documents,
+      recursive: true
+    });
+    
+    // Show success message
+    await Toast.show({
+      text: `Media saved to ${folderName}/${fileName}`,
+      duration: 'long'
+    });
+    
+    // Optional: Try to share the file
     try {
-      const response = await fetch(complaint.mediaUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      
-      const fileExtension = isImage ? 'jpg' : 'mp4';
-      const fileName = `complaint-media-${complaint._id || 'attachment'}.${fileExtension}`;
-      a.download = fileName;
-      
-      document.body.appendChild(a);
-      a.click();
-      
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-      setMessage({
-        type: 'success',
-        text: 'Media downloaded successfully!'
+      const { Share } = await import('@capacitor/share');
+      await Share.share({
+        title: 'Complaint Media',
+        text: isImage ? 'Complaint Image' : 'Complaint Video',
+        url: savedFile.uri,
+        dialogTitle: 'Media Downloaded'
       });
+    } catch (shareError) {
+      console.log('Share optional - not critical:', shareError);
+    }
+    
+    setMessage({
+      type: 'success',
+      text: 'Media saved to device!'
+    });
+    
+    return savedFile;
+  } catch (error) {
+    console.error('Mobile download failed:', error);
+    
+    // Try alternative method for Android
+    try {
+      const { Filesystem, Directory } = await import('@capacitor/filesystem');
+      const { Toast } = await import('@capacitor/toast');
       
-    } catch (error) {
-      console.error('Download failed:', error);
-      setMessage({
-        type: 'error',
-        text: 'Failed to download media. Please try again.'
+      // Fetch again
+      const response = await fetch(mediaUrl);
+      const blob = await response.blob();
+      const base64Data = await blobToBase64(blob);
+      
+      const timestamp = new Date().getTime();
+      const fileExtension = isImage ? 'jpg' : 'mp4';
+      const fileName = `complaint-media-${timestamp}.${fileExtension}`;
+      
+      // Try different directories
+      const directories = [Directory.ExternalStorage, Directory.Data, Directory.Cache];
+      
+      for (const directory of directories) {
+        try {
+          const savedFile = await Filesystem.writeFile({
+            path: fileName,
+            data: base64Data,
+            directory: directory,
+            recursive: true
+          });
+          
+          await Toast.show({
+            text: `Media saved successfully!`,
+            duration: 'long'
+          });
+          
+          setMessage({
+            type: 'success',
+            text: 'Media saved to device!'
+          });
+          
+          return savedFile;
+        } catch (dirError) {
+          console.log(`Directory ${directory} failed:`, dirError);
+          continue;
+        }
+      }
+      
+      // If all directories fail, try browser download as fallback
+      throw new Error('All mobile save methods failed');
+      
+    } catch (fallbackError) {
+      console.error('Fallback methods failed:', fallbackError);
+      
+      // Final fallback: Use web method
+      await downloadMediaWeb(mediaUrl, isImage, complaint._id);
+    }
+  }
+};
+
+// Helper function to convert blob to base64
+const blobToBase64 = (blob: Blob): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      if (typeof reader.result === 'string') {
+        // Remove data URL prefix
+        const base64 = reader.result.split(',')[1];
+        resolve(base64);
+      } else {
+        reject(new Error('Failed to convert blob to base64'));
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+// Alternative simplified mobile download for smaller files
+const downloadMediaMobileSimple = async (mediaUrl: string, isImage: boolean) => {
+  try {
+    // Create data URL and open in browser
+    const response = await fetch(mediaUrl);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+    
+    // Create download link
+    const fileExtension = isImage ? 'jpg' : 'mp4';
+    const fileName = `complaint-media-${Date.now()}.${fileExtension}`;
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.target = '_blank';
+    
+    // For iOS, we need to add to DOM and trigger click
+    document.body.appendChild(link);
+    
+    // Different strategies for different platforms
+    const platform = (window as any).Capacitor?.getPlatform();
+    
+    if (platform === 'ios') {
+      // iOS often blocks programmatic downloads, use share sheet
+      const { Share } = await import('@capacitor/share');
+      await Share.share({
+        title: 'Download Media',
+        text: 'Save this media file',
+        url: url
+      });
+    } else {
+      // Android: try to trigger download
+      link.click();
+      
+      // Show toast
+      const { Toast } = await import('@capacitor/toast');
+      await Toast.show({
+        text: 'Download started. Check notifications.',
+        duration: 'short'
       });
     }
-  };
+    
+    // Clean up
+    setTimeout(() => {
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }, 1000);
+    
+    setMessage({
+      type: 'success',
+      text: 'Download initiated!'
+    });
+    
+  } catch (error) {
+    console.error('Simple mobile download failed:', error);
+    throw error;
+  }
+};
 
   const getStatusConfig = (status: string) => {
     const configs: any = {
@@ -396,16 +617,40 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                      <button
-                        onClick={handleDownload}
-                        onMouseEnter={() => setIsHovered('download')}
-                        onMouseLeave={() => setIsHovered(null)}
-                        className="group relative bg-linear-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-500 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center space-x-3"
-                      >
-                        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                        <FiDownload className="relative z-10 text-lg" />
-                        <span className="relative z-10">{t("form.download")}</span>
-                      </button>
+                   <button
+  onClick={async () => {
+    setDownloading(true);
+    try {
+      await handleDownload();
+    } catch (error) {
+      console.error('Download failed:', error);
+    } finally {
+      setDownloading(false);
+    }
+  }}
+  disabled={downloading}
+  onMouseEnter={() => setIsHovered('download')}
+  onMouseLeave={() => setIsHovered(null)}
+  className={`group relative bg-linear-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-blue-600 hover:to-blue-700 transition-all duration-500 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center space-x-3 ${
+    downloading ? 'opacity-70 cursor-not-allowed hover:scale-100' : ''
+  }`}
+>
+  <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+  
+  {downloading ? (
+    <>
+      <div className="relative z-10 w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+      <span className="relative z-10">
+        {t("form.downloading") || "Downloading..."}
+      </span>
+    </>
+  ) : (
+    <>
+      <FiDownload className="relative z-10 text-lg transition-transform group-hover:scale-110" />
+      <span className="relative z-10">{t("form.download")}</span>
+    </>
+  )}
+</button>
                       
                       <button
                         onClick={handleDelete}
