@@ -46,6 +46,9 @@ import { useTranslation } from 'react-i18next';
 import {departments,DepartmentKey} from '@/data/departments';
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 import * as XLSX from 'xlsx-color';
+import { Toast } from '@capacitor/toast';
+import { Share } from '@capacitor/share';
+import { Capacitor } from '@capacitor/core';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -439,13 +442,219 @@ const downloadExcel = async () => {
 
     XLSX.utils.book_append_sheet(wb, ws2, "Summary");
 
-    // Generate and download file
+    // Generate Excel file
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
     const fileName = `complaints_analytics_${dayjs().format("YYYY-MM-DD_HH-mm")}.xlsx`;
-    XLSX.writeFile(wb, fileName);
+    
+    // Check if running in mobile app
+    if ((window as any).Capacitor?.isNative) {
+      // For mobile app using Capacitor
+      await downloadExcelMobile(excelBuffer, fileName);
+    } else {
+      // For web/desktop
+      downloadExcelWeb(excelBuffer, fileName);
+    }
 
   } catch (error) {
     console.error("Excel export failed:", error);
-    alert("Failed to export Excel file. Please try again.");
+    
+    // Show error message based on platform
+    if ((window as any).Capacitor?.isNative) {
+      if (typeof Toast !== 'undefined') {
+        await Toast.show({
+          text: 'Failed to export Excel file',
+          duration: 'long'
+        });
+      }
+    } else {
+      alert("Failed to export Excel file. Please try again.");
+    }
+  }
+};
+
+// Helper function for web download
+const downloadExcelWeb = (excelBuffer: ArrayBuffer, fileName: string) => {
+  const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+};
+
+// Helper function for mobile download
+const downloadExcelMobile = async (excelBuffer: ArrayBuffer, fileName: string) => {
+  try {
+    // Show loading toast
+    if (typeof Toast !== 'undefined') {
+      await Toast.show({
+        text: 'Preparing Excel file...',
+        duration: 'short'
+      });
+    }
+
+    // Convert ArrayBuffer to base64
+    const base64Data = arrayBufferToBase64(excelBuffer);
+    
+    // Save to device
+    const savedFile = await Filesystem.writeFile({
+      path: `Download/${fileName}`,
+      data: base64Data,
+      directory: Directory.ExternalStorage,
+      recursive: true
+    });
+    
+    // Show success message
+    if (typeof Toast !== 'undefined') {
+      await Toast.show({
+        text: `Excel file saved to Downloads/${fileName}`,
+        duration: 'long'
+      });
+    }
+    
+    return savedFile;
+  } catch (error) {
+    console.error('Error saving Excel file:', error);
+    
+    // Try alternative method (share)
+    try {
+      // Convert to base64 data URL
+      const base64Data = arrayBufferToBase64(excelBuffer);
+      const dataUrl = `data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,${base64Data}`;
+      
+      // Share the file
+      if (typeof Share !== 'undefined') {
+        await Share.share({
+          title: 'Complaints Report',
+          text: 'Complaints Analytics Report',
+          url: dataUrl,
+          dialogTitle: 'Save or Share Excel File'
+        });
+      }
+    } catch (shareError) {
+      console.error('Share also failed:', shareError);
+      throw error;
+    }
+  }
+};
+
+// Helper to convert ArrayBuffer to base64
+const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+};
+
+// Enhanced mobile download function
+const downloadExcelMobileEnhanced = async (excelBuffer: ArrayBuffer, fileName: string) => {
+  try {
+    // Show loading
+    await Toast.show({
+      text: 'Exporting Excel file...',
+      duration: 'short'
+    });
+
+    // Convert to base64
+    const base64Data = arrayBufferToBase64(excelBuffer);
+    
+    if (Capacitor.getPlatform() === 'ios') {
+      // For iOS, save to documents and optionally share
+      return await saveExcelToDocuments(base64Data, fileName);
+    } else {
+      // For Android, save to Downloads
+      return await saveExcelToDownloads(base64Data, fileName);
+    }
+  } catch (error) {
+    console.error('Mobile Excel export error:', error);
+    throw error;
+  }
+};
+
+// Save Excel to Downloads (Android)
+const saveExcelToDownloads = async (base64Data: string, fileName: string) => {
+  try {
+    const result = await Filesystem.writeFile({
+      path: `Download/${fileName}`,
+      data: base64Data,
+      directory: Directory.ExternalStorage,
+      recursive: true
+    });
+    
+    await Toast.show({
+      text: `Excel saved to Downloads/${fileName}`,
+      duration: 'long'
+    });
+    
+    return result;
+  } catch (error) {
+    // If saving fails, try sharing
+    console.log('Saving failed, trying share:', error);
+    return await shareExcelFile(base64Data, fileName);
+  }
+};
+
+// Save Excel to Documents (iOS)
+const saveExcelToDocuments = async (base64Data: string, fileName: string) => {
+  try {
+    const result = await Filesystem.writeFile({
+      path: fileName,
+      data: base64Data,
+      directory: Directory.Documents,
+      recursive: true
+    });
+    
+    await Toast.show({
+      text: `Excel saved to Documents/${fileName}`,
+      duration: 'long'
+    });
+    
+    // Optionally share the file
+    await shareExcelFile(base64Data, fileName);
+    
+    return result;
+  } catch (error) {
+    console.error('Save to documents failed:', error);
+    throw error;
+  }
+};
+
+// Share Excel file
+const shareExcelFile = async (base64Data: string, fileName: string) => {
+  try {
+    // Save to cache first
+    const savedFile = await Filesystem.writeFile({
+      path: fileName,
+      data: base64Data,
+      directory: Directory.Cache,
+      recursive: true
+    });
+    
+    // Get file URI
+    const fileUri = savedFile.uri;
+    
+    // Share the file
+    await Share.share({
+      title: 'Complaints Analytics Report',
+      text: 'Complaints data export',
+      url: fileUri,
+      dialogTitle: 'Save or Share Excel File'
+    });
+    
+    return savedFile;
+  } catch (error) {
+    console.error('Share failed:', error);
+    await Toast.show({
+      text: 'Failed to save or share Excel file',
+      duration: 'long'
+    });
+    throw error;
   }
 };
 
