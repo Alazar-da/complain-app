@@ -481,7 +481,7 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
       setDownloading(true);
       
       if (Capacitor.isNativePlatform()) {
-        await downloadImageMobile(complaint.mediaUrl, `complaint-media-${complaint._id}`);
+        await downloadImageMobile(complaint.mediaUrl);
       } else {
         // Web version
         const response = await fetch(complaint.mediaUrl, { mode: "cors" });
