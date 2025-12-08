@@ -849,7 +849,7 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
         </div>
       </div>
     {/* Action Buttons - Compact */}
-    <div className="flex gap-3 pt-2 justify-between w-full sm:items-end sm:col-span-2 lg:col-span-1">
+    <div className="sm:flex grid gap-3 pt-2 sm:justify-between items-center w-full sm:items-end col-span-1  sm:col-span-2 lg:col-span-1">
       <button
         onClick={fetchData}
         disabled={loading}
@@ -1098,7 +1098,7 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
     <>
       <div className="relative z-10 w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
       <span className="relative z-10 text-lg">
-        {t("analytics.exporting") || "Exporting..."}
+        {t("form.downloading") || "Exporting..."}
       </span>
     </>
   ) : (

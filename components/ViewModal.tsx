@@ -474,16 +474,14 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                   <button
- onClick={async () => {
+                <button
+  onClick={async () => {
     try {
-      // Show loading state
       setDownloading(true);
       
       if (Capacitor.isNativePlatform()) {
         await downloadImageMobile(complaint.mediaUrl);
       } else {
-        // Web version
         const response = await fetch(complaint.mediaUrl, { mode: "cors" });
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -497,7 +495,6 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
       }
     } catch (err) {
       console.error("Failed to download image:", err);
-      // Show error toast
       if (Capacitor.isNativePlatform()) {
         await Toast.show({
           text: 'Failed to download image',
@@ -511,43 +508,78 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
     }
   }}
   disabled={downloading}
-  className={`text-white hover:text-green-300 transition-colors duration-200 cursor-pointer flex items-center gap-2 bg-black/50 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/20 ${downloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+  className={`group relative overflow-hidden rounded-xl px-5 py-3.5 font-medium transition-all duration-300 ${
+    downloading 
+      ? 'bg-emerald-700/40 cursor-wait border border-emerald-600/30' 
+      : 'bg-linear-to-br from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 border border-emerald-600/50 shadow-lg hover:shadow-emerald-500/20'
+  }`}
   title="Download image"
 >
-  <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+  {/* Animated background shine */}
+  <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000"></div>
   
-  {downloading ? (
-    <>
-      <div className="relative z-10 w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-      <span className="relative z-10">
-        {t("form.downloading") || "Downloading..."}
-      </span>
-    </>
-  ) : (
-    <>
-      <FiDownload className="relative z-10 text-lg transition-transform group-hover:scale-110" />
-      <span className="relative z-10">{t("form.download")}</span>
-    </>
+  {/* Content */}
+  <div className="relative z-10 flex items-center justify-center gap-3">
+    {downloading ? (
+      <>
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+        <span className="font-semibold tracking-wide text-white/95">
+          {t("form.downloading") || "Downloading..."}
+        </span>
+      </>
+    ) : (
+      <>
+        <FiDownload className="h-5 w-5 transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-0.5" />
+        <span className="font-semibold tracking-wide text-white/95">
+          {t("form.download") || "Download"}
+        </span>
+      </>
+    )}
+  </div>
+  
+  {/* Subtle pulse effect when not downloading */}
+  {!downloading && (
+    <div className="absolute -inset-1 animate-pulse rounded-xl bg-emerald-400/10 blur-sm"></div>
   )}
 </button>
-                      
-                      <button
-                        onClick={handleDelete}
-                        disabled={deleting}
-                        onMouseEnter={() => setIsHovered('delete')}
-                        onMouseLeave={() => setIsHovered(null)}
-                        className="group relative bg-linear-to-r from-red-500 to-rose-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-red-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-500 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center space-x-3"
-                      >
-                        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                        {deleting ? (
-                          <FaSpinner className="animate-spin relative z-10 text-lg" />
-                        ) : (
-                          <FiTrash2 className="relative z-10 text-lg" />
-                        )}
-                        <span className="relative z-10">
-                          {deleting ? t("form.removing") : t("form.remove")}
-                        </span>
-                      </button>
+<button
+  onClick={handleDelete}
+  disabled={deleting}
+  onMouseEnter={() => setIsHovered('delete')}
+  onMouseLeave={() => setIsHovered(null)}
+  className={`group relative overflow-hidden rounded-xl px-6 py-3.5 font-medium transition-all duration-300 ${
+    deleting 
+      ? 'bg-rose-700/40 cursor-wait border border-rose-600/30' 
+      : 'bg-linear-to-br from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 border border-rose-600/50 shadow-lg hover:shadow-rose-500/20'
+  }`}
+>
+  {/* Animated background sweep */}
+  <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/25 to-transparent group-hover:translate-x-full transition-transform duration-700"></div>
+  
+  {/* Content */}
+  <div className="relative z-10 flex items-center justify-center gap-3">
+    {deleting ? (
+      <>
+        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+        <span className="font-semibold tracking-wide text-white/95">
+          {t("form.removing") || "Removing..."}
+        </span>
+      </>
+    ) : (
+      <>
+        <FiTrash2 className="h-5 w-5 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12" />
+        <span className="font-semibold tracking-wide text-white/95">
+          {t("form.remove") || "Remove"}
+        </span>
+      </>
+    )}
+  </div>
+  
+  {/* Warning glow effect on hover */}
+  {!deleting && (
+    <div className="absolute -inset-1 animate-pulse rounded-xl bg-rose-500/10 blur-sm transition-opacity duration-300 group-hover:opacity-100"></div>
+  )}
+</button>
                     </div>
                   </div>
 
