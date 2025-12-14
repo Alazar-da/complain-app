@@ -286,8 +286,8 @@
     "responsible_person": "ኃላፊ ሰው",
     "responsible_person_placeholder": "የኃላፊውን ሰው ስም ያስገቡ...",
     "responsible_person_help": "ይህ ሰው ቅሬታውን ለማስተናገድ ይመደባል።",
-    "inappropriate_reason": "እንደ ያልተገበረ ለመለየት ምክንያት",
-    "inappropriate_placeholder": "ይህ ቅሬታ ለምን ያልተገበረ መሆኑን ያብራሩ...",
+    "inappropriate_reason": "አግባብነት የሌለው መሆኑን ምክንያት",
+    "inappropriate_placeholder": "ይህ ቅሬታ ለምን አግባብነት የሌለው መሆኑን ማብራሪያ...",
 
     "status_options": {
       "pending": {
