@@ -4,6 +4,9 @@ export interface IComplaint extends Document {
   trackingNumber: string;
   // Step 1: Personal Information
   fullName: string;
+  city: string;//New field
+  subCity: string;//New field
+  houseNo: string;//New field
   phoneNumber: string;
   gender: "male" | "female";
   educationCommunity: "student" | "student_family" | "teacher" | "supervisor" | "expert";
@@ -12,6 +15,10 @@ export interface IComplaint extends Document {
 
   // Step 2: Complaint Information
   title: string;
+  complaintMadeDate: Date;//New field
+  complaintMadePlace: string;//New field
+  responsibleBody: string;//New field
+  responceGived:string;//New field
   department: string;
   subDepartment?: string;
   level: "Low" | "Medium" | "High";
@@ -33,6 +40,9 @@ const ComplaintSchema = new Schema<IComplaint>(
 
     // Personal Info
     fullName: { type: String, required: true, trim: true },
+    city: { type: String, required: true, trim: true },
+    subCity: { type: String, required: true, trim: true },
+    houseNo: { type: String, trim: true },
     phoneNumber: { type: String, required: true, trim: true },
     gender: { type: String, enum: ["male", "female"], required: true },
     educationCommunity: {
@@ -40,11 +50,15 @@ const ComplaintSchema = new Schema<IComplaint>(
       enum: ["student", "student_family", "teacher", "supervisor", "expert"],
       required: true,
     },
-    schoolName: { type: String, required: true, trim: true },
-    wereda: { type: String, required: true, trim: true },
+    schoolName: { type: String, trim: true },
+    wereda: { type: String, trim: true },
 
     // Complaint Info
     title: { type: String, required: true, trim: true },
+    complaintMadeDate: { type: Date, required: true },
+    complaintMadePlace: { type: String, required: true, trim: true },
+    responsibleBody: { type: String, trim: true },
+    responceGived: { type: String, trim: true },
     department: { type: String, required: true, trim: true },
     subDepartment: { type: String, trim: true },
     level: { type: String, enum: ["Low", "Medium", "High"], required: true },

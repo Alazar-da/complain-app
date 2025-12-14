@@ -28,7 +28,16 @@ import {
   FaRocket,
   FaPaperPlane,
   FaCalendarAlt,
-  FaIdCard
+  FaIdCard,
+  FaMusic,
+  FaBuilding,
+  FaMapPin,
+  FaCalendarDay,
+  FaComments,
+  FaUniversity,
+  FaFileWord,
+  FaFileExcel,
+  FaFileArchive
 } from "react-icons/fa";
 import { FiAward, FiShield, FiTrendingUp } from "react-icons/fi";
 
@@ -44,6 +53,18 @@ interface SubmissionData {
   title: string;
 }
 
+// Function to get file type icon
+const getFileIcon = (fileType: string) => {
+  if (fileType.startsWith('image/')) return { icon: FaImage, color: 'text-green-600', bg: 'bg-green-100' };
+  if (fileType.startsWith('video/')) return { icon: FaVideo, color: 'text-blue-600', bg: 'bg-blue-100' };
+  if (fileType.startsWith('audio/')) return { icon: FaMusic, color: 'text-purple-600', bg: 'bg-purple-100' };
+  if (fileType.includes('pdf')) return { icon: FaFilePdf, color: 'text-red-600', bg: 'bg-red-100' };
+  if (fileType.includes('word') || fileType.includes('document')) return { icon: FaFileWord, color: 'text-blue-600', bg: 'bg-blue-100' };
+  if (fileType.includes('excel') || fileType.includes('sheet')) return { icon: FaFileExcel, color: 'text-green-600', bg: 'bg-green-100' };
+  if (fileType.includes('zip') || fileType.includes('archive') || fileType.includes('compressed')) return { icon: FaFileArchive, color: 'text-yellow-600', bg: 'bg-yellow-100' };
+  return { icon: FaFileAlt, color: 'text-gray-600', bg: 'bg-gray-100' };
+};
+
 export default function Home() {
   const [currentStep, setCurrentStep] = useState(1);
   const [form, setForm] = useState<{
@@ -54,6 +75,9 @@ export default function Home() {
     educationCommunity: EducationCommunity | "";
     schoolName: string;
     wereda: string;
+    city: string; // New field
+    subCity: string; // New field
+    houseNo: string; // New field
     
     // Step 2: Complaint Information
     title: string;
@@ -64,6 +88,10 @@ export default function Home() {
     description: string;
     mediaUrl?: string;
     publicId?: string;
+    complaintMadeDate: string; // New field - using string for input
+    complaintMadePlace: string; // New field
+    responsibleBody: string; // New field
+    responceGived: string; // New field (Note: Typo in field name - should be responseGiven)
   }>({
     // Step 1
     fullName: "",
@@ -72,6 +100,9 @@ export default function Home() {
     educationCommunity: "",
     schoolName: "",
     wereda: "",
+    city: "", // New field
+    subCity: "", // New field
+    houseNo: "", // New field
     
     // Step 2
     title: "",
@@ -82,6 +113,10 @@ export default function Home() {
     description: "",
     mediaUrl: "",
     publicId: "",
+    complaintMadeDate: "", // New field
+    complaintMadePlace: "", // New field
+    responsibleBody: "", // New field
+    responceGived: "", // New field
   });
 
   const [loading, setLoading] = useState(false);
@@ -90,6 +125,8 @@ export default function Home() {
   const [message, setMessage] = useState({ text: "", type: "" });
   const [countdown, setCountdown] = useState(0);
   const [preview, setPreview] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
+  const [fileType, setFileType] = useState<string | null>(null);
   const [submissionData, setSubmissionData] = useState<SubmissionData | null>(null);
   const [isHovered, setIsHovered] = useState<string | null>(null);
   const { t, i18n } = useTranslation();
@@ -126,7 +163,7 @@ export default function Home() {
     if (type === "success") setCountdown(3);
   };
 
-  // Upload image/video
+  // Upload any file type
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -142,6 +179,12 @@ export default function Home() {
 
     try {
       setUploading(true);
+      
+      // Set file info for preview
+      setFileName(file.name);
+      setFileType(file.type);
+      
+      // Upload file to Cloudinary
       const uploaded = await compressAndUploadMedia(file, "complain_app/uploads");
 
       setForm(prev => ({
@@ -150,7 +193,21 @@ export default function Home() {
         publicId: uploaded.public_id,
       }));
 
-      setPreview(uploaded.secure_url);
+      // Generate preview URL for images, videos, audio, and PDFs
+      if (file.type.startsWith('image/')) {
+        setPreview(uploaded.secure_url);
+      } else if (file.type.startsWith('video/')) {
+        setPreview(uploaded.secure_url);
+      } else if (file.type.startsWith('audio/')) {
+        setPreview(uploaded.secure_url);
+      } else if (file.type.includes('pdf')) {
+        // For PDFs, we can use the secure_url as preview (Cloudinary generates PDF preview)
+        setPreview(uploaded.secure_url);
+      } else {
+        // For other file types, just show file info
+        setPreview(null);
+      }
+
       showMessage(t("messages.file.success"), "success");
 
     } catch (error: any) {
@@ -168,14 +225,25 @@ export default function Home() {
 
     try {
       setDeleting(true);
-      const isVideo = /\.(mp4|mov|avi)$/i.test(form.mediaUrl);
+      
+      // Determine resource type based on file type
+      let resource_type: "image" | "video" | "raw" = "raw"; // Default to raw for documents, audio, etc.
+      
+      if (fileType) {
+        if (fileType.startsWith('image/')) {
+          resource_type = "image";
+        } else if (fileType.startsWith('video/')) {
+          resource_type = "video";
+        }
+        // For audio, PDF, docs, etc., use "raw"
+      }
 
       const res = await fetch("/api/delete-cloudinary", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           public_id: form.publicId,
-          resource_type: isVideo ? "video" : "image",
+          resource_type: resource_type,
         }),
       });
 
@@ -184,6 +252,8 @@ export default function Home() {
 
       setForm(prev => ({ ...prev, mediaUrl: "", publicId: "" }));
       setPreview(null);
+      setFileName(null);
+      setFileType(null);
       showMessage(t("messages.file.remove.success"), "success");
     } catch (error: any) {
       console.error("❌ Delete failed:", error.message);
@@ -199,10 +269,16 @@ export default function Home() {
     setMessage({ text: "", type: "" });
 
     try {
+      // Convert complaintMadeDate string to Date object
+      const formData = {
+        ...form,
+        complaintMadeDate: form.complaintMadeDate ? new Date(form.complaintMadeDate) : new Date(),
+      };
+
       const res = await fetch("/api/complaints", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(formData),
       });
 
       const data = await res.json();
@@ -251,6 +327,9 @@ export default function Home() {
       educationCommunity: "",
       schoolName: "",
       wereda: "",
+      city: "",
+      subCity: "",
+      houseNo: "",
       title: "",
       department: "",
       subDepartment: "",
@@ -259,8 +338,14 @@ export default function Home() {
       description: "",
       mediaUrl: "",
       publicId: "",
+      complaintMadeDate: "",
+      complaintMadePlace: "",
+      responsibleBody: "",
+      responceGived: "",
     });
     setPreview(null);
+    setFileName(null);
+    setFileType(null);
     setSubmissionData(null);
     setCurrentStep(1);
   };
@@ -298,7 +383,73 @@ ${t('receipt.thank_you')}
     URL.revokeObjectURL(url);
   };
 
-  const isStep1Valid = form.fullName && form.phoneNumber && form.gender && form.educationCommunity;
+  const isStep1Valid = form.fullName && form.phoneNumber && form.gender && form.educationCommunity && form.city && form.subCity;
+
+  // Render file preview based on type
+  const renderFilePreview = () => {
+    if (!form.mediaUrl || !fileType) return null;
+
+    const fileIcon = getFileIcon(fileType);
+    const IconComponent = fileIcon.icon;
+
+    if (fileType.startsWith('image/')) {
+      return (
+        <img
+          src={form.mediaUrl}
+          alt="Preview"
+          className="w-full rounded-xl shadow-sm max-h-64 object-cover border-2 border-gray-100"
+        />
+      );
+    } else if (fileType.startsWith('video/')) {
+      return (
+        <video
+          src={form.mediaUrl}
+          controls
+          className="w-full rounded-xl shadow-sm max-h-64 object-cover border-2 border-gray-100"
+        />
+      );
+    } else if (fileType.startsWith('audio/')) {
+      return (
+        <div className="w-full p-8 bg-linear-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-100 flex flex-col items-center justify-center">
+          <FaMusic className="w-16 h-16 text-purple-500 mb-4" />
+          <p className="text-purple-700 font-medium">{t("form.audio_file")}</p>
+          <audio src={form.mediaUrl} controls className="w-full mt-4" />
+        </div>
+      );
+    } else if (fileType.includes('pdf')) {
+      return (
+        <div className="w-full p-8 bg-linear-to-r from-red-50 to-pink-50 rounded-xl border-2 border-red-100 flex flex-col items-center justify-center">
+          <FaFilePdf className="w-16 h-16 text-red-500 mb-4" />
+          <p className="text-red-700 font-medium">{t("form.pdf_file")}</p>
+          <a 
+            href={form.mediaUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mt-4 px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors duration-300"
+          >
+            {t("form.view_pdf")}
+          </a>
+        </div>
+      );
+    } else {
+      // Generic file preview for other types
+      return (
+        <div className="w-full p-8 bg-linear-to-r from-gray-50 to-blue-50 rounded-xl border-2 border-gray-100 flex flex-col items-center justify-center">
+          <IconComponent className="w-16 h-16 text-gray-500 mb-4" />
+          <p className="text-gray-700 font-medium truncate max-w-full">{fileName}</p>
+          <p className="text-gray-500 text-sm mt-2">{fileType}</p>
+          <a 
+            href={form.mediaUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-300"
+          >
+            {t("form.download_file")}
+          </a>
+        </div>
+      );
+    }
+  };
 
   return (
     <main className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 via-indigo-50 to-purple-100 text-slate-800 py-8 overflow-hidden">
@@ -330,7 +481,7 @@ ${t('receipt.thank_you')}
       </section>
       
       {/* Main Form Container */}
-      <div className="relative bg-white/80 backdrop-blur-xl shadow-2xl rounded-3xl sm:p-8 p-6 w-full max-w-2xl mx-4 my-12 border border-white/20 transform transition-all duration-500 hover:shadow-3xl">
+      <div className="relative bg-white/80 backdrop-blur-xl shadow-2xl rounded-3xl sm:p-8 p-6 w-full max-w-3xl mx-4 my-12 border border-white/20 transform transition-all duration-500 hover:shadow-3xl">
         {/* Header with Enhanced Design */}
         {!submissionData &&
         <div className="text-center mb-8 relative">
@@ -361,9 +512,6 @@ ${t('receipt.thank_you')}
                     : 'border-gray-300 text-gray-300 bg-white'
                 }`}>
                   {currentStep > 1 ? <FaCheck className="text-sm" /> : <FaUser className="text-sm" />}
-                  {/* <div className="absolute -bottom-6 text-xs font-medium text-gray-600">
-                    {t("personal_info.personal_info")}
-                  </div> */}
                 </div>
                 
                 {/* Connection Line */}
@@ -380,9 +528,6 @@ ${t('receipt.thank_you')}
                     : 'border-gray-300 text-gray-300 bg-white'
                 }`}>
                   <FaFileAlt className="text-sm" />
-                  {/* <div className="absolute -bottom-6 text-xs font-medium text-gray-600">
-                    {t("personal_info.complaint_details")}
-                  </div> */}
                 </div>
               </div>
             </div>
@@ -500,6 +645,7 @@ ${t('receipt.thank_you')}
                   value={form.schoolName}
                   onChange={(e) => setForm({ ...form, schoolName: e.target.value })}
                   placeholder={t("form.enter_school")}
+
                 />
               </div>
 
@@ -517,6 +663,59 @@ ${t('receipt.thank_you')}
                   value={form.wereda}
                   onChange={(e) => setForm({ ...form, wereda: e.target.value })}
                   placeholder={t("form.enter_wereda")}
+                />
+              </div>
+
+              {/* City - New Field */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                    <FaBuilding className="text-indigo-600" />
+                  </div>
+                  {t("form.city")} *
+                </label>
+                <input
+                  type="text"
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+                  value={form.city}
+                  onChange={(e) => setForm({ ...form, city: e.target.value })}
+                  placeholder={t("form.enter_city")}
+                  required
+                />
+              </div>
+
+              {/* Sub City - New Field */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mr-3">
+                    <FaMapPin className="text-pink-600" />
+                  </div>
+                  {t("form.sub_city")} *
+                </label>
+                <input
+                  type="text"
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-pink-200 focus:border-pink-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+                  value={form.subCity}
+                  onChange={(e) => setForm({ ...form, subCity: e.target.value })}
+                  placeholder={t("form.enter_sub_city")}
+                  required
+                />
+              </div>
+
+              {/* House No - New Field */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                    <FaHome className="text-amber-600" />
+                  </div>
+                  {t("form.house_no")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-amber-200 focus:border-amber-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+                  value={form.houseNo}
+                  onChange={(e) => setForm({ ...form, houseNo: e.target.value })}
+                  placeholder={t("form.enter_house_no")}
                 />
               </div>
             </div>
@@ -610,6 +809,79 @@ ${t('receipt.thank_you')}
                 )}
             </div>
 
+            {/* New Fields: Complaint Made Date & Place */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Complaint Made Date - New Field */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                    <FaCalendarDay className="text-purple-600" />
+                  </div>
+                  {t("form.complaint_made_date")}
+                </label>
+                <input
+                  type="date"
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-purple-200 focus:border-purple-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+                  value={form.complaintMadeDate}
+                  onChange={(e) => setForm({ ...form, complaintMadeDate: e.target.value })}
+                />
+              </div>
+
+              {/* Complaint Made Place - New Field */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
+                    <FaMapPin className="text-teal-600" />
+                  </div>
+                  {t("form.complaint_made_place")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-teal-200 focus:border-teal-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+                  value={form.complaintMadePlace}
+                  onChange={(e) => setForm({ ...form, complaintMadePlace: e.target.value })}
+                  placeholder={t("form.enter_complaint_made_place")}
+                />
+              </div>
+            </div>
+
+            {/* New Fields: Responsible Body & Response Given */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Responsible Body - New Field */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                    <FaUniversity className="text-blue-600" />
+                  </div>
+                  {t("form.responsible_person")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+                  value={form.responsibleBody}
+                  onChange={(e) => setForm({ ...form, responsibleBody: e.target.value })}
+                  placeholder={t("form.enter_responsible_person")}
+                />
+              </div>
+
+              {/* Response Given - New Field */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                    <FaComments className="text-green-600" />
+                  </div>
+                  {t("form.response_given")}
+                </label>
+                <input
+                  type="text"
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-green-200 focus:border-green-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+                  value={form.responceGived}
+                  onChange={(e) => setForm({ ...form, responceGived: e.target.value })}
+                  placeholder={t("form.enter_response_given")}
+                />
+              </div>
+            </div>
+
             {/* Priority Level */}
             <div>
               <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
@@ -663,9 +935,9 @@ ${t('receipt.thank_you')}
                 <input
                   type="file"
                   onChange={handleFileUpload}
-                  accept="image/*,video/*"
+                  accept="*/*" // Accept all file types
                   className="w-full p-4 border-2 border-dashed border-gray-300 rounded-2xl focus:ring-4 focus:ring-cyan-200 focus:border-cyan-500 hover:border-cyan-400 transition-all duration-300 cursor-pointer opacity-0 absolute inset-0 z-10"
-                  disabled={uploading || deleting || !!preview}
+                  disabled={uploading || deleting || !!form.mediaUrl}
                 />
                 
                 {/* Custom styled file input */}
@@ -676,7 +948,7 @@ ${t('receipt.thank_you')}
                       {t("form.click_to_upload")}
                     </p>
                     <p className="text-xs text-gray-500 group-hover:text-cyan-600">
-                      PNG, JPG, MP4, MOV ({t("form.max_size")})
+                      {t("form.all_files_allowed")} ({t("form.max_size")})
                     </p>
                   </div>
                 </div>
@@ -689,22 +961,28 @@ ${t('receipt.thank_you')}
                 </div>
               )}
 
-              {preview && (
+              {(form.mediaUrl || preview) && (
                 <div className="mt-6 relative bg-white p-6 rounded-2xl border-2 border-gray-100 shadow-lg">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
-                      {preview.includes("image") ? (
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                          <FaImage className="text-green-600" />
-                        </div>
-                      ) : (
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <FaVideo className="text-blue-600" />
-                        </div>
+                      {fileType && (
+                        <>
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getFileIcon(fileType).bg}`}>
+                            {(() => {
+                              const Icon = getFileIcon(fileType).icon;
+                              return <Icon className={getFileIcon(fileType).color} />;
+                            })()}
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-semibold text-gray-700">
+                              {fileName}
+                            </span>
+                            <span className="text-xs text-gray-500">
+                              {fileType}
+                            </span>
+                          </div>
+                        </>
                       )}
-                      <span className="text-sm font-semibold text-gray-700">
-                        {preview.includes("image") ? t("form.image") : t("form.video")} {t("form.uploaded")}
-                      </span>
                     </div>
                     <button
                       type="button"
@@ -726,19 +1004,7 @@ ${t('receipt.thank_you')}
                     </button>
                   </div>
                   
-                  {preview.includes("image") ? (
-                    <img
-                      src={preview}
-                      alt="Preview"
-                      className="w-full rounded-xl shadow-sm max-h-64 object-cover border-2 border-gray-100"
-                    />
-                  ) : (
-                    <video
-                      src={preview}
-                      controls
-                      className="w-full rounded-xl shadow-sm max-h-64 object-cover border-2 border-gray-100"
-                    />
-                  )}
+                  {renderFilePreview()}
                 </div>
               )}
             </div>

@@ -24,21 +24,41 @@ import {
   FaUserTie,
   FaPaperPlane,
   FaRocket,
-  FaAward
+  FaAward,
+  FaBuilding,
+  FaHome,
+  FaMapPin,
+  FaCalendarDay,
+  FaComments,
+  FaUniversity,
+  FaMusic,
+  FaImage,
+  FaVideo,
+  FaFilePdf,
+  FaFileWord,
+  FaFileExcel,
+  FaFileArchive
 } from "react-icons/fa";
-import { departments, DepartmentKey } from "@/data/departments";
 import { FiCheckCircle, FiClock, FiInfo, FiMinus, FiPauseCircle, FiPlayCircle, FiTrendingDown, FiTrendingUp, FiUserCheck } from "react-icons/fi";
 import { FaRightLeft, FaStar } from "react-icons/fa6";
+import { departments, DepartmentKey } from "@/data/departments";
 
 interface ComplaintData {
   _id: string;
   trackingNumber: string;
+  
+  // Step 1: Personal Information
   fullName: string;
   phoneNumber: string;
   gender: "male" | "female";
   educationCommunity: "student" | "student_family" | "teacher" | "supervisor" | "expert";
   schoolName: string;
   wereda: string;
+  city: string;
+  subCity: string;
+  houseNo: string;
+  
+  // Step 2: Complaint Information
   title: string;
   department: string;
   subDepartment?: string;
@@ -46,10 +66,18 @@ interface ComplaintData {
   description: string;
   mediaUrl?: string;
   publicId?: string;
+  complaintMadeDate: string;
+  complaintMadePlace: string;
+  responsibleBody: string;
+  responceGived: string;
+  
+  // Status fields
   status: "Pending" | "Appropriate" | "In Progress" | "Completed" | "Inappropriate";
   reason?: string;
   responsiblePerson?: string;
   resolvedAt?: string;
+  
+  // Timestamps
   date: string;
   createdAt: string;
   updatedAt: string;
@@ -83,6 +111,20 @@ export default function TrackComplaint() {
     { key: "male", label: t("gender.male") },
     { key: "female", label: t("gender.female") },
   ];
+
+  // Function to get file type icon
+  const getFileIcon = (mediaUrl?: string) => {
+    if (!mediaUrl) return { icon: FaFileAlt, color: 'text-gray-600', bg: 'bg-gray-100' };
+    
+    if (mediaUrl.includes("image")) return { icon: FaImage, color: 'text-green-600', bg: 'bg-green-100' };
+    if (mediaUrl.includes("video")) return { icon: FaVideo, color: 'text-blue-600', bg: 'bg-blue-100' };
+    if (mediaUrl.includes("audio")) return { icon: FaMusic, color: 'text-purple-600', bg: 'bg-purple-100' };
+    if (mediaUrl.includes("pdf")) return { icon: FaFilePdf, color: 'text-red-600', bg: 'bg-red-100' };
+    if (mediaUrl.includes("word") || mediaUrl.includes("document")) return { icon: FaFileWord, color: 'text-blue-600', bg: 'bg-blue-100' };
+    if (mediaUrl.includes("excel") || mediaUrl.includes("sheet")) return { icon: FaFileExcel, color: 'text-green-600', bg: 'bg-green-100' };
+    if (mediaUrl.includes("zip") || mediaUrl.includes("archive") || mediaUrl.includes("compressed")) return { icon: FaFileArchive, color: 'text-yellow-600', bg: 'bg-yellow-100' };
+    return { icon: FaFileAlt, color: 'text-gray-600', bg: 'bg-gray-100' };
+  };
 
   const handleSearch = async (e: FormEvent) => {
     e.preventDefault();
@@ -129,6 +171,9 @@ ${t("form.gender", "Gender")}: ${t(`gender.${complaint.gender}`)}
 ${t("form.education_community", "Education Community")}: ${t(`education.${complaint.educationCommunity}`)}
 ${t("form.school_name", "School Name")}: ${complaint.schoolName}
 ${t("form.wereda", "Wereda")}: ${complaint.wereda}
+${t("form.city", "City")}: ${complaint.city}
+${t("form.sub_city", "Sub City")}: ${complaint.subCity}
+${t("form.house_no", "House No")}: ${complaint.houseNo}
 
 ${t("tracking.download.complaint_section", "COMPLAINT DETAILS:")}
 ${t("tracking.download.section_separator", "---------------------")}
@@ -139,10 +184,14 @@ ${complaint.subDepartment ? `${t("form.subDepartment", "Sub-Department")}: ${dep
                               sub.en === complaint.subDepartment ||
                               sub.am === complaint.subDepartment ||
                               sub.om === complaint.subDepartment
-                          )?.[lang] || complaint.subDepartment}` : ''}
+                          )?.[lang] || complaint.subDepartment}\n` : ''}
 ${t("tracking.priority", "Priority Level")}: ${t(`levels.${complaint.level}`)}
 ${t("tracking.status", "Status")}: ${t(`status.${complaint.status}`)}
-${complaint.responsiblePerson ? `${t("tracking.responsible_person", "Responsible Person")}: ${complaint.responsiblePerson}` : ''}
+${complaint.complaintMadeDate ? `${t("form.complaint_made_date", "Complaint Made Date")}: ${new Date(complaint.complaintMadeDate).toLocaleDateString()}\n` : ''}
+${complaint.complaintMadePlace ? `${t("form.complaint_made_place", "Complaint Made Place")}: ${complaint.complaintMadePlace}\n` : ''}
+${complaint.responsibleBody ? `${t("form.responsible_person", "Responsible Body")}: ${complaint.responsibleBody}\n` : ''}
+${complaint.responceGived ? `${t("form.response_given", "Response Given")}: ${complaint.responceGived}\n` : ''}
+${complaint.responsiblePerson ? `${t("tracking.responsible_person", "Responsible Person")}: ${complaint.responsiblePerson}\n` : ''}
 ${t("tracking.download.submission_date", "Submission Date")}: ${new Date(complaint.createdAt).toLocaleDateString()}
 
 ${t("tracking.download.description_section", "DESCRIPTION:")}
@@ -250,10 +299,84 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
-     month: 'short',
+      month: 'short',
       day: 'numeric',
       year: 'numeric'
     });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  // Render file preview based on type
+  const renderFilePreview = () => {
+    if (!complaint?.mediaUrl) return null;
+
+    const fileIcon = getFileIcon(complaint.mediaUrl);
+    const IconComponent = fileIcon.icon;
+
+    if (complaint.mediaUrl.includes("image")) {
+      return (
+        <img
+          src={complaint.mediaUrl}
+          alt="Complaint attachment"
+          className="max-w-full h-auto rounded-xl max-h-96 object-contain mx-auto shadow-lg"
+        />
+      );
+    } else if (complaint.mediaUrl.includes("video")) {
+      return (
+        <video
+          src={complaint.mediaUrl}
+          controls
+          className="max-w-full h-auto rounded-xl max-h-96 mx-auto shadow-lg"
+        />
+      );
+    } else if (complaint.mediaUrl.includes("audio")) {
+      return (
+        <div className="w-full p-6 md:p-8 bg-linear-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-100 flex flex-col items-center justify-center">
+          <FaMusic className="w-16 h-16 text-purple-500 mb-4" />
+          <p className="text-purple-700 font-medium">{t("form.audio_file", "Audio File")}</p>
+          <audio src={complaint.mediaUrl} controls className="w-full mt-4" />
+        </div>
+      );
+    } else if (complaint.mediaUrl.includes("pdf")) {
+      return (
+        <div className="w-full p-6 md:p-8 bg-linear-to-r from-red-50 to-pink-50 rounded-xl border-2 border-red-100 flex flex-col items-center justify-center">
+          <FaFilePdf className="w-16 h-16 text-red-500 mb-4" />
+          <p className="text-red-700 font-medium">{t("form.pdf_file", "PDF Document")}</p>
+          <a 
+            href={complaint.mediaUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mt-4 px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors duration-300"
+          >
+            {t("form.view_pdf", "View PDF")}
+          </a>
+        </div>
+      );
+    } else {
+      // Generic file preview for other types
+      return (
+        <div className="w-full p-6 md:p-8 bg-linear-to-r from-gray-50 to-blue-50 rounded-xl border-2 border-gray-100 flex flex-col items-center justify-center">
+          <IconComponent className="w-16 h-16 text-gray-500 mb-4" />
+          <a 
+            href={complaint.mediaUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mt-4 px-5 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-300"
+          >
+            {t("form.download_file", "Download File")}
+          </a>
+        </div>
+      );
+    }
   };
 
   return (
@@ -304,65 +427,65 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
         </div>
 
         {/* Enhanced Search Section */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl sm:p-8 p-6 mb-8 border border-white/20 transform transition-all duration-500 hover:shadow-3xl">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl sm:p-6 md:p-8 p-6 mb-8 border border-white/20 transform transition-all duration-500 hover:shadow-3xl">
           <form onSubmit={handleSearch} className="space-y-6">
-  <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-end">
-    <div className="flex-1 w-full">
-      <label htmlFor="trackingNumber" className="flex items-center text-sm font-semibold text-gray-700 mb-3">
-        <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
-          <FaSearch className="text-white text-sm" />
-        </div>
-        <span className="text-lg font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          {t("tracking.tracking_number", "Tracking Number")}
-        </span>
-      </label>
-      <div className="relative group">
-        <input
-          id="trackingNumber"
-          type="text"
-          value={trackingNumber}
-          onChange={(e) => setTrackingNumber(e.target.value)}
-          placeholder={t("tracking.enter_tracking_number", "Enter your tracking number (e.g., CMP-ABC123XYZ)")}
-          className="w-full px-6 py-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl focus:shadow-2xl group-hover:border-blue-300 text-lg font-medium"
-          required
-        />
-        <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-      </div>
-    </div>
-    
-    <div className="flex sm:items-end w-full sm:w-auto">
-      <button
-        type="submit"
-        disabled={loading || !trackingNumber.trim()}
-        className="group relative w-full sm:w-48 bg-linear-to-r from-blue-500 to-purple-600 text-white px-8 py-5 rounded-2xl font-bold hover:from-blue-600 hover:to-purple-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-purple-600 transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95 overflow-hidden"
-      >
-        {/* Shimmer Effect */}
-        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 delay-200"></div>
-        
-        {/* Button Content */}
-        <div className="relative z-10 flex items-center justify-center space-x-3">
-          {loading ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              <span className="text-lg font-semibold">{t("tracking.searching", "Searching...")}</span>
-            </>
-          ) : (
-            <>
-              <FaSearch className="text-lg transition-transform group-hover:scale-110 group-hover:rotate-12" />
-              <span className="text-lg font-semibold">{t("tracking.search", "Search")}</span>
-            </>
-          )}
-        </div>
-        
-        {/* Bottom Border Animation */}
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-white/30 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-      </button>
-    </div>
-  </div>
-</form>
+            <div className="flex flex-col sm:flex-row gap-4 items-center sm:items-end">
+              <div className="flex-1 w-full">
+                <label htmlFor="trackingNumber" className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-10 h-10 bg-linear-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3 shadow-lg">
+                    <FaSearch className="text-white text-sm" />
+                  </div>
+                  <span className="text-lg font-bold bg-linear-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    {t("tracking.tracking_number", "Tracking Number")}
+                  </span>
+                </label>
+                <div className="relative group">
+                  <input
+                    id="trackingNumber"
+                    type="text"
+                    value={trackingNumber}
+                    onChange={(e) => setTrackingNumber(e.target.value)}
+                    placeholder={t("tracking.enter_tracking_number", "Enter your tracking number (e.g., CMP-ABC123XYZ)")}
+                    className="w-full px-6 py-5 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-200 focus:border-blue-500 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-lg hover:shadow-xl focus:shadow-2xl group-hover:border-blue-300 text-lg font-medium"
+                    required
+                  />
+                  <div className="absolute inset-0 rounded-2xl bg-linear-to-r from-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                </div>
+              </div>
+              
+              <div className="flex sm:items-end w-full sm:w-auto">
+                <button
+                  type="submit"
+                  disabled={loading || !trackingNumber.trim()}
+                  className="group relative w-full sm:w-48 bg-linear-to-r from-blue-500 to-purple-600 text-white px-8 py-5 rounded-2xl font-bold hover:from-blue-600 hover:to-purple-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-blue-500 disabled:hover:to-purple-600 transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95 overflow-hidden"
+                >
+                  {/* Shimmer Effect */}
+                  <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700 delay-200"></div>
+                  
+                  {/* Button Content */}
+                  <div className="relative z-10 flex items-center justify-center space-x-3">
+                    {loading ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span className="text-lg font-semibold">{t("tracking.searching", "Searching...")}</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaSearch className="text-lg transition-transform group-hover:scale-110 group-hover:rotate-12" />
+                        <span className="text-lg font-semibold">{t("tracking.search", "Search")}</span>
+                      </>
+                    )}
+                  </div>
+                  
+                  {/* Bottom Border Animation */}
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-white/30 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                </button>
+              </div>
+            </div>
+          </form>
 
           {error && (
             <div className="mt-6 p-4 bg-linear-to-r from-red-50 to-rose-50 border-2 border-red-200 rounded-xl shadow-lg">
@@ -378,7 +501,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
         {complaint && (
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden animate-fade-in transform transition-all duration-500 hover:shadow-3xl">
             {/* Enhanced Header with Tracking Number */}
-            <div className="bg-linear-to-r from-blue-600 via-purple-600 to-indigo-600 sm:p-8 p-6 text-white relative overflow-hidden">
+            <div className="bg-linear-to-r from-blue-600 via-purple-600 to-indigo-600 sm:p-6 md:p-8 p-6 text-white relative overflow-hidden">
               <div className="absolute inset-0 bg-black/10"></div>
               <div className="relative z-10">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -392,7 +515,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                       </code>
                       <button
                         onClick={() => copyToClipboard(complaint.trackingNumber)}
-                        className="group p-3 bg-white/20 rounded-xl hover:bg-white/30 transition-all duration-300 hover:scale-110 hover:cursor-pointer relative overflow-hidden"
+                        className="group p-3 md:p-4 bg-white/20 rounded-xl hover:bg-white/30 transition-all duration-300 hover:scale-110 hover:cursor-pointer relative overflow-hidden"
                         title={t("tracking.copy_tracking", "Copy tracking number")}
                       >
                         <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
@@ -422,7 +545,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
               </div>
             </div>
 
-            <div className="sm:p-8 p-6 space-y-8">
+            <div className="sm:p-6 md:p-8 p-6 space-y-8">
               {/* Enhanced Status and Priority Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300">
@@ -494,6 +617,59 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                 </div>
               )}
 
+              {/* New Complaint Details Section */}
+              <div className="bg-linear-to-br from-purple-50 to-pink-50 rounded-2xl p-6 border-2 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
+                <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                    <FaCalendarDay className="text-purple-600" />
+                  </div>
+                  <span>{t("tracking.complaint_process_details", "Complaint Process Details")}</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {complaint.complaintMadeDate && (
+                    <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-purple-200 transition-all duration-300">
+                      <label className="text-sm font-semibold text-gray-600 flex items-center space-x-2 mb-2">
+                        <FaCalendarDay className="text-purple-500" />
+                        <span>{t("form.complaint_made_date", "Complaint Made Date")}</span>
+                      </label>
+                      <p className="text-gray-800 font-bold">
+                        {formatDate(complaint.complaintMadeDate)}
+                      </p>
+                    </div>
+                  )}
+                  
+                  {complaint.complaintMadePlace && (
+                    <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-teal-200 transition-all duration-300">
+                      <label className="text-sm font-semibold text-gray-600 flex items-center space-x-2 mb-2">
+                        <FaMapPin className="text-teal-500" />
+                        <span>{t("form.complaint_made_place", "Complaint Made Place")}</span>
+                      </label>
+                      <p className="text-gray-800 font-bold">{complaint.complaintMadePlace}</p>
+                    </div>
+                  )}
+                  
+                  {complaint.responsibleBody && (
+                    <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-blue-200 transition-all duration-300">
+                      <label className="text-sm font-semibold text-gray-600 flex items-center space-x-2 mb-2">
+                        <FaUniversity className="text-blue-500" />
+                        <span>{t("form.responsible_person", "Responsible Person")}</span>
+                      </label>
+                      <p className="text-gray-800 font-bold">{complaint.responsibleBody}</p>
+                    </div>
+                  )}
+                  
+                  {complaint.responceGived && (
+                    <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-green-200 transition-all duration-300">
+                      <label className="text-sm font-semibold text-gray-600 flex items-center space-x-2 mb-2">
+                        <FaComments className="text-green-500" />
+                        <span>{t("form.response_given", "Response Given")}</span>
+                      </label>
+                      <p className="text-gray-800 font-bold">{complaint.responceGived}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
               {/* Enhanced Personal Information */}
               <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300">
                 <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center space-x-3">
@@ -525,6 +701,13 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                       </label>
                       <p className="text-gray-800 font-bold text-lg capitalize">{genderOptions.find(option => option.key === complaint.gender)?.label}</p>
                     </div>
+                    <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-indigo-200 transition-all duration-300">
+                      <label className="text-sm font-semibold text-gray-600 flex items-center space-x-2">
+                        <FaBuilding className="text-indigo-500" />
+                        <span>{t("form.city", "City")}</span>
+                      </label>
+                      <p className="text-gray-800 font-bold text-lg">{complaint.city}</p>
+                    </div>
                   </div>
                   <div className="space-y-4">
                     <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-orange-200 transition-all duration-300">
@@ -552,6 +735,20 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                         <FaMapMarkerAlt className="text-teal-500" />
                         <span>{complaint.wereda}</span>
                       </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-pink-200 transition-all duration-300">
+                      <label className="text-sm font-semibold text-gray-600 flex items-center space-x-2">
+                        <FaMapPin className="text-pink-500" />
+                        <span>{t("form.sub_city", "Sub City")}</span>
+                      </label>
+                      <p className="text-gray-800 font-bold text-lg">{complaint.subCity}</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-amber-200 transition-all duration-300">
+                      <label className="text-sm font-semibold text-gray-600 flex items-center space-x-2">
+                        <FaHome className="text-amber-500" />
+                        <span>{t("form.house_no", "House No")}</span>
+                      </label>
+                      <p className="text-gray-800 font-bold text-lg">{complaint.houseNo}</p>
                     </div>
                   </div>
                 </div>
@@ -611,23 +808,17 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
               {/* Enhanced Media Attachment */}
               {complaint.mediaUrl && (
                 <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-100 shadow-lg hover:shadow-xl transition-all duration-300">
-                  <h3 className="text-xl font-bold text-gray-800 mb-6">
-                    {t("tracking.media_attachment", "Media Attachment")}
+                  <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center space-x-3">
+                    <div className={`w-10 h-10 ${getFileIcon(complaint.mediaUrl).bg} rounded-xl flex items-center justify-center`}>
+                      {(() => {
+                        const Icon = getFileIcon(complaint.mediaUrl).icon;
+                        return <Icon className={getFileIcon(complaint.mediaUrl).color} />;
+                      })()}
+                    </div>
+                    <span>{t("tracking.media_attachment", "Media Attachment")}</span>
                   </h3>
-                  <div className="bg-white p-5 rounded-xl border-2 border-gray-200">
-                    {complaint.mediaUrl.includes("image") ? (
-                      <img
-                        src={complaint.mediaUrl}
-                        alt="Complaint attachment"
-                        className="max-w-full h-auto rounded-xl max-h-96 object-contain mx-auto shadow-lg"
-                      />
-                    ) : (
-                      <video
-                        src={complaint.mediaUrl}
-                        controls
-                        className="max-w-full h-auto rounded-xl max-h-96 mx-auto shadow-lg"
-                      />
-                    )}
+                  <div className="bg-white md:p-5 rounded-xl border-2 border-gray-200">
+                    {renderFilePreview()}
                   </div>
                 </div>
               )}
@@ -640,8 +831,8 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                   </div>
                   <span>{t("tracking.timeline", "Timeline")}</span>
                 </h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-blue-200 transition-all duration-300">
+                <div className="space-y-4 text-sm">
+                  <div className="flex justify-between items-center bg-white p-3 md:p-4 rounded-xl border-2 border-gray-100 hover:border-blue-200 transition-all duration-300">
                     <span className="text-sm font-semibold text-gray-600">
                       {t("tracking.submission_date", "Submission Date")}
                     </span>
@@ -649,10 +840,21 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                       {formatDate(complaint.createdAt)}
                     </span>
                   </div>
-                  {complaint.resolvedAt && (
-                    <div className="flex justify-between items-center bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-green-200 transition-all duration-300">
+                  {complaint.complaintMadeDate && (
+                    <div className="flex justify-between items-center bg-white p-3 md:p-4 rounded-xl border-2 border-gray-100 hover:border-purple-200 transition-all duration-300">
                       <span className="text-sm font-semibold text-gray-600 flex items-center space-x-3">
-                        <FaCheck className="text-green-500" />
+                        {/* <FaCalendarDay className="text-purple-500" /> */}
+                        <span>{t("form.complaint_made_date", "Complaint Made Date")}</span>
+                      </span>
+                      <span className="text-gray-800 font-bold">
+                        {formatDate(complaint.complaintMadeDate)}
+                      </span>
+                    </div>
+                  )}
+                  {complaint.resolvedAt && (
+                    <div className="flex justify-between items-center bg-white p-3 md:p-4 rounded-xl border-2 border-gray-100 hover:border-green-200 transition-all duration-300">
+                      <span className="text-sm font-semibold text-gray-600 flex items-center space-x-3">
+                       {/*  <FaCheck className="text-green-500" /> */}
                         <span>{t("tracking.resolved_at", "Resolved Date")}</span>
                       </span>
                       <span className="text-gray-800 font-bold">
@@ -668,7 +870,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
       </div>
 
       <style jsx global>{`
-          @keyframes fade-in {
+        @keyframes fade-in {
           from { opacity: 0; transform: translateY(-20px); }
           to { opacity: 1; transform: translateY(0); }
         }

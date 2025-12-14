@@ -15,10 +15,23 @@
     "school_name": "School Name",
     "enter_school": "Enter school",
     "wereda": "Wereda",
+    "city": "City",
+    "sub_city": "Sub City",
+    "house_no": "House Number",
+    "enter_city": "Enter city",
+    "enter_sub_city": "Enter sub city",
+    "enter_house_no": "Enter house number",
     "enter_wereda": "Enter wereda",
     "title": "Complaint Title",
     "department": "Department",
     "subDepartment": "Sub Department",
+    "complaint_made_date": "When does the complaint made?",
+    "complaint_made_place": "Where does the complaint made?",
+    "responsible_person": "Responsible Person for the complaint",
+    "response_given": "Response Given",
+    "enter_complaint_made_place": "Enter complaint made place",
+    "enter_responsible_person": "Enter responsible person",
+    "enter_response_given": "Enter response given",
     "priority": "Priority Level",
     "description": "Description",
     "submit": "Submit Complaint",
@@ -27,7 +40,8 @@
     "error": "Something went wrong. Please try again.",
     "note": "Your complaint will be reviewed and addressed promptly.",
     "file_optional": "File (optional)",
-    "click_to_upload": "Click to upload image or video",
+    "click_to_upload": "Click to upload file",
+    "all_files_allowed": "All file types are allowed",
     "max_size":"Max: 10MB",
     "uploading": "Uploading your file...",
     "image": "Image",
@@ -38,7 +52,10 @@
     "download": "Download",
     "downloading": "Downloading...",
     "next": "Next",
-    "back": "Back"
+    "back": "Back",
+    "download_file": "Download File",
+    "audio_file": "Audio File",
+    "pdf_file": "PDF File"
 },
 
 "education": {
@@ -133,6 +150,7 @@
     "resolved_at": "Resolved Date",
     "resolution_reason": "Resolution Details",
     "cancellation_reason": "Cancellation Reason",
+    "complaint_process_details": "Complaint Process Details",
 
     "errors": {
       "not_found": "Complaint not found",
@@ -411,7 +429,8 @@
     "level_filter": "Level Filter",
     "department_filter": "Department Filter",
     "to": "to",
-    "all": "All"
+    "all": "All",
+    "media_url": "Media URL"
   }
 
 }

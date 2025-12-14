@@ -293,45 +293,90 @@ const downloadExcel = async () => {
       levelTranslationMap[t(`levels.${l.key}`)] = l.key;
     });
 
-    // Prepare data for main sheet with translated labels
-    const data = items.map((item) => {
-      return {
-        [t("file_headers.tracking_number")]: item.trackingNumber || "",
-        [t("file_headers.title")]: item.title || "",
-        [t("file_headers.description")]: item.description || "",
-        [t("file_headers.department")]: departments[item.department as DepartmentKey]?.[language] || item.department || "",
-        [t("file_headers.sub_department")]: departments[item.department as DepartmentKey]?.subDepartments.find(
-          (sub: any) =>
-            sub.en === item.subDepartment ||
-            sub.am === item.subDepartment ||
-            sub.om === item.subDepartment
-        )?.[language] || item.subDepartment || "",
-        [t("file_headers.level")]: t(`levels.${item.level}`),
-        [t("file_headers.status")]: t(`status.${item.status}`),
-        [t("file_headers.responsible_person")]: item.responsiblePerson || "",
-        [t("file_headers.reason")]: item.reason || "",
-        [t("file_headers.submission_date")]: dayjs(item.createdAt).format("MMM DD, YYYY"),
-        [t("file_headers.resolved_date")]: item.resolvedAt ? dayjs(item.resolvedAt).format("MMM DD, YYYY") : "",
-        // Keep original keys for styling reference
-        _originalLevel: item.level,
-        _originalStatus: item.status
-      };
-    });
+// Prepare data for main sheet with translated labels
+const data = items.map((item) => {
+  return {
+    // Basic Information
+    [t("file_headers.tracking_number")]: item.trackingNumber || "",
+    [t("file_headers.title")]: item.title || "",
+    [t("file_headers.description")]: item.description || "",
+    
+    // Personal Information
+    [t("form.full_name")]: item.fullName || "",
+    [t("form.phone_number")]: item.phoneNumber || "",
+    [t("form.gender")]: t(`gender.${item.gender}`) || "",
+    [t("form.education_community")]: t(`education.${item.educationCommunity}`) || "",
+    [t("form.school_name")]: item.schoolName || "",
+    [t("form.wereda")]: item.wereda || "",
+    [t("form.city")]: item.city || "",
+    [t("form.sub_city")]: item.subCity || "",
+    [t("form.house_no")]: item.houseNo || "",
+    
+    // Complaint Details
+    [t("form.complaint_made_date")]: item.complaintMadeDate ? dayjs(item.complaintMadeDate).format("MMM DD, YYYY") : "",
+    [t("form.complaint_made_place")]: item.complaintMadePlace || "",
+    [t("form.responsible_person")]: item.responsiblePerson || "",
+    [t("form.response_given")]: item.responseGiven || "",
+    [t("form.department")]: departments[item.department as DepartmentKey]?.[language] || item.department || "",
+    [t("form.subDepartment")]: departments[item.department as DepartmentKey]?.subDepartments.find(
+      (sub: any) =>
+        sub.en === item.subDepartment ||
+        sub.am === item.subDepartment ||
+        sub.om === item.subDepartment
+    )?.[language] || item.subDepartment || "",
+    [t("file_headers.level")]: t(`levels.${item.level}`),
+    
+    // Status & Resolution
+    [t("file_headers.status")]: t(`status.${item.status}`),
+    [t("file_headers.responsible_person")]: item.responsiblePerson || "",
+    [t("file_headers.reason")]: item.reason || "",
+    [t("file_headers.submission_date")]: dayjs(item.createdAt).format("MMM DD, YYYY"),
+    [t("file_headers.resolved_date")]: item.resolvedAt ? dayjs(item.resolvedAt).format("MMM DD, YYYY") : "",
+    
 
-    // Create main worksheet
-    const headers = [
-      t("file_headers.tracking_number"),
-      t("file_headers.title"),
-      t("file_headers.description"),
-      t("file_headers.department"),
-      t("file_headers.sub_department"),
-      t("file_headers.level"),
-      t("file_headers.status"),
-      t("file_headers.responsible_person"),
-      t("file_headers.reason"),
-      t("file_headers.submission_date"),
-      t("file_headers.resolved_date")
-    ];
+    [t("file_headers.media_url")]: item.mediaUrl || "-",
+    
+   
+  };
+});
+
+// Create main worksheet - Simplified version for CSV
+const headers = [
+  // Basic Information
+  t("file_headers.tracking_number"),
+  t("file_headers.title"),
+  t("file_headers.description"),
+  
+  // Personal Information
+  t("form.full_name"),
+  t("form.phone_number"),
+  t("form.gender"),
+  t("form.education_community"),
+  t("form.school_name"),
+  t("form.wereda"),
+  t("form.city"),
+  t("form.sub_city"),
+  t("form.house_no"),
+  
+  // Complaint Details
+  t("form.complaint_made_date"),
+  t("form.complaint_made_place"),
+  t("form.responsible_person"),
+  t("form.response_given"),
+  t("form.department"),
+  t("form.subDepartment"),
+  t("file_headers.level"),
+
+  // Status & Resolution
+  t("file_headers.status"),
+  t("file_headers.responsible_person"),
+  t("file_headers.reason"),
+  t("file_headers.submission_date"),
+  t("file_headers.resolved_date"),
+  
+  // Media
+  t("file_headers.media_url")
+];
 
     const ws = XLSX.utils.json_to_sheet(data, { header: headers });
 

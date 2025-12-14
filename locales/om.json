@@ -15,10 +15,23 @@
     "school_name": "Maqaa Mana Barumsaa",
     "enter_school": "Maqaa mana barumsaa galchi",
     "wereda": "Woreeda",
+    "city": "Kuura",
+    "sub_city": "Kuura Xiqqaa",
+    "house_no": "Lakkoofsa Gara",
+    "enter_city": "Kuura galchi",
+    "enter_sub_city": "Kuura xiqqaa galchi",
+    "enter_house_no": "Lakkoofsa gara galchi",
     "enter_wereda": "Woreeda galchi",
     "title": "Maqaa Komii",
     "department": "Kutaa hojii",
     "subDepartment": "Kutaa xiqqaa",
+    "complaint_made_date": "Guyyaa komiin dhiyaate",
+    "complaint_made_place": "Bakka komiin dhiyaate",
+    "responsible_person": "Nama itti gaafatamaa",
+    "response_given": "Deebii kenname",
+    "enter_complaint_made_place": "Bakka komii galchi",
+    "enter_responsible_person": "Maqaa nama itti gaafatamaa galchi",
+    "enter_response_given": "Deebii siif kenname galchi",
     "priority": "Sadarkaa Dursa",
     "description": "Ibsa",
     "submit": "Komii Galchi",
@@ -27,7 +40,8 @@
     "error": "Dogoggorri uumame. Maaloo irra deebi'ii yaali.",
     "note": "Komiin kee ni ilaalama, deebiin ni kennama.",
     "file_optional":"Faayilii (filannoo)",
-    "click_to_upload": "Suuraa yookaan viidiyoo Erguuf cuqaasaa",
+    "click_to_upload": "Faayilii ergaa",
+    "all_files_allowed": "Faayiliiwwan hundi ni eeyyamama",
     "max_size": "Hangii ol’aanaa: 10MB",
     "uploading": "Faayilii ergaa jira...",
     "uploaded": "Ergame",
@@ -38,7 +52,10 @@
     "download": "Buusi",
     "downloading":"Buufataa...",
     "next": "Kan itti aanu",
-    "back": "Deebi’i"
+    "back": "Deebi’i",
+    "download_file": "Faayilii buusi",
+    "audio_file": "Faayilii Sagalee",
+    "pdf_file": "Faayilii PDF"
     },
 
   "levels": { "Low": "Gadii", "Medium": "Giddugaleessa", "High": "Olaanaa" },
@@ -120,6 +137,7 @@
     "resolved_at": "Guyyaa Furmaata",
     "resolution_reason": "Gahee Furmaata",
     "cancellation_reason": "Sababa Dhiisu",
+    "complaint_process_details": "Faayila Hojii Daawoomii",
 
     "errors": {
       "not_found": "Daawoomii hin argamne",
@@ -400,7 +418,8 @@
     "level_filter": "Salaasa Sadarkaa",
     "department_filter": "Salaasa Garee Hojii",
     "to": "Itti",
-    "all": "Hunda"
+    "all": "Hunda",
+    "media_url": "Miidiyaa URL"
   }  
 
 }

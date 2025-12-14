@@ -13,6 +13,9 @@ export async function GET(req: Request) {
     const level = searchParams.get("level");
     const department = searchParams.get("department");
     const subDepartment = searchParams.get("subDepartment");
+    const city = searchParams.get("city");
+    const subCity = searchParams.get("subCity");
+    const educationCommunity = searchParams.get("educationCommunity");
 
     // 🧠 Build dynamic filter
     const filter: any = {};
@@ -27,11 +30,13 @@ export async function GET(req: Request) {
     if (status && status !== "All") filter.status = status;
     if (level && level !== "All") filter.level = level;
     if (department && department !== "All") filter.department = department;
-    if (subDepartment && subDepartment !== "All")
-      filter.subDepartment = subDepartment;
+    if (subDepartment && subDepartment !== "All") filter.subDepartment = subDepartment;
+    if (city && city !== "All") filter.city = city;
+    if (subCity && subCity !== "All") filter.subCity = subCity;
+    if (educationCommunity && educationCommunity !== "All") filter.educationCommunity = educationCommunity;
 
-    // 🔹 Fetch complaints that match filters
-    const complaints = await Complaint.find(filter);
+    // 🔹 Fetch ALL complaints that match filters
+    const complaints = await Complaint.find(filter).sort({ createdAt: -1 });
 
     // 🔹 Aggregations
     const total = complaints.length;
@@ -43,6 +48,23 @@ export async function GET(req: Request) {
 
     const levelCounts = complaints.reduce((acc: Record<string, number>, c) => {
       acc[c.level] = (acc[c.level] || 0) + 1;
+      return acc;
+    }, {});
+
+    const departmentCounts = complaints.reduce((acc: Record<string, number>, c) => {
+      acc[c.department] = (acc[c.department] || 0) + 1;
+      return acc;
+    }, {});
+
+    const cityCounts = complaints.reduce((acc: Record<string, number>, c) => {
+      if (c.city) {
+        acc[c.city] = (acc[c.city] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    const educationCommunityCounts = complaints.reduce((acc: Record<string, number>, c) => {
+      acc[c.educationCommunity] = (acc[c.educationCommunity] || 0) + 1;
       return acc;
     }, {});
 
@@ -64,6 +86,9 @@ export async function GET(req: Request) {
       complaints,
       statusCounts,
       levelCounts,
+      departmentCounts,
+      cityCounts,
+      educationCommunityCounts,
       dailyCounts,
     });
   } catch (error) {

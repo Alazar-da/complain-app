@@ -15,10 +15,23 @@
     "school_name": "የትምህርት ቤት ስም",
     "enter_school": "የትምህርት ቤት ስም ያስገቡ",
     "wereda": "ወረዳ",
+    "city": "ከተማ",
+    "sub_city": "ክፍለ ከተማ",
+    "house_no": "የቤት ቁጥር",
+    "enter_city": "ከተማ ያስገቡ",
+    "enter_sub_city": "ክፍለ ከተማ ያስገቡ",
+    "enter_house_no": "የቤት ቁጥር ያስገቡ",
     "enter_wereda": "ወረዳ ያስገቡ",
     "title": "የቅሬታ ርዕስ",
     "department": "ዲፓርትመንት",
     "subDepartment": "ንዑስ ዲፓርትመንት",
+    "complaint_made_date": "ቅሬታው የተፈጠረበት ቀን",
+    "complaint_made_place": "ቅሬታው የተፈጠረበት ቦታ",
+    "responsible_person": "ለቅሬታው ተጠያቂ ሰው",
+    "response_given": "የተሰጠ መልስ",
+    "enter_complaint_made_place": "የቅሬታ ቦታ ያስገቡ",
+    "enter_responsible_person": "የተጠያቂውን ሰው ስም ያስገቡ",
+    "enter_response_given": "የተሰጠዎትን መልስ ያስገቡ",
     "priority": "ቅድሚያ ደረጃ",
     "description": "መግለጫ",
     "submit": "ቅሬታ ያቅርቡ",
@@ -27,7 +40,8 @@
     "error": "አንዳንድ ችግኝ ተከስቷል። እባክዎን እንደገና ይሞክሩ።",
     "note": "ቅሬታዎ በቅርቡ ይታያል እና መልስ ይሰጥበታል።",
     "file_optional": "ፋይል (አማራጭ)",
-    "click_to_upload": "ምስል ወይም ቪዲዮ ለመላከ ይጫኑ",
+    "click_to_upload": "ፋይል ለመላከ ይጫኑ",
+    "all_files_allowed": "ሁሉም የፋይል አይነቶች ይፈቀዳሉ",
     "max_size": "ከፍተኛ መጠን፡ 10MB",
     "uploading": "ፋይሉን በመላከ ላይ...",
     "uploaded": "ተላከ",
@@ -38,7 +52,10 @@
     "download": "አውርድ",
     "downloading":"እያወረደ ነው...",
     "next": "ቀጣይ",
-    "back": "ተመለስ"
+    "back": "ተመለስ",
+    "download_file": "ፋይል አውርድ",
+    "audio_file": "የድምጽ ፋይል",
+    "pdf_file": "PDF ፋይል"
     },
             
   "education": {
@@ -133,6 +150,7 @@
     "resolved_at": "የተፈታበት ቀን",
     "resolution_reason": "የመፍትሄ ዝርዝሮች",
     "cancellation_reason": "የስረዛ ምክንያት",
+    "complaint_process_details": "የቅሬታ ሂደት ዝርዝሮች",
 
     "errors": {
       "not_found": "ቅሬታ አልተገኘም",
@@ -414,7 +432,8 @@
     "level_filter": "የደረጃ ማጣሪያ",
     "department_filter": "የስራ ክፍል ማጣሪያ",
     "to": "እስከ",
-    "all": "ሁሉም"
+    "all": "ሁሉም",
+    "media_url": "የሚዲያ አድራሻ"
   }
 
 }

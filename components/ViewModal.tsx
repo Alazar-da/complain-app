@@ -1,15 +1,17 @@
 'use client';
 
 import { FiX, FiFileText, FiClock, FiTag, FiAlertCircle, FiCheckCircle, FiPlayCircle, FiPauseCircle, FiTrendingUp, FiTrendingDown, FiMinus, FiInfo, FiUser, FiPhone, FiMapPin, FiBook, FiHome, FiShield, FiMessageSquare, FiCalendar, FiUserCheck, FiDownload, FiTrash2 } from 'react-icons/fi';
-import { TbBuilding, TbBuildingSkyscraper } from 'react-icons/tb';
+import { TbBuilding, TbBuildingSkyscraper, TbMapPin, TbCalendar, TbMessageCircle, TbHome } from 'react-icons/tb';
+import { FaBuilding, FaComments, FaCalendarDay, FaUniversity } from 'react-icons/fa';
 import { useTranslation } from "react-i18next";
 import { departments, DepartmentKey } from "@/data/departments";
 import { useState, useEffect } from 'react';
-import { FaSpinner, FaImage, FaVideo, FaVenusMars, FaGraduationCap, FaStar, FaPaperPlane, FaAward } from 'react-icons/fa';
+import { FaSpinner, FaImage, FaVideo, FaVenusMars, FaGraduationCap, FaStar, FaPaperPlane, FaAward, FaMusic, FaFilePdf, FaFileWord, FaFileExcel, FaFileArchive } from 'react-icons/fa';
 import { Filesystem, Directory } from '@capacitor/filesystem';
 import { Toast } from '@capacitor/toast';
 import { Share } from '@capacitor/share';
 import { Capacitor } from '@capacitor/core';
+
 interface ViewModalProps {
   complaint: any;
   onClose: () => void;
@@ -114,8 +116,15 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
       const publicId = extractPublicId(complaint.mediaUrl);
       if (!publicId) throw new Error("Could not extract file information");
 
+      // Determine resource type based on file extension
       const isVideo = /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
-      const resourceType = isVideo ? "video" : "image";
+      const isAudio = /\.(mp3|wav|ogg)$/i.test(complaint.mediaUrl);
+      const isPDF = /\.(pdf)$/i.test(complaint.mediaUrl);
+      const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(complaint.mediaUrl);
+
+      let resourceType = "raw"; // Default for documents, audio, etc.
+      if (isImage) resourceType = "image";
+      else if (isVideo) resourceType = "video";
 
       const res = await fetch("/api/delete-cloudinary", {
         method: "POST",
@@ -143,112 +152,112 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
     await deleteFromCloudinary();
   };
 
-// Enhanced mobile download function with sharing option
-const downloadImageMobile = async (imageUrl: string, imageName?: string) => {
-  try {
-    // Show loading
-    await Toast.show({
-      text: 'Preparing image...',
-      duration: 'short'
-    });
+  // Enhanced mobile download function with sharing option
+  const downloadImageMobile = async (imageUrl: string, imageName?: string) => {
+    try {
+      // Show loading
+      await Toast.show({
+        text: 'Preparing image...',
+        duration: 'short'
+      });
 
-    // Fetch image
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-    
-    if (Capacitor.getPlatform() === 'ios') {
-      // For iOS, use share dialog as primary method
-      return await shareImageMobile(blob, imageName);
-    } else {
-      // For Android, save to Downloads
-      return await saveImageToDownloads(blob, imageName);
-    }
-  } catch (error) {
-    console.error('Mobile download error:', error);
-    throw error;
-  }
-};
-
-// Add this function anywhere in your component file
-const blobToBase64 = (blob: Blob): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (typeof reader.result === 'string') {
-        const base64 = reader.result.split(',')[1];
-        resolve(base64);
+      // Fetch image
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      
+      if (Capacitor.getPlatform() === 'ios') {
+        // For iOS, use share dialog as primary method
+        return await shareImageMobile(blob, imageName);
       } else {
-        reject(new Error('Failed to convert blob to base64'));
+        // For Android, save to Downloads
+        return await saveImageToDownloads(blob, imageName);
       }
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-};
+    } catch (error) {
+      console.error('Mobile download error:', error);
+      throw error;
+    }
+  };
 
-// Save image to Downloads (Android)
-const saveImageToDownloads = async (blob: Blob, fileName?: string) => {
-  try {
-    const base64Data = await blobToBase64(blob);
-    const timestamp = new Date().getTime();
-    const name = fileName || `chat-image-${timestamp}.jpg`;
-    
-    const result = await Filesystem.writeFile({
-      path: `Download/${name}`,
-      data: base64Data,
-      directory: Directory.ExternalStorage,
-      recursive: true
+  // Add this function anywhere in your component file
+  const blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          const base64 = reader.result.split(',')[1];
+          resolve(base64);
+        } else {
+          reject(new Error('Failed to convert blob to base64'));
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
     });
-    
-    await Toast.show({
-      text: `Saved to Downloads/${name}`,
-      duration: 'long'
-    });
-    
-    return result;
-  } catch (error) {
-    // If saving fails, try sharing
-    console.log('Saving failed, trying share:', error);
-    return await shareImageMobile(blob, fileName);
-  }
-};
+  };
 
-// Share image (iOS/alternative)
-const shareImageMobile = async (blob: Blob, fileName?: string) => {
-  try {
-    const base64Data = await blobToBase64(blob);
-    const timestamp = new Date().getTime();
-    const name = fileName || `chat-image-${timestamp}.jpg`;
-    
-    // Save to cache first
-    const savedFile = await Filesystem.writeFile({
-      path: name,
-      data: base64Data,
-      directory: Directory.Cache,
-      recursive: true
-    });
-    
-    // Get file URI
-    const fileUri = savedFile.uri;
-    
-    // Share the file
-    await Share.share({
-      title: 'Share Image',
-      text: 'Chat Image',
-      url: fileUri,
-      dialogTitle: 'Save or Share Image'
-    });
-    
-    return savedFile;
-  } catch (error) {
-    console.error('Share failed:', error);
-    await Toast.show({
-      text: 'Failed to save or share image',
-      duration: 'long'
-    });
-    throw error;
-  }
-};
+  // Save image to Downloads (Android)
+  const saveImageToDownloads = async (blob: Blob, fileName?: string) => {
+    try {
+      const base64Data = await blobToBase64(blob);
+      const timestamp = new Date().getTime();
+      const name = fileName || `chat-image-${timestamp}.jpg`;
+      
+      const result = await Filesystem.writeFile({
+        path: `Download/${name}`,
+        data: base64Data,
+        directory: Directory.ExternalStorage,
+        recursive: true
+      });
+      
+      await Toast.show({
+        text: `Saved to Downloads/${name}`,
+        duration: 'long'
+      });
+      
+      return result;
+    } catch (error) {
+      // If saving fails, try sharing
+      console.log('Saving failed, trying share:', error);
+      return await shareImageMobile(blob, fileName);
+    }
+  };
+
+  // Share image (iOS/alternative)
+  const shareImageMobile = async (blob: Blob, fileName?: string) => {
+    try {
+      const base64Data = await blobToBase64(blob);
+      const timestamp = new Date().getTime();
+      const name = fileName || `chat-image-${timestamp}.jpg`;
+      
+      // Save to cache first
+      const savedFile = await Filesystem.writeFile({
+        path: name,
+        data: base64Data,
+        directory: Directory.Cache,
+        recursive: true
+      });
+      
+      // Get file URI
+      const fileUri = savedFile.uri;
+      
+      // Share the file
+      await Share.share({
+        title: 'Share Image',
+        text: 'Chat Image',
+        url: fileUri,
+        dialogTitle: 'Save or Share Image'
+      });
+      
+      return savedFile;
+    } catch (error) {
+      console.error('Share failed:', error);
+      await Toast.show({
+        text: 'Failed to save or share image',
+        duration: 'long'
+      });
+      throw error;
+    }
+  };
 
   const getStatusConfig = (status: string) => {
     const configs: any = {
@@ -329,6 +338,20 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
     return educations[education] || education;
   };
 
+  // Function to get file type icon
+  const getFileIcon = (mediaUrl?: string) => {
+    if (!mediaUrl) return { icon: FiFileText, color: 'text-gray-600', bg: 'bg-gray-100' };
+    
+    if (/\.(jpg|jpeg|png|gif|webp)$/i.test(mediaUrl)) return { icon: FaImage, color: 'text-green-600', bg: 'bg-green-100' };
+    if (/\.(mp4|mov|avi|webm)$/i.test(mediaUrl)) return { icon: FaVideo, color: 'text-blue-600', bg: 'bg-blue-100' };
+    if (/\.(mp3|wav|ogg)$/i.test(mediaUrl)) return { icon: FaMusic, color: 'text-purple-600', bg: 'bg-purple-100' };
+    if (/\.(pdf)$/i.test(mediaUrl)) return { icon: FaFilePdf, color: 'text-red-600', bg: 'bg-red-100' };
+    if (/\.(doc|docx)$/i.test(mediaUrl)) return { icon: FaFileWord, color: 'text-blue-600', bg: 'bg-blue-100' };
+    if (/\.(xls|xlsx)$/i.test(mediaUrl)) return { icon: FaFileExcel, color: 'text-green-600', bg: 'bg-green-100' };
+    if (/\.(zip|rar|7z)$/i.test(mediaUrl)) return { icon: FaFileArchive, color: 'text-yellow-600', bg: 'bg-yellow-100' };
+    return { icon: FiFileText, color: 'text-gray-600', bg: 'bg-gray-100' };
+  };
+
   const statusConfig = getStatusConfig(complaint.status);
   const levelConfig = getLevelConfig(complaint.level);
 
@@ -345,8 +368,74 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
     }
   };
 
-  const isImage = complaint.mediaUrl?.includes("image") || /\.(jpg|jpeg|png|gif|webp)$/i.test(complaint.mediaUrl);
-  const isVideo = complaint.mediaUrl?.includes("video") || /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
+  const isImage = complaint.mediaUrl && /\.(jpg|jpeg|png|gif|webp)$/i.test(complaint.mediaUrl);
+  const isVideo = complaint.mediaUrl && /\.(mp4|mov|avi|webm)$/i.test(complaint.mediaUrl);
+  const isAudio = complaint.mediaUrl && /\.(mp3|wav|ogg)$/i.test(complaint.mediaUrl);
+  const isPDF = complaint.mediaUrl && /\.(pdf)$/i.test(complaint.mediaUrl);
+  
+  const fileIcon = getFileIcon(complaint.mediaUrl);
+  const IconComponent = fileIcon.icon;
+
+  // Render file preview based on type
+  const renderFilePreview = () => {
+    if (!complaint.mediaUrl) return null;
+
+    if (isImage) {
+      return (
+        <img
+          src={complaint.mediaUrl}
+          alt="Complaint attachment"
+          className="w-full rounded-xl shadow-lg max-h-96 object-contain bg-gray-50 transform group-hover:scale-105 transition-transform duration-500"
+        />
+      );
+    } else if (isVideo) {
+      return (
+        <video
+          src={complaint.mediaUrl}
+          controls
+          className="w-full rounded-xl shadow-lg max-h-96 bg-black"
+        />
+      );
+    } else if (isAudio) {
+      return (
+        <div className="w-full p-8 bg-linear-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-100 flex flex-col items-center justify-center">
+          <FaMusic className="w-16 h-16 text-purple-500 mb-4" />
+          <p className="text-purple-700 font-medium">{t("form.audio_file", "Audio File")}</p>
+          <audio src={complaint.mediaUrl} controls className="w-full mt-4" />
+        </div>
+      );
+    } else if (isPDF) {
+      return (
+        <div className="w-full p-8 bg-linear-to-r from-red-50 to-pink-50 rounded-xl border-2 border-red-100 flex flex-col items-center justify-center">
+          <FaFilePdf className="w-16 h-16 text-red-500 mb-4" />
+          <p className="text-red-700 font-medium">{t("form.pdf_file", "PDF Document")}</p>
+          <a 
+            href={complaint.mediaUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mt-4 px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors duration-300"
+          >
+            {t("form.view_pdf", "View PDF")}
+          </a>
+        </div>
+      );
+    } else {
+      // Generic file preview for other types
+      return (
+        <div className="w-full p-8 bg-linear-to-r from-gray-50 to-blue-50 rounded-xl border-2 border-gray-100 flex flex-col items-center justify-center">
+          <IconComponent className="w-16 h-16 text-gray-500 mb-4" />
+          <a 
+            href={complaint.mediaUrl} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="mt-4 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-300"
+          >
+            {t("form.download_file", "Download File")}
+          </a>
+        </div>
+      );
+    }
+  };
 
   return (
     <section className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-100 animate-fade-in">
@@ -403,7 +492,10 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
                     { icon: <FaVenusMars className="w-4 h-4" />, label: t("form.gender"), value: getGenderLabel(complaint.gender) },
                     { icon: <FaGraduationCap className="w-4 h-4" />, label: t("form.education_community"), value: getEducationLabel(complaint.educationCommunity) },
                     { icon: <FiHome className="w-4 h-4" />, label: t("form.school_name"), value: complaint.schoolName },
-                    { icon: <FiMapPin className="w-4 h-4" />, label: t("form.wereda"), value: complaint.wereda }
+                    { icon: <FiMapPin className="w-4 h-4" />, label: t("form.wereda"), value: complaint.wereda },
+                    { icon: <FaBuilding className="w-4 h-4" />, label: t("form.city"), value: complaint.city },
+                    { icon: <TbMapPin className="w-4 h-4" />, label: t("form.sub_city"), value: complaint.subCity },
+                    { icon: <TbHome className="w-4 h-4" />, label: t("form.house_no"), value: complaint.houseNo }
                   ].map((item, index) => (
                     <div key={index} className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-5 border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 group">
                       <div className="flex items-center space-x-3 mb-3">
@@ -412,7 +504,7 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
                         </div>
                         <span className="text-sm font-semibold text-gray-500">{item.label}</span>
                       </div>
-                      <p className="text-gray-800 font-bold text-lg">{item.value}</p>
+                      <p className="text-gray-800 font-bold text-lg">{item.value || 'N/A'}</p>
                     </div>
                   ))}
                 </div>
@@ -432,6 +524,37 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
                 <p className="text-gray-800 text-lg leading-relaxed bg-linear-to-br from-gray-50 to-white rounded-2xl p-6 border-2 border-gray-100">
                   {complaint.title}
                 </p>
+              </div>
+
+              {/* Enhanced Complaint Process Details Card */}
+              <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg md:p-8 p-6 border border-white/20">
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <FaCalendarDay className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">{t("tracking.complaint_process_details", "Complaint Process Details")}</h3>
+                    {/* <p className="text-gray-500">{t("complaint_details.complaint_process_description", "Details about the complaint process")}</p>
+                 */}  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {[
+                    { icon: <FaCalendarDay className="w-4 h-4" />, label: t("form.complaint_made_date"), value: complaint.complaintMadeDate ? new Date(complaint.complaintMadeDate).toLocaleDateString() : 'N/A' },
+                    { icon: <TbMapPin className="w-4 h-4" />, label: t("form.complaint_made_place"), value: complaint.complaintMadePlace },
+                    { icon: <FaUniversity className="w-4 h-4" />, label: t("form.responsible_person"), value: complaint.responsibleBody },
+                    { icon: <FaComments className="w-4 h-4" />, label: t("form.response_given"), value: complaint.responceGived }
+                  ].map((item, index) => (
+                    <div key={index} className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-5 border-2 border-gray-100 hover:border-purple-200 transition-all duration-300 group">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center group-hover:bg-purple-100 transition-colors duration-300">
+                          {item.icon}
+                        </div>
+                        <span className="text-sm font-semibold text-gray-500">{item.label}</span>
+                      </div>
+                      <p className="text-gray-800 font-bold text-lg">{item.value || 'N/A'}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               {/* Enhanced Description Card */}
@@ -457,129 +580,129 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
                 <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg md:p-8 p-6 border border-white/20">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
                     <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
-                        {isImage ? (
-                          <FaImage className="w-6 h-6 text-white" />
-                        ) : (
-                          <FaVideo className="w-6 h-6 text-white" />
-                        )}
+                      <div className={`w-12 h-12 ${fileIcon.bg} rounded-2xl flex items-center justify-center shadow-lg`}>
+                        <IconComponent className={`w-6 h-6 ${fileIcon.color}`} />
                       </div>
                       <div>
                         <h3 className="text-xl font-bold text-gray-900">
                           {t("complaint_details.attached_media")}
                         </h3>
-                        <p className="text-gray-500">
-                          {isImage ? t("form.image") : t("form.video")}
-                        </p>
+                       {/*  <p className="text-gray-500">
+                          {isImage ? t("form.image") : 
+                           isVideo ? t("form.video") : 
+                           isAudio ? t("form.audio") :
+                           isPDF ? t("form.pdf_file") : 
+                           t("form.attached_file")}
+                        </p> */}
                       </div>
                     </div>
                     <div className="flex items-center space-x-3">
-                <button
-  onClick={async () => {
-    try {
-      setDownloading(true);
-      
-      if (Capacitor.isNativePlatform()) {
-        await downloadImageMobile(complaint.mediaUrl);
-      } else {
-        const response = await fetch(complaint.mediaUrl, { mode: "cors" });
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `complaint-media-${complaint._id}`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      }
-    } catch (err) {
-      console.error("Failed to download image:", err);
-      if (Capacitor.isNativePlatform()) {
-        await Toast.show({
-          text: 'Failed to download image',
-          duration: 'long'
-        });
-      } else {
-        alert('Failed to download image');
-      }
-    } finally {
-      setDownloading(false);
-    }
-  }}
-  disabled={downloading}
-  className={`group relative overflow-hidden rounded-xl px-5 py-3.5 font-medium transition-all duration-300 ${
-    downloading 
-      ? 'bg-emerald-700/40 cursor-wait border border-emerald-600/30' 
-      : 'bg-linear-to-br from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 border border-emerald-600/50 shadow-lg hover:shadow-emerald-500/20'
-  }`}
-  title="Download image"
->
-  {/* Animated background shine */}
-  <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000"></div>
-  
-  {/* Content */}
-  <div className="relative z-10 flex items-center justify-center gap-3">
-    {downloading ? (
-      <>
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-        <span className="font-semibold tracking-wide text-white/95">
-          {t("form.downloading") || "Downloading..."}
-        </span>
-      </>
-    ) : (
-      <>
-        <FiDownload className="h-5 w-5 transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-0.5" />
-        <span className="font-semibold tracking-wide text-white/95">
-          {t("form.download") || "Download"}
-        </span>
-      </>
-    )}
-  </div>
-  
-  {/* Subtle pulse effect when not downloading */}
-  {!downloading && (
-    <div className="absolute -inset-1 animate-pulse rounded-xl bg-emerald-400/10 blur-sm"></div>
-  )}
-</button>
-<button
-  onClick={handleDelete}
-  disabled={deleting}
-  onMouseEnter={() => setIsHovered('delete')}
-  onMouseLeave={() => setIsHovered(null)}
-  className={`group relative overflow-hidden rounded-xl px-6 py-3.5 font-medium transition-all duration-300 ${
-    deleting 
-      ? 'bg-rose-700/40 cursor-wait border border-rose-600/30' 
-      : 'bg-linear-to-br from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 border border-rose-600/50 shadow-lg hover:shadow-rose-500/20'
-  }`}
->
-  {/* Animated background sweep */}
-  <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/25 to-transparent group-hover:translate-x-full transition-transform duration-700"></div>
-  
-  {/* Content */}
-  <div className="relative z-10 flex items-center justify-center gap-3">
-    {deleting ? (
-      <>
-        <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-        <span className="font-semibold tracking-wide text-white/95">
-          {t("form.removing") || "Removing..."}
-        </span>
-      </>
-    ) : (
-      <>
-        <FiTrash2 className="h-5 w-5 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12" />
-        <span className="font-semibold tracking-wide text-white/95">
-          {t("form.remove") || "Remove"}
-        </span>
-      </>
-    )}
-  </div>
-  
-  {/* Warning glow effect on hover */}
-  {!deleting && (
-    <div className="absolute -inset-1 animate-pulse rounded-xl bg-rose-500/10 blur-sm transition-opacity duration-300 group-hover:opacity-100"></div>
-  )}
-</button>
+                      <button
+                        onClick={async () => {
+                          try {
+                            setDownloading(true);
+                            
+                            if (Capacitor.isNativePlatform()) {
+                              await downloadImageMobile(complaint.mediaUrl);
+                            } else {
+                              const response = await fetch(complaint.mediaUrl, { mode: "cors" });
+                              const blob = await response.blob();
+                              const url = window.URL.createObjectURL(blob);
+                              const link = document.createElement("a");
+                              link.href = url;
+                              link.download = `complaint-media-${complaint._id}`;
+                              document.body.appendChild(link);
+                              link.click();
+                              document.body.removeChild(link);
+                              window.URL.revokeObjectURL(url);
+                            }
+                          } catch (err) {
+                            console.error("Failed to download file:", err);
+                            if (Capacitor.isNativePlatform()) {
+                              await Toast.show({
+                                text: 'Failed to download file',
+                                duration: 'long'
+                              });
+                            } else {
+                              alert('Failed to download file');
+                            }
+                          } finally {
+                            setDownloading(false);
+                          }
+                        }}
+                        disabled={downloading}
+                        className={`group relative overflow-hidden rounded-xl px-5 py-3.5 font-medium transition-all duration-300 ${
+                          downloading 
+                            ? 'bg-emerald-700/40 cursor-wait border border-emerald-600/30' 
+                            : 'bg-linear-to-br from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800 border border-emerald-600/50 shadow-lg hover:shadow-emerald-500/20'
+                        }`}
+                        title="Download file"
+                      >
+                        {/* Animated background shine */}
+                        <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/20 to-transparent group-hover:translate-x-full transition-transform duration-1000"></div>
+                        
+                        {/* Content */}
+                        <div className="relative z-10 flex items-center justify-center gap-3">
+                          {downloading ? (
+                            <>
+                              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                              <span className="font-semibold tracking-wide text-white/95">
+                                {t("form.downloading") || "Downloading..."}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <FiDownload className="h-5 w-5 transition-transform duration-300 group-hover:scale-125 group-hover:-translate-y-0.5" />
+                              <span className="font-semibold tracking-wide text-white/95">
+                                {t("form.download") || "Download"}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        
+                        {/* Subtle pulse effect when not downloading */}
+                        {!downloading && (
+                          <div className="absolute -inset-1 animate-pulse rounded-xl bg-emerald-400/10 blur-sm"></div>
+                        )}
+                      </button>
+                      <button
+                        onClick={handleDelete}
+                        disabled={deleting}
+                        onMouseEnter={() => setIsHovered('delete')}
+                        onMouseLeave={() => setIsHovered(null)}
+                        className={`group relative overflow-hidden rounded-xl px-6 py-3.5 font-medium transition-all duration-300 ${
+                          deleting 
+                            ? 'bg-rose-700/40 cursor-wait border border-rose-600/30' 
+                            : 'bg-linear-to-br from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700 border border-rose-600/50 shadow-lg hover:shadow-rose-500/20'
+                        }`}
+                      >
+                        {/* Animated background sweep */}
+                        <div className="absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/25 to-transparent group-hover:translate-x-full transition-transform duration-700"></div>
+                        
+                        {/* Content */}
+                        <div className="relative z-10 flex items-center justify-center gap-3">
+                          {deleting ? (
+                            <>
+                              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                              <span className="font-semibold tracking-wide text-white/95">
+                                {t("form.removing") || "Removing..."}
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <FiTrash2 className="h-5 w-5 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12" />
+                              <span className="font-semibold tracking-wide text-white/95">
+                                {t("form.remove") || "Remove"}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        
+                        {/* Warning glow effect on hover */}
+                        {!deleting && (
+                          <div className="absolute -inset-1 animate-pulse rounded-xl bg-rose-500/10 blur-sm transition-opacity duration-300 group-hover:opacity-100"></div>
+                        )}
+                      </button>
                     </div>
                   </div>
 
@@ -602,35 +725,8 @@ const shareImageMobile = async (blob: Blob, fileName?: string) => {
                     </div>
                   )}
 
-                  <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-4 border-2 border-gray-100">
-                    {isImage ? (
-                      <div className="relative group overflow-hidden rounded-xl">
-                        <img
-                          src={complaint.mediaUrl}
-                          alt="Complaint attachment"
-                          className="w-full rounded-xl shadow-lg max-h-96 object-contain bg-gray-50 transform group-hover:scale-105 transition-transform duration-500"
-                        />
-                        <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl flex items-end">
-                          <div className="p-6 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                            <div className="flex items-center space-x-2">
-                              <FaImage className="w-5 h-5" />
-                              <span className="font-semibold">Image Preview</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="relative group overflow-hidden rounded-xl">
-                        <video
-                          src={complaint.mediaUrl}
-                          controls
-                          className="w-full rounded-xl shadow-lg max-h-96 bg-black"
-                        />
-                        <div className="absolute top-4 right-4 bg-black/50 backdrop-blur-sm rounded-full p-3 shadow-lg">
-                          <FaVideo className="w-5 h-5 text-white" />
-                        </div>
-                      </div>
-                    )}
+                  <div className="bg-linear-to-br from-gray-50 to-white rounded-2xl md:p-4 border-2 border-gray-100">
+                    {renderFilePreview()}
                   </div>
                 </div>
               )}
