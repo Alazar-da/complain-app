@@ -8,9 +8,9 @@ export default function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
 
   const languages = [
-    { code: "en", name: "English", native: "EN" },
-    { code: "am", name: "Amharic", native: "አማ" },
-    { code: "om", name: "Afan Oromo", native: "OM" },
+    { code: "en", name: "English", native: "ENG" },
+    { code: "am", name: "Amharic", native: "AMR" },
+    { code: "om", name: "Afan Oromo", native: "A/O" },
   ];
 
   const changeLanguage = (lng: string) => {
