@@ -453,9 +453,9 @@ export default function AdminDashboard() {
                 <div className="w-20 h-20 bg-linear-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                   <FiSearch className="w-10 h-10 text-gray-400" />
                 </div>
-                <p className="text-2xl font-semibold text-gray-500 mb-2">No complaints found</p>
+                <p className="text-2xl font-semibold text-gray-500 mb-2">{t('complain.no_complaints_found')}</p>
                 <p className="text-gray-400">
-                  {searchTerm || statusFilter !== "All" ? "Try adjusting your search or filters" : "No complaints have been submitted yet"}
+                  {searchTerm || statusFilter !== "All" ? t('complain.try_adjusting_search_or_filters') : t('complain.no_complaints_have_been_submitted_yet')}
                 </p>
               </div>
             )}
@@ -529,7 +529,7 @@ export default function AdminDashboard() {
                     className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors duration-200 text-sm font-semibold"
                   >
                     <FiEye className="w-4 h-4" />
-                    <span>View Details</span>
+                    <span>{t('complain.view_details')}</span>
                   </button>
                   <div className="flex items-center space-x-2">
                     <button
@@ -557,7 +557,7 @@ export default function AdminDashboard() {
                   <div className="w-20 h-20 bg-linear-to-br from-gray-200 to-gray-300 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                     <FiSearch className="w-10 h-10 text-gray-400" />
                   </div>
-                  <p className="text-2xl font-semibold text-gray-500 mb-2">No complaints found</p>
+                  <p className="text-2xl font-semibold text-gray-500 mb-2">{t('complain.no_complaints_found')}</p>
                   <p className="text-gray-400">
                     {searchTerm || statusFilter !== "All" ? "Try adjusting your search or filters" : "No complaints have been submitted yet"}
                   </p>
@@ -569,9 +569,9 @@ export default function AdminDashboard() {
 
         {/* Enhanced Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-6 mt-8 border border-white/20">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-0 items-center justify-between bg-white/80 backdrop-blur-xl rounded-3xl shadow-lg p-6 mt-8 border border-white/20">
             <div className="text-sm text-gray-600">
-              Showing <span className="font-bold text-gray-800">{complaints.length}</span> complaints
+              {t('complain.showing')} <span className="font-bold text-gray-800">{complaints.length}</span> {t('complain.complains')}
             </div>
             
             <div className="flex items-center space-x-3">

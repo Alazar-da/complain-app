@@ -420,6 +420,15 @@
     "to": "Itti",
     "all": "Hunda",
     "media_url": "Miidiyaa URL"
-  }  
+  },
+  
+  "complain": {
+    "showing": "Agarsiisaa ",
+    "complains": " komiiwwan",
+    "no_complaints_found": "Komiin hin argamne",
+    "view_details": "Faayila Ilaali",
+    "try_adjusting_search_or_filters": "Faayilota ykn barbadii jijjiiri.",
+    "no_complaints_have_been_submitted_yet": "Komiin ammaaaf hin dhihaatin"
+  }
 
 }

@@ -431,6 +431,16 @@
     "to": "to",
     "all": "All",
     "media_url": "Media URL"
+  },
+
+  "complain": {
+    "showing": "Showing",
+    "complains": " complains",
+    "no_complaints_found": "No complaints found",
+    "view_details": "View Details",
+    "try_adjusting_search_or_filters": "Try adjusting your search or filters",
+    "no_complaints_have_been_submitted_yet": "No complaints have been submitted yet"
+
   }
 
 }

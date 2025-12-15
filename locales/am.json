@@ -434,6 +434,15 @@
     "to": "እስከ",
     "all": "ሁሉም",
     "media_url": "የሚዲያ አድራሻ"
+  },
+
+  "complain":{
+  "showing": "ሚታዩት",
+  "complains": "ቅሬታዎች",
+  "no_complaints_found": "ቅሬታዎች አልተገኙም",
+  "view_details": "ዝርዝሮችን እይ",
+  "try_adjusting_search_or_filters": "የፍለጋ ቃላትዎን ወይም ማጣሪያዎችን ይቀይሩ።",
+  "no_complaints_have_been_submitted_yet": "እስካሁን ድረስ ቅሬታዎች አልተሰጡም"
   }
 
 }
