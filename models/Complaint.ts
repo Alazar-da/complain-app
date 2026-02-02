@@ -55,8 +55,8 @@ const ComplaintSchema = new Schema<IComplaint>(
 
     // Complaint Info
     title: { type: String, required: true, trim: true },
-    complaintMadeDate: { type: Date, required: true },
-    complaintMadePlace: { type: String, required: true, trim: true },
+    complaintMadeDate: { type: Date },
+    complaintMadePlace: { type: String, trim: true },
     responsibleBody: { type: String, trim: true },
     responceGived: { type: String, trim: true },
     department: { type: String, required: true, trim: true },
