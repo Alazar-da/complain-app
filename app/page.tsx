@@ -631,6 +631,98 @@ ${t('receipt.thank_you')}
                 </select>
               </div>
 
+              {/* City - New Field */}
+              <div>
+                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
+                    <FaBuilding className="text-indigo-600" />
+                  </div>
+                  {t("form.city")} *
+                </label>
+             {/*    <input
+                  type="text"
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+                  value={form.city}
+                  onChange={(e) => setForm({ ...form, city: e.target.value })}
+                  placeholder={t("form.enter_city")}
+                  required
+                /> */}
+
+                 <select
+                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner cursor-pointer"
+                 value={form.city}
+                  onChange={(e) => setForm({ ...form, city: e.target.value as string })}
+                  required
+                >
+                  <option value="" disabled>{/* {t("form.select_gender")} */}Select City</option>
+                 
+                    <option key="Addis Ababa" value={"Addis Ababa"}>
+                    Addis Ababa
+                    </option>
+                
+                </select>
+              </div>
+
+              {/* Sub City - New Field */}
+              <div>
+  <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+    <div className="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mr-3">
+      <FaMapPin className="text-pink-600" />
+    </div>
+    {t("form.sub_city")} *
+  </label>
+  <select
+    className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-pink-200 focus:border-pink-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+    value={form.subCity}
+    onChange={(e) => setForm({ ...form, subCity: e.target.value })}
+    required
+  >
+    <option value="" disabled>{/* {t("form.select_sub_city")} */}Select Sub city</option>
+    <option value="Addis Ketema">Addis Ketema</option>
+    <option value="Akaky Kaliti">Akaky Kaliti</option>
+    <option value="Arada">Arada</option>
+    <option value="Bole">Bole</option>
+    <option value="Gullele">Gullele</option>
+    <option value="Kirkos">Kirkos</option>
+    <option value="Kolfe Keranio">Kolfe Keranio</option>
+    <option value="Lideta">Lideta</option>
+    <option value="Lemi Kura">Lemi Kura</option>
+    <option value="Nifas Silk-Lafto">Nifas Silk-Lafto</option>
+    <option value="Yeka">Yeka</option>
+  </select>
+</div>
+
+              {/* Wereda */}
+             <div>
+  <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
+    <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
+      <FaMapMarkerAlt className="text-teal-600" />
+    </div>
+    {t("form.wereda")}
+  </label>
+  <select
+    className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-teal-200 focus:border-teal-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
+    value={form.wereda}
+    onChange={(e) => setForm({ ...form, wereda: e.target.value })}
+  >
+    <option value="" disabled>{/* {t("form.select_wereda")} */}Select Wereda</option>
+    <option value="01">01</option>
+    <option value="02">02</option>
+    <option value="03">03</option>
+    <option value="04">04</option>
+    <option value="05">05</option>
+    <option value="06">06</option>
+    <option value="07">07</option>
+    <option value="08">08</option>
+    <option value="09">09</option>
+    <option value="10">10</option>
+    <option value="12">12</option>
+    <option value="13">13</option>
+  </select>
+</div>
+
+              
+
               {/* School Name */}
               <div>
                 <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
@@ -646,59 +738,6 @@ ${t('receipt.thank_you')}
                   onChange={(e) => setForm({ ...form, schoolName: e.target.value })}
                   placeholder={t("form.enter_school")}
 
-                />
-              </div>
-
-              {/* Wereda */}
-              <div>
-                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
-                  <div className="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
-                    <FaMapMarkerAlt className="text-teal-600" />
-                  </div>
-                  {t("form.wereda")}
-                </label>
-                <input
-                  type="text"
-                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-teal-200 focus:border-teal-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
-                  value={form.wereda}
-                  onChange={(e) => setForm({ ...form, wereda: e.target.value })}
-                  placeholder={t("form.enter_wereda")}
-                />
-              </div>
-
-              {/* City - New Field */}
-              <div>
-                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
-                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center mr-3">
-                    <FaBuilding className="text-indigo-600" />
-                  </div>
-                  {t("form.city")} *
-                </label>
-                <input
-                  type="text"
-                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
-                  value={form.city}
-                  onChange={(e) => setForm({ ...form, city: e.target.value })}
-                  placeholder={t("form.enter_city")}
-                  required
-                />
-              </div>
-
-              {/* Sub City - New Field */}
-              <div>
-                <label className="flex items-center text-sm font-semibold text-gray-700 mb-3">
-                  <div className="w-8 h-8 bg-pink-100 rounded-lg flex items-center justify-center mr-3">
-                    <FaMapPin className="text-pink-600" />
-                  </div>
-                  {t("form.sub_city")} *
-                </label>
-                <input
-                  type="text"
-                  className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-pink-200 focus:border-pink-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner"
-                  value={form.subCity}
-                  onChange={(e) => setForm({ ...form, subCity: e.target.value })}
-                  placeholder={t("form.enter_sub_city")}
-                  required
                 />
               </div>
 
