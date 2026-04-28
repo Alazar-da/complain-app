@@ -38,7 +38,9 @@ import {
   FaUserCheck,
   FaBan,
   FaStar,
-  FaAward
+  FaAward,
+  FaMapPin,
+  FaMapMarkerAlt
 } from "react-icons/fa";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { BsGraphUpArrow } from "react-icons/bs";
@@ -52,6 +54,24 @@ import { Capacitor } from '@capacitor/core';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Title, Tooltip, Legend);
 
+// Sub-city options
+const subCities = [
+  "Addis Ketema",
+  "Akaky Kaliti", 
+  "Arada",
+  "Bole",
+  "Gullele",
+  "Kirkos",
+  "Kolfe Keranio",
+  "Lideta",
+  "Lemi Kura",
+  "Nifas Silk-Lafto",
+  "Yeka"
+];
+
+// Wereda options (01-13)
+const weredas = Array.from({ length: 13 }, (_, i) => String(i + 1).padStart(2, '0'));
+
 export default function AnalyticsPage() {
   const [startDate, setStartDate] = useState(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
   const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
@@ -59,6 +79,8 @@ export default function AnalyticsPage() {
   const [levelFilter, setLevelFilter] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [subDepartmentFilter, setSubDepartmentFilter] = useState("");
+  const [subCityFilter, setSubCityFilter] = useState(""); // New subCity filter
+  const [weredaFilter, setWeredaFilter] = useState(""); // New wereda filter
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [items, setItems] = useState<any[]>([]);
@@ -85,14 +107,17 @@ const [exporting, setExporting] = useState(false);
   const fetchData = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        startDate,
-        endDate,
-        status: statusFilter || "All",
-        level: levelFilter || "All",
-        department: departmentFilter || "All",
-        subDepartment: subDepartmentFilter || "All",
-      });
+     const params = new URLSearchParams();
+
+params.append("startDate", startDate);
+params.append("endDate", endDate);
+
+if (statusFilter) params.append("status", statusFilter);
+if (levelFilter) params.append("level", levelFilter);
+if (departmentFilter) params.append("department", departmentFilter);
+if (subDepartmentFilter) params.append("subDepartment", subDepartmentFilter);
+if (subCityFilter) params.append("subCity", subCityFilter);
+if (weredaFilter) params.append("wereda", weredaFilter);
 
       const res = await fetch(`/api/admin/analytics?${params.toString()}`);
       const data = await res.json();
@@ -106,9 +131,18 @@ const [exporting, setExporting] = useState(false);
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+ useEffect(() => {
+  fetchData();
+}, [
+  startDate,
+  endDate,
+  statusFilter,
+  levelFilter,
+  departmentFilter,
+  subDepartmentFilter,
+  subCityFilter,
+  weredaFilter
+]);
 
   // Enhanced Chart data with better colors and styling
   const statusLabels = Object.keys(data?.statusCounts || {});
@@ -465,7 +499,9 @@ const headers = [
       [t("file_headers.status_filter"), statusFilter ? t(`status.${statusFilter}`) : t("file_headers.all")],
       [t("file_headers.level_filter"), levelFilter ? t(`levels.${levelFilter}`) : t("file_headers.all")],
       [t("file_headers.department"), departmentFilter ? (departments[departmentFilter as DepartmentKey]?.[language] || departmentFilter) : t("file_headers.all")],
-      [t("file_headers.sub_department"), subDepartmentFilter || t("file_headers.all")]
+      [t("file_headers.sub_department"), subDepartmentFilter || t("file_headers.all")],
+      [t("file_headers.sub_city"), subCityFilter || t("file_headers.all")], // Add subCity to summary
+      [t("file_headers.wereda"), weredaFilter || t("file_headers.all")] // Add wereda to summary
     ];
 
     const ws2 = XLSX.utils.aoa_to_sheet(summaryData);
@@ -786,7 +822,7 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
 {/* Compact Collapsible Filters Card */}
 {showFilters && (
   <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-6 mb-6 border border-white/20 animate-fade-in">
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
       {/* Status Filter */}
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -833,10 +869,11 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
         <select
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
           value={departmentFilter}
-          onChange={(e) => {
-            setDepartmentFilter(e.target.value);
-            setSubDepartmentFilter("");
-          }}
+         onChange={(e) => {
+  const value = e.target.value;
+  setDepartmentFilter(value);
+  setSubDepartmentFilter(""); // reset child filter
+}}
         >
           <option value="">{t("analytics.All")}</option>
           {Object.entries(departments).map(([key, dept]) => (
@@ -847,33 +884,77 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
         </select>
       </div>
 
-          {/* Sub-department - Only shows when needed */}
-    {departmentFilter && departments[departmentFilter as DepartmentKey]?.subDepartments.length > 0 && (
-      <div className="mb-4">
+      {/* Sub-department - Only shows when needed */}
+      {departmentFilter && departments[departmentFilter as DepartmentKey]?.subDepartments.length > 0 && (
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            {t("analytics.sub_department")}
+          </label>
+          <select
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+            value={subDepartmentFilter}
+            onChange={(e) => setSubDepartmentFilter(e.target.value)}
+          >
+            <option value="">{t("analytics.All")}</option>
+            {departments[departmentFilter as DepartmentKey].subDepartments.map(
+              (sub, index) => (
+                <option key={index} value={sub.en}>
+                  {sub[language] || sub.en}
+                </option>
+              )
+            )}
+          </select>
+        </div>
+      )}
+
+      {/* Sub-City Filter - NEW */}
+      <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
-          {t("analytics.sub_department")}
+          <div className="flex items-center gap-1">
+            <FaMapPin className="text-pink-500 text-xs" />
+            {t("form.sub_city")}
+          </div>
         </label>
         <select
           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
-          value={subDepartmentFilter}
-          onChange={(e) => setSubDepartmentFilter(e.target.value)}
+          value={subCityFilter}
+          onChange={(e) => setSubCityFilter(e.target.value)}
         >
           <option value="">{t("analytics.All")}</option>
-          {departments[departmentFilter as DepartmentKey].subDepartments.map(
-            (sub, index) => (
-              <option key={index} value={sub.en}>
-                {sub[language] || sub.en}
-              </option>
-            )
-          )}
+          {subCities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
         </select>
       </div>
-    )}
+
+      {/* Wereda Filter - NEW */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <div className="flex items-center gap-1">
+            <FaMapMarkerAlt className="text-teal-500 text-xs" />
+            {t("form.wereda")}
+          </div>
+        </label>
+        <select
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-sm"
+          value={weredaFilter}
+          onChange={(e) => setWeredaFilter(e.target.value)}
+        >
+          <option value="">{t("analytics.All")}</option>
+          {weredas.map((wereda) => (
+            <option key={wereda} value={wereda}>
+              {wereda}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
 
-<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-   {/* Date Range - Combined */}
-      <div className="sm:col-span-2 lg:col-span-1">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      {/* Date Range - Combined */}
+      <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
           {t("analytics.date_range")}
         </label>
@@ -893,47 +974,53 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
           />
         </div>
       </div>
-    {/* Action Buttons - Compact */}
-    <div className="sm:flex grid gap-3 pt-2 sm:justify-between items-center w-full sm:items-end col-span-1  sm:col-span-2 lg:col-span-1">
-      <button
-        onClick={fetchData}
-        disabled={loading}
-        onMouseEnter={() => setIsHovered('apply')}
-        onMouseLeave={() => setIsHovered(null)}
-        className="group relative bg-linear-to-r from-blue-500 to-purple-600 text-white px-4 py-3 h-fit rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center justify-center space-x-2 flex-1"
-      >
-        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
-        {loading ? (
-          <>
-            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
-            <span className="relative z-10 text-sm">{t("analytics.Loading")}</span>
-          </>
-        ) : (
-          <>
-            <FaSync className="relative z-10 text-sm" />
-            <span className="relative z-10 text-sm">{t("analytics.apply_filters")}</span>
-          </>
-        )}
-      </button>
       
-      <button
-        onClick={() => {
-          setStatusFilter('');
-          setLevelFilter('');
-          setDepartmentFilter('');
-          setSubDepartmentFilter('');
-          setStartDate(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
-          setEndDate(dayjs().format("YYYY-MM-DD"));
-        }}
-        onMouseEnter={() => setIsHovered('clear')}
-        onMouseLeave={() => setIsHovered(null)}
-        className="group relative bg-linear-to-r from-gray-500 to-gray-600 text-white px-4 py-3 h-fit rounded-xl font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center justify-center space-x-2 flex-1"
-      >
-        <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
-        <FaTimes className="relative z-10 text-sm" />
-        <span className="relative z-10 text-sm">{t("analytics.clear_all")}</span>
-      </button>
-    </div>
+      {/* Action Buttons - Compact */}
+      <div className="flex gap-3 pt-2 items-end">
+        <button
+          onClick={fetchData}
+          disabled={loading}
+          onMouseEnter={() => setIsHovered('apply')}
+          onMouseLeave={() => setIsHovered(null)}
+          className="group relative bg-linear-to-r from-blue-500 to-purple-600 text-white px-4 py-3 h-fit rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center justify-center space-x-2 flex-1"
+        >
+          <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin relative z-10"></div>
+              <span className="relative z-10 text-sm">{t("analytics.Loading")}</span>
+            </>
+          ) : (
+            <>
+              <FaSync className="relative z-10 text-sm" />
+              <span className="relative z-10 text-sm">{t("analytics.apply_filters")}</span>
+            </>
+          )}
+        </button>
+        
+        <button
+          onClick={() => {
+  setStatusFilter('');
+  setLevelFilter('');
+  setDepartmentFilter('');
+  setSubDepartmentFilter('');
+  setSubCityFilter('');
+  setWeredaFilter('');
+  setStartDate(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
+  setEndDate(dayjs().format("YYYY-MM-DD"));
+
+  // 🔥 force refresh immediately
+  setTimeout(fetchData, 0);
+}}
+          onMouseEnter={() => setIsHovered('clear')}
+          onMouseLeave={() => setIsHovered(null)}
+          className="group relative bg-linear-to-r from-gray-500 to-gray-600 text-white px-4 py-3 h-fit rounded-xl font-semibold hover:from-gray-600 hover:to-gray-700 transition-all duration-300 hover:scale-105 hover:shadow-lg overflow-hidden flex items-center justify-center space-x-2 flex-1"
+        >
+          <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-500"></div>
+          <FaTimes className="relative z-10 text-sm" />
+          <span className="relative z-10 text-sm">{t("analytics.clear_all")}</span>
+        </button>
+      </div>
     </div>
   </div>
 )}
@@ -1166,7 +1253,7 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
                   <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.level")}</th>
                   <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.status")}</th>
                   <th className="px-6 py-4 text-sm font-bold text-gray-700">{t("analytics.table_date")}</th>
-                </tr>
+                 </tr>
               </thead>
               <tbody>
                 {items.length > 0 ? (

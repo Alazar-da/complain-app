@@ -5,13 +5,13 @@ export interface IComplaint extends Document {
   // Step 1: Personal Information
   fullName: string;
   city: string;//New field
-  subCity: string;//New field
+  subCity: "Addis Ketema" | "Akaky Kaliti" | "Arada" | "Bole" | "Gullele" | "Kirkos" | "Kolfe Keranio" | "Lideta" | "Lemi Kura" | "Nifas Silk-Lafto" | "Yeka";//Updated field with enum
   houseNo: string;//New field
   phoneNumber: string;
   gender: "male" | "female";
   educationCommunity: "student" | "student_family" | "teacher" | "supervisor" | "expert";
   schoolName: string;
-  wereda: string;
+  wereda: "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09" | "10" | "12" | "13"; // Keep as string since it's from 01-13 (or can be enum if preferred)
 
   // Step 2: Complaint Information
   title: string;
@@ -41,7 +41,11 @@ const ComplaintSchema = new Schema<IComplaint>(
     // Personal Info
     fullName: { type: String, required: true, trim: true },
     city: { type: String, required: true, trim: true },
-    subCity: { type: String, required: true, trim: true },
+    subCity: { 
+      type: String, 
+      enum: ["Addis Ketema", "Akaky Kaliti", "Arada", "Bole", "Gullele", "Kirkos", "Kolfe Keranio", "Lideta", "Lemi Kura", "Nifas Silk-Lafto", "Yeka"], 
+      required: true 
+    },
     houseNo: { type: String, trim: true },
     phoneNumber: { type: String, required: true, trim: true },
     gender: { type: String, enum: ["male", "female"], required: true },
@@ -51,7 +55,11 @@ const ComplaintSchema = new Schema<IComplaint>(
       required: true,
     },
     schoolName: { type: String, trim: true },
-    wereda: { type: String, trim: true },
+    wereda: { 
+      type: String, 
+      enum: ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "12", "13"],
+      trim: true 
+    },
 
     // Complaint Info
     title: { type: String, required: true, trim: true },
@@ -85,6 +93,8 @@ ComplaintSchema.index({ status: 1 });
 ComplaintSchema.index({ date: 1 });
 ComplaintSchema.index({ resolvedAt: 1 });
 ComplaintSchema.index({ responsiblePerson: 1 }); // New index
+ComplaintSchema.index({ subCity: 1 }); // Index for subCity filtering
+ComplaintSchema.index({ wereda: 1 }); // Index for wereda filtering
 
 // 🔹 Pre-save hook for unique tracking number
 ComplaintSchema.pre("validate", async function (next) {

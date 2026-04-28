@@ -7,17 +7,18 @@ export async function GET(req: Request) {
     await connectDB();
 
     const { searchParams } = new URL(req.url);
+
     const startDate = searchParams.get("startDate");
     const endDate = searchParams.get("endDate");
     const status = searchParams.get("status");
     const level = searchParams.get("level");
     const department = searchParams.get("department");
     const subDepartment = searchParams.get("subDepartment");
-    const city = searchParams.get("city");
     const subCity = searchParams.get("subCity");
+    const wereda = searchParams.get("wereda");
     const educationCommunity = searchParams.get("educationCommunity");
 
-    // 🧠 Build dynamic filter
+    // 🔹 Dynamic filter
     const filter: any = {};
 
     if (startDate && endDate) {
@@ -31,45 +32,38 @@ export async function GET(req: Request) {
     if (level && level !== "All") filter.level = level;
     if (department && department !== "All") filter.department = department;
     if (subDepartment && subDepartment !== "All") filter.subDepartment = subDepartment;
-    if (city && city !== "All") filter.city = city;
     if (subCity && subCity !== "All") filter.subCity = subCity;
-    if (educationCommunity && educationCommunity !== "All") filter.educationCommunity = educationCommunity;
+    if (wereda && wereda !== "All") filter.wereda = wereda;
+    if (educationCommunity && educationCommunity !== "All") {
+      filter.educationCommunity = educationCommunity;
+    }
 
-    // 🔹 Fetch ALL complaints that match filters
+    // 🔹 Fetch complaints
     const complaints = await Complaint.find(filter).sort({ createdAt: -1 });
 
-    // 🔹 Aggregations
+    // 🔹 Total
     const total = complaints.length;
 
-    const statusCounts = complaints.reduce((acc: Record<string, number>, c) => {
-      acc[c.status] = (acc[c.status] || 0) + 1;
-      return acc;
-    }, {});
+    // 🔹 Aggregations
+    const countByField = (field: string) =>
+      complaints.reduce((acc: Record<string, number>, c: any) => {
+        if (c[field]) {
+          acc[c[field]] = (acc[c[field]] || 0) + 1;
+        }
+        return acc;
+      }, {});
 
-    const levelCounts = complaints.reduce((acc: Record<string, number>, c) => {
-      acc[c.level] = (acc[c.level] || 0) + 1;
-      return acc;
-    }, {});
+    const statusCounts = countByField("status");
+    const levelCounts = countByField("level");
+    const departmentCounts = countByField("department");
+    const cityCounts = countByField("city");
+    const subCityCounts = countByField("subCity");       // ✅ NEW
+    const weredaCounts = countByField("wereda");         // ✅ NEW
+    const educationCommunityCounts = countByField("educationCommunity");
 
-    const departmentCounts = complaints.reduce((acc: Record<string, number>, c) => {
-      acc[c.department] = (acc[c.department] || 0) + 1;
-      return acc;
-    }, {});
-
-    const cityCounts = complaints.reduce((acc: Record<string, number>, c) => {
-      if (c.city) {
-        acc[c.city] = (acc[c.city] || 0) + 1;
-      }
-      return acc;
-    }, {});
-
-    const educationCommunityCounts = complaints.reduce((acc: Record<string, number>, c) => {
-      acc[c.educationCommunity] = (acc[c.educationCommunity] || 0) + 1;
-      return acc;
-    }, {});
-
-    // 🔹 Daily count aggregation (for charts)
+    // 🔹 Daily counts (for charts)
     const dailyCountsMap: Record<string, number> = {};
+
     complaints.forEach((c) => {
       const date = new Date(c.date).toISOString().split("T")[0];
       dailyCountsMap[date] = (dailyCountsMap[date] || 0) + 1;
@@ -80,7 +74,7 @@ export async function GET(req: Request) {
       count,
     }));
 
-    // ✅ Match frontend shape
+    // 🔹 Response
     return NextResponse.json({
       total,
       complaints,
@@ -88,9 +82,12 @@ export async function GET(req: Request) {
       levelCounts,
       departmentCounts,
       cityCounts,
+      subCityCounts,          // ✅ INCLUDED
+      weredaCounts,           // ✅ INCLUDED
       educationCommunityCounts,
       dailyCounts,
     });
+
   } catch (error) {
     console.error("❌ Error in analytics API:", error);
     return NextResponse.json(

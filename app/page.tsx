@@ -651,12 +651,12 @@ ${t('receipt.thank_you')}
                  <select
                   className="w-full border-2 border-gray-200 rounded-xl p-4 focus:ring-4 focus:ring-indigo-200 focus:border-indigo-500 transition-all duration-300 bg-white/50 backdrop-blur-sm shadow-inner cursor-pointer"
                  value={form.city}
-                  onChange={(e) => setForm({ ...form, city: e.target.value as string })}
+                  onChange={(e) => setForm({ ...form, city: e.target.value})}
                   required
                 >
                   <option value="" disabled>{/* {t("form.select_gender")} */}Select City</option>
                  
-                    <option key="Addis Ababa" value={"Addis Ababa"}>
+                    <option value={"Addis Ababa"}>
                     Addis Ababa
                     </option>
                 
