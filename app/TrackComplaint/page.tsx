@@ -171,8 +171,8 @@ ${t("form.gender", "Gender")}: ${t(`gender.${complaint.gender}`)}
 ${t("form.education_community", "Education Community")}: ${t(`education.${complaint.educationCommunity}`)}
 ${t("form.school_name", "School Name")}: ${complaint.schoolName}
 ${t("form.wereda", "Wereda")}: ${complaint.wereda}
-${t("form.city", "City")}: ${complaint.city}
-${t("form.sub_city", "Sub City")}: ${complaint.subCity}
+${t("form.city", "City")}: ${t("city")}
+${t("form.sub_city", "Sub City")}: ${t(`sub_city.${complaint.subCity}`)}
 ${t("form.house_no", "House No")}: ${complaint.houseNo}
 
 ${t("tracking.download.complaint_section", "COMPLAINT DETAILS:")}
@@ -706,7 +706,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                         <FaBuilding className="text-indigo-500" />
                         <span>{t("form.city", "City")}</span>
                       </label>
-                      <p className="text-gray-800 font-bold text-lg">{complaint.city}</p>
+                      <p className="text-gray-800 font-bold text-lg">{t("city")}</p>
                     </div>
                   </div>
                   <div className="space-y-4">
@@ -741,7 +741,7 @@ ${t("tracking.download.tracking_usage", "You can use it to check the status of y
                         <FaMapPin className="text-pink-500" />
                         <span>{t("form.sub_city", "Sub City")}</span>
                       </label>
-                      <p className="text-gray-800 font-bold text-lg">{complaint.subCity}</p>
+                      <p className="text-gray-800 font-bold text-lg">{t(`sub_city.${complaint.subCity}`)}</p>
                     </div>
                     <div className="bg-white p-4 rounded-xl border-2 border-gray-100 hover:border-amber-200 transition-all duration-300">
                       <label className="text-sm font-semibold text-gray-600 flex items-center space-x-2">

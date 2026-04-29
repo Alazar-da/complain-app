@@ -10,6 +10,9 @@
     "enter_phone_number": "Enter phone number",
     "gender": "Gender",
     "select_gender": "Select gender",
+    "select_city": "Select city",
+    "select_sub_city": "Select sub city",
+    "select_wereda": "Select wereda",
     "education_community": "Job position",
     "select_education_community": "Select your job position",
     "school_name": "School Name",
@@ -69,6 +72,21 @@
 "gender": {
   "male": "Male",
   "female": "Female"
+  },
+
+"city":"Addis Ababa",
+  "sub_city":{
+ "Addis Ketema":"Addis Ketema",
+   "Akaky Kaliti":"Akaky Kaliti",
+    "Arada":"Arada",
+    "Bole":"Bole",
+    "Gullele":"Gullele",
+    "Kirkos":"Kirkos",
+    "Kolfe Keranio":"Kolfe Keranio",
+    "Lideta":"Lideta",
+    "Lemi Kura":"Lemi Kura",
+    "Nifas Silk-Lafto":"Nifas Silk-Lafto",
+    "Yeka":"Yeka"
   },
 
 "levels": { "Low": "Low", "Medium": "Medium", "High": "High" },

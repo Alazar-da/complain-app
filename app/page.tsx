@@ -654,10 +654,10 @@ ${t('receipt.thank_you')}
                   onChange={(e) => setForm({ ...form, city: e.target.value})}
                   required
                 >
-                  <option value="" disabled>{/* {t("form.select_gender")} */}Select City</option>
+                  <option value="" disabled>{t("form.select_city")}</option>
                  
                     <option value={"Addis Ababa"}>
-                    Addis Ababa
+                    {t("city")}
                     </option>
                 
                 </select>
@@ -677,18 +677,18 @@ ${t('receipt.thank_you')}
     onChange={(e) => setForm({ ...form, subCity: e.target.value })}
     required
   >
-    <option value="" disabled>{/* {t("form.select_sub_city")} */}Select Sub city</option>
-    <option value="Addis Ketema">Addis Ketema</option>
-    <option value="Akaky Kaliti">Akaky Kaliti</option>
-    <option value="Arada">Arada</option>
-    <option value="Bole">Bole</option>
-    <option value="Gullele">Gullele</option>
-    <option value="Kirkos">Kirkos</option>
-    <option value="Kolfe Keranio">Kolfe Keranio</option>
-    <option value="Lideta">Lideta</option>
-    <option value="Lemi Kura">Lemi Kura</option>
-    <option value="Nifas Silk-Lafto">Nifas Silk-Lafto</option>
-    <option value="Yeka">Yeka</option>
+    <option value="" disabled>{t("form.select_sub_city")}</option>
+    <option value="Addis Ketema">{t("sub_city.Addis Ketema")}</option>
+    <option value="Akaky Kaliti">{t("sub_city.Akaky Kaliti")}</option>
+    <option value="Arada">{t("sub_city.Arada")}</option>
+    <option value="Bole">{t("sub_city.Bole")}</option>
+    <option value="Gullele">{t("sub_city.Gullele")}</option>
+    <option value="Kirkos">{t("sub_city.Kirkos")}</option>
+    <option value="Kolfe Keranio">{t("sub_city.Kolfe Keranio")}</option>
+    <option value="Lideta">{t("sub_city.Lideta")}</option>
+    <option value="Lemi Kura">{t("sub_city.Lemi Kura")}</option>
+    <option value="Nifas Silk-Lafto">{t("sub_city.Nifas Silk-Lafto")}</option>
+    <option value="Yeka">{t("sub_city.Yeka")}</option>
   </select>
 </div>
 
@@ -705,7 +705,7 @@ ${t('receipt.thank_you')}
     value={form.wereda}
     onChange={(e) => setForm({ ...form, wereda: e.target.value })}
   >
-    <option value="" disabled>{/* {t("form.select_wereda")} */}Select Wereda</option>
+    <option value="" disabled>{t("form.select_wereda")}</option>
     <option value="01">01</option>
     <option value="02">02</option>
     <option value="03">03</option>

@@ -70,11 +70,13 @@ const subCities = [
 ];
 
 // Wereda options (01-13)
-const weredas = Array.from({ length: 13 }, (_, i) => String(i + 1).padStart(2, '0'));
+const weredas = Array.from({ length: 13 }, (_, i) => i + 1)
+  .filter(n => n !== 11) // ❌ remove 11
+  .map(n => String(n).padStart(2, '0')); // ✅ format 01, 02...
 
 export default function AnalyticsPage() {
   const [startDate, setStartDate] = useState(dayjs().subtract(30, "day").format("YYYY-MM-DD"));
-  const [endDate, setEndDate] = useState(dayjs().format("YYYY-MM-DD"));
+  const [endDate, setEndDate] = useState(dayjs().add(1,"day").format("YYYY-MM-DD"));
   const [statusFilter, setStatusFilter] = useState("");
   const [levelFilter, setLevelFilter] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("");
@@ -342,8 +344,8 @@ const data = items.map((item) => {
     [t("form.education_community")]: t(`education.${item.educationCommunity}`) || "",
     [t("form.school_name")]: item.schoolName || "",
     [t("form.wereda")]: item.wereda || "",
-    [t("form.city")]: item.city || "",
-    [t("form.sub_city")]: item.subCity || "",
+    [t("form.city")]: t("city") || "",
+    [t("form.sub_city")]: t(`sub_city.${item.subCity}`) || "",
     [t("form.house_no")]: item.houseNo || "",
     
     // Complaint Details
@@ -923,7 +925,7 @@ const blobToBase64 = (blob: Blob): Promise<string> => {
           <option value="">{t("analytics.All")}</option>
           {subCities.map((city) => (
             <option key={city} value={city}>
-              {city}
+              { t(`sub_city.${city}`)}
             </option>
           ))}
         </select>

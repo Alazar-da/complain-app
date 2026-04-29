@@ -10,6 +10,9 @@
     "enter_phone_number": "Lakkoofsa bilbila galchi",
     "gender": "Saala",
     "select_gender": "Saala filadhu",
+    "select_city": "Kuura fili",
+      "select_sub_city": "Kuura xiqqaa fili",
+      "select_wereda": "Woreeda fili",
     "education_community": "Iddoo Hojii",
     "select_education_community": "Iddoo hojii kee fili",
     "school_name": "Maqaa Mana Barumsaa",
@@ -56,6 +59,26 @@
     "download_file": "Faayilii buusi",
     "audio_file": "Faayilii Sagalee",
     "pdf_file": "Faayilii PDF"
+    },
+
+   "gender": {
+    "male": "Dhiira",
+    "female": "Dubartii"
+  },
+  
+    "city": "Finfinnee",
+    "sub_city": {
+      "Addis Ketema": "Addis Katamaa",
+      "Akaky Kaliti": "Akaakii Qaallittii",
+      "Arada": "Araadaa",
+      "Bole": "Bolee",
+      "Gullele": "Gulleelee",
+      "Kirkos": "Qiirqoos",
+      "Kolfe Keranio": "Kolfee Qaraaniyoo",
+      "Lideta": "Lidata",
+      "Lemi Kura": "Lammii Kuraa",
+      "Nifas Silk-Lafto": "Nifaas Silk-Laaftoo",
+      "Yeka": "Yekkaa"
     },
 
   "levels": { "Low": "Gadii", "Medium": "Giddugaleessa", "High": "Olaanaa" },

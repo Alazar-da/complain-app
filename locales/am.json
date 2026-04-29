@@ -10,6 +10,9 @@
     "enter_phone_number": "የስልክ ቁጥር ያስገቡ",
     "gender": "ፆታ",
     "select_gender": "ፆታ ይምረጡ",
+    "select_city": "ከተማ ይምረጡ",
+    "select_sub_city": "ክፍለ ከተማ ይምረጡ",
+    "select_wereda": "ወረዳ ይምረጡ",
     "education_community": "የስራ ድርሻ",
     "select_education_community": "የስራ ድርሻዎን ይምረጡ",
     "school_name": "የትምህርት ቤት ስም",
@@ -69,6 +72,21 @@
   "gender": {
     "male": "ወንድ",
     "female": "ሴት"
+    },
+
+    "city": "አዲስ አበባ",
+    "sub_city": {
+      "Addis Ketema": "አዲስ ከተማ",
+      "Akaky Kaliti": "አቃቂ ቃሊቲ",
+      "Arada": "አራዳ",
+      "Bole": "ቦሌ",
+      "Gullele": "ጉለሌ",
+      "Kirkos": "ቂርቆስ",
+      "Kolfe Keranio": "ኮልፌ ቀራኒዮ",
+      "Lideta": "ልደታ",
+      "Lemi Kura": "ለሚ ኩራ",
+      "Nifas Silk-Lafto": "ንፋስ ስልክ ላፍቶ",
+      "Yeka": "የካ"
     },
 
   "levels": { "Low": "ዝቅተኛ", "Medium": "መካከለኛ", "High": "ከፍተኛ" },

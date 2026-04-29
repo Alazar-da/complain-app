@@ -493,8 +493,8 @@ export default function ViewModal({ complaint, onClose }: ViewModalProps) {
                     { icon: <FaGraduationCap className="w-4 h-4" />, label: t("form.education_community"), value: getEducationLabel(complaint.educationCommunity) },
                     { icon: <FiHome className="w-4 h-4" />, label: t("form.school_name"), value: complaint.schoolName },
                     { icon: <FiMapPin className="w-4 h-4" />, label: t("form.wereda"), value: complaint.wereda },
-                    { icon: <FaBuilding className="w-4 h-4" />, label: t("form.city"), value: complaint.city },
-                    { icon: <TbMapPin className="w-4 h-4" />, label: t("form.sub_city"), value: complaint.subCity },
+                    { icon: <FaBuilding className="w-4 h-4" />, label: t("form.city"), value: t("city") },
+                    { icon: <TbMapPin className="w-4 h-4" />, label: t("form.sub_city"), value: t(`sub_city.${complaint.subCity}`) },
                     { icon: <TbHome className="w-4 h-4" />, label: t("form.house_no"), value: complaint.houseNo }
                   ].map((item, index) => (
                     <div key={index} className="bg-linear-to-br from-gray-50 to-white rounded-2xl p-5 border-2 border-gray-100 hover:border-blue-200 transition-all duration-300 group">
